@@ -1,0 +1,63 @@
+- name: Configure TaskFlow learning host
+  hosts: taskflow
+  become: true
+  vars:
+    project_dir: /opt/taskflow
+    repo_url: "REPLACE_WITH_YOUR_GITHUB_REPOSITORY_URL"
+  tasks:
+    - name: Install prerequisites
+      ansible.builtin.apt:
+        update_cache: true
+        name:
+          - ca-certificates
+          - curl
+          - git
+        state: present
+
+    - name: Install Docker using Ubuntu package
+      ansible.builtin.apt:
+        name:
+          - docker.io
+          - docker-compose-v2
+        state: present
+
+    - name: Enable Docker
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Create deployment directory
+      ansible.builtin.file:
+        path: "{{ project_dir }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Checkout TaskFlow repository
+      ansible.builtin.git:
+        repo: "{{ repo_url }}"
+        dest: "{{ project_dir }}"
+        version: main
+        force: true
+
+    - name: Create deployment environment file
+      ansible.builtin.copy:
+        dest: "{{ project_dir }}/.env"
+        owner: root
+        group: root
+        mode: "0600"
+        content: |
+          APP_ENV=production
+          POSTGRES_DB=taskflow
+          POSTGRES_USER=taskflow
+          POSTGRES_PASSWORD={{ vault_postgres_password }}
+          GRAFANA_ADMIN_PASSWORD={{ vault_grafana_password }}
+      no_log: true
+
+    - name: Start application stack
+      ansible.builtin.command:
+        cmd: docker compose up --build -d
+        chdir: "{{ project_dir }}"
+      changed_when: true
