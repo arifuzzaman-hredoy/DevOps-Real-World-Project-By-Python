@@ -1,5 +1,4 @@
 from flask import Flask, jsonify
-from sqlalchemy import text
 from .config import Config
 from .extensions import db
 from .routes import api

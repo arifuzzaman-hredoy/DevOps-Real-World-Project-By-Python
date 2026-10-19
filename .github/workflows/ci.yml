@@ -1,4 +1,4 @@
-name: CI
+name: TaskFlow CI
 
 on:
   push:
@@ -11,28 +11,54 @@ permissions:
 
 jobs:
   test:
+    name: Lint and Test
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
           cache: pip
+          cache-dependency-path: requirements-dev.txt
+
       - name: Install dependencies
-        run: pip install -r requirements-dev.txt
-      - name: Lint
+        run: python -m pip install -r requirements-dev.txt
+
+      - name: Ruff lint
         run: ruff check app tests
-      - name: Test
-        run: pytest -q
+
+      - name: Run pytest
+        run: pytest -v
 
   build:
+    name: Build and Scan Docker Image
     needs: test
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      security-events: write
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Build container image
-        run: docker build -t taskflow:${{ github.sha }} .
-      - name: Verify image exists
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build --pull -t taskflow:${{ github.sha }} .
+
+      - name: Verify Docker image
         run: docker image inspect taskflow:${{ github.sha }}
+
+      - name: Scan image with Trivy
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          image-ref: taskflow:${{ github.sha }}
+          format: table
+          exit-code: "0"
+          vuln-type: os,library
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
