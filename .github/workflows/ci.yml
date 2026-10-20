@@ -41,7 +41,6 @@ jobs:
 
     permissions:
       contents: read
-      security-events: write
 
     steps:
       - name: Checkout repository
@@ -58,7 +57,7 @@ jobs:
         with:
           image-ref: taskflow:${{ github.sha }}
           format: table
-          exit-code: "0"
+          exit-code: "1"
           vuln-type: os,library
           severity: CRITICAL,HIGH
           ignore-unfixed: true
