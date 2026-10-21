@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, render_template
 from .config import Config
 from .extensions import db
 from .routes import api
@@ -15,11 +15,7 @@ def create_app(test_config=None):
 
     @app.get("/")
     def index():
-        return jsonify({
-            "name": "TaskFlow",
-            "message": "TaskFlow API is running",
-            "docs": "See README.md for API usage"
-        })
+        return render_template("index.html")
 
     with app.app_context():
         db.create_all()

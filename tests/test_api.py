@@ -43,3 +43,11 @@ def test_delete_task(client):
     response = client.delete(f"/api/tasks/{task_id}")
     assert response.status_code == 204
     assert client.get(f"/api/tasks/{task_id}").status_code == 404
+
+
+def test_homepage_serves_study_matrix(client):
+    response = client.get("/")
+
+    assert response.status_code == 200
+    assert response.mimetype == "text/html"
+    assert b"CST Semester Study Matrix" in response.data

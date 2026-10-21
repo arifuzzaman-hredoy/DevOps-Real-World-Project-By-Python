@@ -1,0 +1,6263 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#060913" />
+    <title>CST Semester Study Matrix</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f4f7fb;
+        --panel: #fff;
+        --ink: #172033;
+        --muted: #65718a;
+        --line: #e4e9f1;
+        --accent: #5b5ce2;
+        --accent2: #8b5cf6;
+        --good: #138a63;
+        --soft: #eef0ff;
+        --shadow: 0 10px 35px rgba(30, 45, 80, 0.07);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font:
+          15px/1.5 Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+      }
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+      button,
+      select {
+        cursor: pointer;
+      }
+      button:focus-visible,
+      input:focus-visible,
+      select:focus-visible {
+        outline: 3px solid #a5b4fc;
+        outline-offset: 2px;
+      }
+      .shell {
+        max-width: 1440px;
+        margin: auto;
+        padding: 24px;
+      }
+      .hero {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(125deg, #111827, #252b61 65%, #5b42a8);
+        border-radius: 28px;
+        padding: 32px;
+        color: white;
+        box-shadow: var(--shadow);
+      }
+      .hero:after {
+        content: "";
+        position: absolute;
+        width: 330px;
+        height: 330px;
+        border: 1px solid #ffffff24;
+        border-radius: 50%;
+        right: -90px;
+        top: -150px;
+        box-shadow:
+          0 0 0 35px #ffffff09,
+          0 0 0 70px #ffffff07;
+      }
+      .eyebrow {
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        font-size: 11px;
+        font-weight: 800;
+        color: #c7d2fe;
+      }
+      .hero h1 {
+        font-size: clamp(27px, 4vw, 43px);
+        line-height: 1.1;
+        margin: 12px 0 10px;
+        max-width: 760px;
+        letter-spacing: -0.035em;
+      }
+      .hero p {
+        max-width: 760px;
+        color: #d8def1;
+        margin: 0;
+      }
+      .hero-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+        margin-top: 22px;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        border: 1px solid #ffffff30;
+        background: #ffffff12;
+        border-radius: 999px;
+        padding: 7px 12px;
+        font-size: 12px;
+        font-weight: 650;
+      }
+      .dot {
+        width: 7px;
+        height: 7px;
+        background: #a7f3d0;
+        border-radius: 50%;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+        margin: 18px 0;
+      }
+      .stat,
+      .panel,
+      .subject-card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        box-shadow: var(--shadow);
+      }
+      .stat {
+        padding: 18px;
+      }
+      .stat-label {
+        font-size: 12px;
+        color: var(--muted);
+        font-weight: 650;
+      }
+      .stat-value {
+        font-size: 29px;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        margin: 4px 0;
+      }
+      .stat-foot {
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .progress-track {
+        height: 7px;
+        background: #edf0f6;
+        border-radius: 99px;
+        overflow: hidden;
+        margin-top: 12px;
+      }
+      .progress-fill {
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--accent), var(--accent2));
+        border-radius: 99px;
+        transition: width 0.2s;
+      }
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        margin: 22px 0 14px;
+      }
+      .search {
+        flex: 1;
+        min-width: 220px;
+        position: relative;
+      }
+      .search input {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 11px 14px 11px 38px;
+        background: white;
+        color: var(--ink);
+      }
+      .search span {
+        position: absolute;
+        left: 13px;
+        top: 10px;
+        color: var(--muted);
+      }
+      select,
+      .btn {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: white;
+        color: var(--ink);
+        padding: 10px 13px;
+      }
+      .btn {
+        font-weight: 700;
+        transition:
+          transform 0.15s,
+          box-shadow 0.15s;
+      }
+      .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 5px 14px #15203b12;
+      }
+      .btn.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: white;
+      }
+      .btn.ghost {
+        background: transparent;
+      }
+      .tabs {
+        display: flex;
+        gap: 6px;
+        background: #e9edf5;
+        padding: 5px;
+        border-radius: 13px;
+      }
+      .tab {
+        border: 0;
+        background: transparent;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 750;
+        padding: 8px 12px;
+        border-radius: 9px;
+      }
+      .tab.active {
+        background: white;
+        color: var(--accent);
+        box-shadow: 0 2px 8px #17203312;
+      }
+      .notice {
+        border: 1px solid #dfe3ff;
+        background: #f0f2ff;
+        border-radius: 14px;
+        padding: 12px 15px;
+        color: #454b86;
+        font-size: 13px;
+        margin: 12px 0 18px;
+      }
+      .subject-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        gap: 12px;
+        margin: 26px 0 12px;
+      }
+      .subject-heading h2 {
+        font-size: 19px;
+        margin: 0;
+        letter-spacing: -0.02em;
+      }
+      .subject-heading p {
+        margin: 3px 0 0;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .subject-count {
+        font-size: 12px;
+        font-weight: 750;
+        color: var(--muted);
+      }
+      .chapters {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .chapter {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 16px;
+        transition:
+          border-color 0.15s,
+          box-shadow 0.15s;
+      }
+      .chapter.complete {
+        border-color: #8dd7bb;
+        box-shadow: 0 0 0 2px #dff7ed;
+      }
+      .chapter-top {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+      }
+      .chapter-num {
+        flex: 0 0 36px;
+        height: 36px;
+        display: grid;
+        place-items: center;
+        border-radius: 11px;
+        background: var(--soft);
+        color: var(--accent);
+        font-weight: 850;
+      }
+      .chapter-title {
+        font-size: 14px;
+        font-weight: 750;
+        line-height: 1.4;
+        flex: 1;
+      }
+      .chapter-sub {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 5px;
+      }
+      .status {
+        font-size: 11px;
+        font-weight: 800;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+      .status.done {
+        color: var(--good);
+      }
+      .mini-progress {
+        height: 4px;
+        background: #edf0f6;
+        border-radius: 9px;
+        margin: 13px 0 15px;
+        overflow: hidden;
+      }
+      .mini-progress div {
+        height: 100%;
+        background: var(--good);
+        width: 0;
+      }
+      .section-label {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        font-weight: 850;
+        color: #7a8498;
+        margin: 12px 0 8px;
+      }
+      .checks {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+      .check {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        font-size: 12px;
+        color: #45516a;
+        cursor: pointer;
+        min-width: 0;
+      }
+      .check input {
+        accent-color: var(--accent);
+        width: 15px;
+        height: 15px;
+        margin: 1px 0 0;
+        flex-shrink: 0;
+      }
+      .check span {
+        line-height: 1.35;
+      }
+      .check:has(input:checked) span {
+        color: var(--good);
+      }
+      .empty {
+        padding: 40px;
+        text-align: center;
+        color: var(--muted);
+        background: white;
+        border: 1px dashed var(--line);
+        border-radius: 18px;
+      }
+      .footer {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        justify-content: space-between;
+        margin: 24px 0 8px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .toast {
+        position: fixed;
+        left: 50%;
+        bottom: 22px;
+        transform: translate(-50%, 20px);
+        opacity: 0;
+        pointer-events: none;
+        background: #111827;
+        color: white;
+        padding: 11px 16px;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        transition: 0.2s;
+        z-index: 5;
+      }
+      .toast.show {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: #11182788;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        z-index: 10;
+      }
+      .modal-backdrop.open {
+        display: flex;
+      }
+      .modal {
+        background: white;
+        border-radius: 18px;
+        padding: 22px;
+        max-width: 540px;
+        width: 100%;
+        box-shadow: 0 20px 80px #0003;
+      }
+      .modal h2 {
+        margin: 0 0 8px;
+      }
+      .modal p {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .modal textarea {
+        width: 100%;
+        height: 230px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 12px;
+        font:
+          12px/1.5 ui-monospace,
+          monospace;
+      }
+      .modal-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+        margin-top: 12px;
+      }
+      @media (max-width: 900px) {
+        .stats {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .chapters {
+          grid-template-columns: 1fr;
+        }
+        .shell {
+          padding: 16px;
+        }
+        .hero {
+          padding: 25px;
+        }
+      }
+      @media (max-width: 560px) {
+        .shell {
+          padding: 12px;
+        }
+        .hero {
+          border-radius: 20px;
+          padding: 22px;
+        }
+        .stats {
+          gap: 9px;
+        }
+        .stat {
+          padding: 13px;
+        }
+        .stat-value {
+          font-size: 24px;
+        }
+        .toolbar > * {
+          width: 100%;
+        }
+        .tabs {
+          width: 100%;
+        }
+        .tab {
+          flex: 1;
+        }
+        .checks {
+          gap: 10px 7px;
+        }
+        .check {
+          font-size: 11px;
+        }
+        .subject-heading {
+          align-items: start;
+          flex-direction: column;
+        }
+        .btn {
+          padding: 10px;
+        }
+        .search {
+          min-width: 100%;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+          scroll-behavior: auto !important;
+        }
+      }
+      #ttl {
+        white-space: pre-line;
+      }
+      .pad {
+        padding: 18px;
+      }
+      .admin-top {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        justify-content: space-between;
+        margin: 6px 0 16px;
+      }
+      .admin-top h1 {
+        margin: 0;
+        font-size: 26px;
+        letter-spacing: -0.03em;
+      }
+      .admin-top p {
+        margin: 2px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .fld {
+        display: block;
+        margin-bottom: 14px;
+      }
+      .fld span {
+        display: block;
+        font-size: 12px;
+        font-weight: 750;
+        color: var(--muted);
+        margin-bottom: 5px;
+      }
+      .fld input,
+      .fld textarea,
+      .arow input[type="text"],
+      .arow > input:not([type]),
+      #bk {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 9px 12px;
+        background: #fff;
+        color: var(--ink);
+        font: inherit;
+      }
+      .fld textarea {
+        resize: vertical;
+      }
+      .acard {
+        padding: 16px;
+        margin-bottom: 14px;
+      }
+      .arow {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .arow .grow {
+        flex: 1;
+        min-width: 0;
+      }
+      .arow.ch {
+        padding-left: 4px;
+      }
+      .arow .n {
+        width: 22px;
+        font-size: 11px;
+        color: var(--muted);
+        font-weight: 800;
+        text-align: right;
+      }
+      .arow > input:not(.grow) {
+        width: auto;
+      }
+      .mid {
+        font-size: 11px;
+        font-weight: 750;
+        color: var(--muted);
+        display: flex;
+        gap: 4px;
+        align-items: center;
+        white-space: nowrap;
+      }
+      .btn.sm {
+        padding: 6px 10px;
+        font-size: 12px;
+      }
+      .btn.danger {
+        color: #c0392b;
+      }
+      .addrow {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px dashed var(--line);
+      }
+      #bk {
+        height: 200px;
+        font:
+          12px/1.5 ui-monospace,
+          monospace;
+        margin: 10px 0;
+      }
+      .atabs {
+        margin-bottom: 16px;
+        display: inline-flex;
+        flex-wrap: wrap;
+      }
+      .dgrid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      .hint {
+        font-size: 12px;
+        color: var(--muted);
+        margin: 0 0 12px;
+      }
+      @media (max-width: 700px) {
+        .dgrid {
+          grid-template-columns: 1fr;
+        }
+        .arow {
+          flex-wrap: wrap;
+        }
+      }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style id="fx">
+      /* =====================================================================
+   FUTURE UI LAYER  (pure CSS motion: compositor-friendly transforms,
+   scroll-driven animations, @property, conic gradients, no libraries)
+   ===================================================================== */
+      @property --p {
+        syntax: "<number>";
+        inherits: false;
+        initial-value: 0;
+      }
+      @property --ang {
+        syntax: "<angle>";
+        inherits: false;
+        initial-value: 0deg;
+      }
+
+      :root {
+        color-scheme: dark;
+        --a1: #22e4ff;
+        --a2: #8b5cf6;
+        --a3: #ff3d9a;
+        --a-rgb: 34, 228, 255;
+        --bg: #060913;
+        --panel: rgba(12, 18, 36, 0.74);
+        --ink: #e8eefc;
+        --muted: #8d9bc0;
+        --line: rgba(140, 170, 255, 0.16);
+        --accent: var(--a1);
+        --accent2: var(--a2);
+        --good: #3dffb0;
+        --soft: rgba(var(--a-rgb), 0.12);
+        --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+        --fd: "Chakra Petch", "Segoe UI", system-ui, sans-serif;
+        --fb:
+          "Manrope", Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+          sans-serif;
+      }
+      html[data-accent="violet"] {
+        --a1: #a78bfa;
+        --a2: #22e4ff;
+        --a3: #ff4fa3;
+        --a-rgb: 167, 139, 250;
+      }
+      html[data-accent="magenta"] {
+        --a1: #ff4fa3;
+        --a2: #8b5cf6;
+        --a3: #ffb347;
+        --a-rgb: 255, 79, 163;
+      }
+      html[data-accent="lime"] {
+        --a1: #b6ff3d;
+        --a2: #22e4ff;
+        --a3: #3dffb0;
+        --a-rgb: 182, 255, 61;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: var(--fb);
+        background: var(--bg);
+        overflow-x: hidden;
+      }
+      .shell {
+        position: relative;
+        z-index: 1;
+      }
+      ::selection {
+        background: rgba(var(--a-rgb), 0.35);
+      }
+      ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(var(--a-rgb), 0.28);
+        border-radius: 9px;
+        border: 2px solid var(--bg);
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      /* ---------- ambient background ---------- */
+      .fx-bg {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        overflow: hidden;
+        pointer-events: none;
+        background: radial-gradient(
+          1200px 700px at 50% -10%,
+          rgba(var(--a-rgb), 0.08),
+          transparent 70%
+        );
+      }
+      .fx-aurora {
+        position: absolute;
+        width: 55vmax;
+        height: 55vmax;
+        border-radius: 50%;
+        filter: blur(90px);
+        opacity: 0.34;
+        will-change: transform;
+      }
+      .fx-aurora.a1 {
+        left: -15vmax;
+        top: -20vmax;
+        background: radial-gradient(circle, var(--a2), transparent 65%);
+        animation: drift1 26s ease-in-out infinite alternate;
+      }
+      .fx-aurora.a2 {
+        right: -18vmax;
+        top: 10vh;
+        background: radial-gradient(circle, var(--a1), transparent 65%);
+        animation: drift2 32s ease-in-out infinite alternate;
+        opacity: 0.26;
+      }
+      .fx-aurora.a3 {
+        left: 20vw;
+        bottom: -30vmax;
+        background: radial-gradient(circle, var(--a3), transparent 65%);
+        animation: drift3 38s ease-in-out infinite alternate;
+        opacity: 0.2;
+      }
+      .fx-grid {
+        position: absolute;
+        left: -60%;
+        right: -60%;
+        bottom: -60px;
+        height: calc(62vh + 60px);
+        transform: perspective(520px) rotateX(63deg);
+        transform-origin: 50% 100%;
+        -webkit-mask-image: linear-gradient(to top, #000 5%, transparent 85%);
+        mask-image: linear-gradient(to top, #000 5%, transparent 85%);
+        opacity: 0.5;
+      }
+      .fx-grid::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(var(--a-rgb), 0.35) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(var(--a-rgb), 0.35) 1px, transparent 1px);
+        background-size: 60px 60px;
+        animation: gridRun 3.2s linear infinite;
+        will-change: transform;
+      }
+      .fx-vignette {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          ellipse at 50% 40%,
+          transparent 45%,
+          rgba(2, 4, 10, 0.7)
+        );
+      }
+      .fx-cursor {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 520px;
+        height: 520px;
+        z-index: 0;
+        pointer-events: none;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(var(--a-rgb), 0.13),
+          transparent 62%
+        );
+        transform: translate3d(-999px, -999px, 0);
+        transition: transform 0.28s ease-out;
+        will-change: transform;
+        mix-blend-mode: screen;
+      }
+      .fx-scroll {
+        display: none;
+      }
+      @supports (animation-timeline: scroll()) {
+        .fx-scroll {
+          display: block;
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 3px;
+          z-index: 30;
+          background: linear-gradient(90deg, var(--a2), var(--a1), var(--a3));
+          box-shadow: 0 0 14px var(--a1);
+          transform-origin: 0 50%;
+          transform: scaleX(0);
+          animation: growX linear both;
+          animation-timeline: scroll(root);
+        }
+      }
+      @keyframes drift1 {
+        to {
+          transform: translate3d(18vw, 14vh, 0) scale(1.15);
+        }
+      }
+      @keyframes drift2 {
+        to {
+          transform: translate3d(-22vw, 18vh, 0) scale(0.9);
+        }
+      }
+      @keyframes drift3 {
+        to {
+          transform: translate3d(24vw, -12vh, 0) scale(1.2);
+        }
+      }
+      @keyframes gridRun {
+        to {
+          transform: translate3d(0, 60px, 0);
+        }
+      }
+      @keyframes growX {
+        to {
+          transform: scaleX(1);
+        }
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* ---------- HUD bar ---------- */
+      .hud-logo {
+        width: 26px;
+        height: 26px;
+        clip-path: polygon(50% 0, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+        background: conic-gradient(var(--a1), var(--a2), var(--a3), var(--a1));
+        animation: spin 8s linear infinite;
+      }
+      .live {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--good);
+        margin-right: 8px;
+        box-shadow: 0 0 0 0 rgba(61, 255, 176, 0.6);
+        animation: ping 2s ease-out infinite;
+      }
+      .xp {
+        flex: 1;
+        height: 8px;
+        border-radius: 9px;
+        background: rgba(255, 255, 255, 0.08);
+        overflow: hidden;
+      }
+      .xp i {
+        display: block;
+        height: 100%;
+        width: 0;
+        border-radius: 9px;
+        background: linear-gradient(90deg, var(--a2), var(--a1));
+        box-shadow: 0 0 12px var(--a1);
+        transition: width 1.1s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      .xpn {
+        font-size: 11px;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 11px;
+        border-radius: 99px;
+        font: 700 13px var(--fd);
+        background: rgba(255, 160, 60, 0.1);
+        border: 1px solid rgba(255, 160, 60, 0.35);
+        color: #ffc47a;
+      }
+      .sw {
+        display: flex;
+        gap: 7px;
+        padding: 0 6px;
+      }
+      .sw button {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        border: 2px solid transparent;
+        padding: 0;
+        background: var(--c);
+        box-shadow: 0 0 0 0 var(--c);
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+      }
+      .sw button:hover {
+        transform: scale(1.2);
+      }
+      .sw button[aria-pressed="true"] {
+        border-color: #fff;
+        box-shadow: 0 0 12px var(--c);
+      }
+      kbd {
+        font: 600 11px var(--fd);
+        padding: 2px 6px;
+        border-radius: 6px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.06);
+        color: #c8d4f2;
+        margin-left: 6px;
+      }
+      @keyframes ping {
+        70% {
+          box-shadow: 0 0 0 9px rgba(61, 255, 176, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(61, 255, 176, 0);
+        }
+      }
+
+      /* ---------- hero ---------- */
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 28px;
+        align-items: center;
+        background:
+          linear-gradient(
+            135deg,
+            rgba(var(--a-rgb), 0.13),
+            rgba(139, 92, 246, 0.1) 55%,
+            rgba(255, 61, 154, 0.07)
+          ),
+          rgba(8, 13, 28, 0.72);
+        border: 1px solid rgba(var(--a-rgb), 0.24);
+        -webkit-backdrop-filter: blur(16px);
+        backdrop-filter: blur(16px);
+        padding: 34px;
+      }
+      .hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        padding: 1.5px;
+        pointer-events: none;
+        background: conic-gradient(
+          from var(--ang),
+          transparent 0 62%,
+          var(--a1) 82%,
+          var(--a3) 92%,
+          transparent
+        );
+        -webkit-mask:
+          linear-gradient(#000 0 0) content-box,
+          linear-gradient(#000 0 0);
+        -webkit-mask-composite: xor;
+        mask:
+          linear-gradient(#000 0 0) content-box exclude,
+          linear-gradient(#000 0 0);
+        animation: angle 7s linear infinite;
+      }
+      .hero:after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        width: auto;
+        height: auto;
+        right: auto;
+        top: auto;
+        border: 0;
+        border-radius: inherit;
+        box-shadow: none;
+        pointer-events: none;
+        background: linear-gradient(
+            180deg,
+            transparent,
+            rgba(var(--a-rgb), 0.24) 50%,
+            transparent
+          )
+          no-repeat;
+        background-size: 100% 36%;
+        background-position: 0 -60%;
+        animation: scanDown 2.4s 0.4s ease-in-out 1 forwards;
+      }
+      .hero-copy,
+      .reactor {
+        position: relative;
+        z-index: 1;
+      }
+      @keyframes angle {
+        to {
+          --ang: 360deg;
+        }
+      }
+      @keyframes scanDown {
+        to {
+          background-position: 0 170%;
+        }
+      }
+      .eyebrow {
+        text-transform: none;
+        letter-spacing: 0.03em;
+        font: 600 13px var(--fd);
+        color: var(--a1);
+      }
+      .eyebrow::after {
+        content: "";
+        display: inline-block;
+        width: 8px;
+        height: 15px;
+        margin-left: 5px;
+        vertical-align: -3px;
+        background: var(--a1);
+        animation: caret 1s steps(1) infinite;
+      }
+      @keyframes caret {
+        50% {
+          opacity: 0;
+        }
+      }
+      .hero h1 {
+        font-family: var(--fd);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        background: linear-gradient(
+          100deg,
+          #fff 15%,
+          var(--a1) 42%,
+          #d8ccff 62%,
+          #fff 85%
+        );
+        background-size: 260% 100%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        -webkit-text-fill-color: transparent;
+        animation: sheen 8s ease-in-out infinite alternate;
+      }
+      @keyframes sheen {
+        from {
+          background-position: 0 0;
+        }
+        to {
+          background-position: 100% 0;
+        }
+      }
+      .hero p {
+        color: #b9c5e6;
+      }
+      .pill {
+        border-color: rgba(var(--a-rgb), 0.28);
+        background: rgba(var(--a-rgb), 0.07);
+        color: #dbe6ff;
+      }
+      .dot {
+        background: var(--good);
+        box-shadow: 0 0 0 0 rgba(61, 255, 176, 0.6);
+        animation: ping 2s ease-out infinite;
+      }
+
+      .count {
+        display: flex;
+        align-items: flex-end;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 20px;
+      }
+      .count[hidden] {
+        display: none;
+      }
+      .cu {
+        min-width: 64px;
+        padding: 8px 10px 6px;
+        border-radius: 12px;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.045);
+        border: 1px solid rgba(var(--a-rgb), 0.24);
+      }
+      .cu b {
+        display: block;
+        font: 700 27px/1.1 var(--fd);
+        font-variant-numeric: tabular-nums;
+        color: #fff;
+        text-shadow: 0 0 18px rgba(var(--a-rgb), 0.55);
+      }
+      .cu small {
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .flip {
+        animation: flip 0.5s cubic-bezier(0.3, 1.4, 0.5, 1);
+      }
+      @keyframes flip {
+        from {
+          transform: translateY(-40%) rotateX(75deg);
+          opacity: 0;
+        }
+        to {
+          transform: none;
+          opacity: 1;
+        }
+      }
+      .count-note {
+        align-self: center;
+        margin-left: 6px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      /* ---------- progress reactor (the hero moment) ---------- */
+      .reactor {
+        position: relative;
+        width: 230px;
+        height: 230px;
+        flex: none;
+        transform-style: preserve-3d;
+        transition: transform 0.3s ease-out;
+        will-change: transform;
+      }
+      .reactor::before {
+        content: "";
+        position: absolute;
+        inset: 6%;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(var(--a-rgb), 0.28),
+          transparent 68%
+        );
+        animation: breathe 4s ease-in-out infinite;
+      }
+      .reactor::after {
+        content: "";
+        position: absolute;
+        inset: 21%;
+        border-radius: 50%;
+        background: conic-gradient(transparent 0 68%, rgba(var(--a-rgb), 0.38));
+        -webkit-mask-image: radial-gradient(circle, #000 70%, transparent 72%);
+        mask-image: radial-gradient(circle, #000 70%, transparent 72%);
+        animation: spin 5s linear infinite;
+      }
+      .reactor svg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+        z-index: 1;
+      }
+      .reactor circle {
+        fill: none;
+      }
+      .rx-spin1,
+      .rx-spin2 {
+        transform-origin: 110px 110px;
+      }
+      .rx-spin1 {
+        animation: spin 48s linear infinite;
+      }
+      .rx-spin2 {
+        animation: spin 28s linear infinite reverse;
+      }
+      .rx-dash {
+        stroke: rgba(var(--a-rgb), 0.45);
+        stroke-width: 1;
+        stroke-dasharray: 3 9;
+      }
+      .rx-ticks {
+        stroke: rgba(255, 255, 255, 0.22);
+        stroke-width: 5;
+        stroke-dasharray: 1.2 11.8;
+      }
+      .rx-track,
+      .rx-track2 {
+        stroke: rgba(255, 255, 255, 0.07);
+        stroke-width: 10;
+      }
+      .rx-track2 {
+        stroke-width: 6;
+      }
+      .rx-arc,
+      .rx-arc2 {
+        transform: rotate(-90deg);
+        transform-origin: 110px 110px;
+        stroke-linecap: round;
+        transition: stroke-dashoffset 1.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      .rx-arc {
+        stroke-width: 10;
+        stroke-dasharray: 527.8;
+        stroke-dashoffset: 527.8;
+        filter: drop-shadow(0 0 7px var(--a1));
+      }
+      .rx-arc2 {
+        stroke-width: 6;
+        stroke-dasharray: 414.7;
+        stroke-dashoffset: 414.7;
+        stroke: var(--good);
+        filter: drop-shadow(0 0 5px var(--good));
+      }
+      .rx-goal {
+        transform-origin: 110px 110px;
+        transform: rotate(calc(var(--goal, 80) * 3.6deg));
+        transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      .rx-core {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        display: grid;
+        place-content: center;
+        text-align: center;
+      }
+      .rx-core b {
+        font: 700 44px/1 var(--fd);
+        color: #fff;
+        text-shadow: 0 0 24px rgba(var(--a-rgb), 0.7);
+        font-variant-numeric: tabular-nums;
+      }
+      .rx-core span {
+        font-size: 12px;
+        color: #b9c5e6;
+        margin-top: 6px;
+      }
+      @keyframes breathe {
+        50% {
+          transform: scale(1.1);
+          opacity: 0.7;
+        }
+      }
+
+      /* ---------- glass surfaces ---------- */
+      .stat,
+      .panel,
+      .subject-card {
+        background: var(--panel);
+        border-color: var(--line);
+        box-shadow: var(--shadow);
+      }
+      .stat {
+        position: relative;
+        overflow: hidden;
+        -webkit-backdrop-filter: blur(12px);
+        backdrop-filter: blur(12px);
+        transition:
+          transform 0.25s ease-out,
+          border-color 0.25s;
+        will-change: transform;
+      }
+      .stat::before,
+      .mission::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.3s;
+        background: radial-gradient(
+          280px circle at var(--mx, 50%) var(--my, 50%),
+          rgba(var(--a-rgb), 0.18),
+          transparent 70%
+        );
+      }
+      .stat:hover::before,
+      .mission:hover::before {
+        opacity: 1;
+      }
+      .stat:hover {
+        border-color: rgba(var(--a-rgb), 0.4);
+      }
+      .stat::after {
+        content: "";
+        position: absolute;
+        left: 18px;
+        right: 18px;
+        top: 0;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--a1), transparent);
+        opacity: 0.7;
+      }
+      .stat-label {
+        letter-spacing: 0.06em;
+        color: var(--muted);
+      }
+      .stat-value {
+        font-family: var(--fd);
+        font-size: 34px;
+        color: #fff;
+        text-shadow: 0 0 26px rgba(var(--a-rgb), 0.35);
+        font-variant-numeric: tabular-nums;
+      }
+      .progress-track {
+        position: relative;
+        background: rgba(255, 255, 255, 0.08);
+        --goal: 80%;
+      }
+      .progress-track::after {
+        content: "";
+        position: absolute;
+        top: -1px;
+        bottom: -1px;
+        left: var(--goal);
+        width: 2px;
+        background: #ffd24a;
+        box-shadow: 0 0 8px #ffd24a;
+      }
+      .progress-fill {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(90deg, var(--a2), var(--a1));
+        box-shadow: 0 0 14px var(--a1);
+        transition: width 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      .progress-fill::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.7),
+          transparent
+        );
+        transform: translateX(-100%);
+        animation: shimmer 2.6s ease-in-out infinite;
+      }
+      @keyframes shimmer {
+        to {
+          transform: translateX(100%);
+        }
+      }
+
+      /* ---------- next-up mission strip ---------- */
+      .mission {
+        position: relative;
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: minmax(0, 1.5fr) auto minmax(190px, 1fr);
+        gap: 18px 24px;
+        align-items: center;
+        padding: 18px 20px;
+        margin: 0 0 6px;
+        border-radius: 18px;
+        background:
+          linear-gradient(
+            120deg,
+            rgba(var(--a-rgb), 0.1),
+            rgba(139, 92, 246, 0.07)
+          ),
+          var(--panel);
+        border: 1px solid rgba(var(--a-rgb), 0.28);
+        box-shadow: var(--shadow);
+      }
+      .ms-main {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        min-width: 0;
+      }
+      .ms-txt {
+        min-width: 0;
+      }
+      .ms-txt small {
+        color: var(--a1);
+        font-weight: 700;
+        font-size: 12px;
+      }
+      .ms-txt h3 {
+        margin: 2px 0 2px;
+        font: 700 18px/1.25 var(--fd);
+        overflow-wrap: anywhere;
+      }
+      .ms-txt p {
+        margin: 0;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .ms-act {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .ms-heat small {
+        display: block;
+        margin-top: 6px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .bars {
+        display: flex;
+        align-items: flex-end;
+        gap: 4px;
+        height: 40px;
+      }
+      .bars i {
+        flex: 1;
+        min-width: 6px;
+        height: var(--h, 12%);
+        border-radius: 3px;
+        background: rgba(var(--a-rgb), 0.34);
+        transition: height 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      .bars i.z {
+        background: rgba(255, 255, 255, 0.09);
+      }
+      .bars i.t {
+        background: var(--a1);
+        box-shadow: 0 0 10px var(--a1);
+      }
+
+      /* conic progress ring (used by mission + subject headings) */
+      .sring {
+        --p: 0;
+        position: relative;
+        flex: none;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: conic-gradient(
+          var(--a1) calc(var(--p) * 1%),
+          rgba(255, 255, 255, 0.09) 0
+        );
+        transition: --p 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+        filter: drop-shadow(0 0 6px rgba(var(--a-rgb), 0.45));
+      }
+      .sring::before {
+        content: "";
+        position: absolute;
+        inset: 4px;
+        border-radius: 50%;
+        background: #0a1124;
+      }
+      .sring b {
+        position: relative;
+        font: 700 11px var(--fd);
+        color: #fff;
+      }
+      .sring.lg {
+        width: 66px;
+        height: 66px;
+      }
+      .sring.lg::before {
+        inset: 6px;
+      }
+      .sring.lg b {
+        font-size: 15px;
+      }
+      .sh-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      /* ---------- toolbar / controls ---------- */
+      .search input,
+      select,
+      .btn,
+      .fld input,
+      .fld textarea,
+      .arow input[type="text"],
+      .arow > input:not([type]),
+      #bk,
+      .modal textarea {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--ink);
+        border-color: var(--line);
+      }
+      .search input::placeholder,
+      .fld input::placeholder {
+        color: #6f7da3;
+      }
+      .search input:focus,
+      .fld input:focus,
+      .fld textarea:focus {
+        border-color: rgba(var(--a-rgb), 0.6);
+        box-shadow: 0 0 0 3px rgba(var(--a-rgb), 0.15);
+        outline: 0;
+      }
+      select option {
+        background: #0b1226;
+        color: var(--ink);
+      }
+      .btn {
+        transition:
+          transform 0.15s,
+          box-shadow 0.2s,
+          border-color 0.2s,
+          background 0.2s;
+      }
+      .btn:hover {
+        border-color: rgba(var(--a-rgb), 0.55);
+        box-shadow: 0 0 20px rgba(var(--a-rgb), 0.2);
+      }
+      .btn:active {
+        transform: translateY(0) scale(0.97);
+      }
+      .btn.primary {
+        background: var(--a1);
+        border-color: var(--a1);
+        color: #03121a;
+        box-shadow: 0 0 22px rgba(var(--a-rgb), 0.35);
+      }
+      .btn.primary:hover {
+        box-shadow: 0 0 30px rgba(var(--a-rgb), 0.6);
+      }
+      .btn.ghost {
+        background: transparent;
+      }
+      .btn.danger {
+        color: #ff7d92;
+      }
+      .tabs {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--line);
+      }
+      .tab {
+        transition:
+          color 0.2s,
+          background 0.2s;
+      }
+      .tab.active {
+        background: rgba(var(--a-rgb), 0.16);
+        color: var(--a1);
+        box-shadow: inset 0 0 0 1px rgba(var(--a-rgb), 0.4);
+      }
+      .notice {
+        background: rgba(var(--a-rgb), 0.07);
+        border-color: rgba(var(--a-rgb), 0.25);
+        color: #b8c6ea;
+      }
+      .notice strong {
+        color: #fff;
+      }
+      .empty {
+        background: var(--panel);
+        border-color: var(--line);
+      }
+      .subject-heading h2 {
+        font-family: var(--fd);
+        font-size: 23px;
+        letter-spacing: -0.01em;
+      }
+      .subject-count {
+        color: var(--muted);
+      }
+
+      /* ---------- chapter cards ---------- */
+      .chapter {
+        position: relative;
+        overflow: hidden;
+        isolation: isolate;
+        background: rgba(11, 17, 34, 0.8);
+        border-color: var(--line);
+        transition:
+          border-color 0.25s,
+          box-shadow 0.3s;
+      }
+      .chapter::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        opacity: 0;
+        transition: opacity 0.3s;
+        background: radial-gradient(
+          280px circle at var(--mx, 50%) var(--my, 50%),
+          rgba(var(--a-rgb), 0.16),
+          transparent 70%
+        );
+      }
+      .chapter:hover::before {
+        opacity: 1;
+      }
+      .chapter:hover {
+        border-color: rgba(var(--a-rgb), 0.42);
+      }
+      .chapter.complete {
+        border-color: rgba(61, 255, 176, 0.55);
+        box-shadow:
+          0 0 0 1px rgba(61, 255, 176, 0.16),
+          0 0 30px rgba(61, 255, 176, 0.13);
+      }
+      .chapter.complete::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 12%;
+        bottom: 12%;
+        width: 3px;
+        border-radius: 0 3px 3px 0;
+        background: var(--good);
+        box-shadow: 0 0 12px var(--good);
+      }
+      .chapter.flash {
+        animation: flash 1.8s ease-out;
+      }
+      @keyframes flash {
+        0% {
+          box-shadow: 0 0 0 0 rgba(var(--a-rgb), 0.95);
+          border-color: var(--a1);
+        }
+        70% {
+          box-shadow: 0 0 0 18px rgba(var(--a-rgb), 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(var(--a-rgb), 0);
+        }
+      }
+      .chapter-num {
+        background: rgba(var(--a-rgb), 0.1);
+        color: var(--a1);
+        font-family: var(--fd);
+        border: 1px solid rgba(var(--a-rgb), 0.28);
+      }
+      .chapter-title {
+        color: #f1f5ff;
+      }
+      .status {
+        color: var(--muted);
+        font-family: var(--fd);
+      }
+      .status.done {
+        color: var(--good);
+        text-shadow: 0 0 12px rgba(61, 255, 176, 0.6);
+      }
+      .mini-progress {
+        background: rgba(255, 255, 255, 0.07);
+      }
+      .mini-progress div {
+        background: linear-gradient(90deg, var(--a2), var(--good));
+        box-shadow: 0 0 10px rgba(61, 255, 176, 0.5);
+      }
+      .section-label {
+        color: #7f8db3;
+      }
+      .check {
+        color: #a9b6d6;
+        padding: 2px 0;
+        transition: color 0.2s;
+      }
+      .check:hover {
+        color: #fff;
+      }
+      .check input {
+        -webkit-appearance: none;
+        appearance: none;
+        position: relative;
+        display: grid;
+        place-content: center;
+        width: 18px;
+        height: 18px;
+        margin: 0;
+        border-radius: 6px;
+        border: 1.5px solid rgba(var(--a-rgb), 0.5);
+        background: rgba(var(--a-rgb), 0.06);
+        transition:
+          background 0.2s,
+          border-color 0.2s,
+          box-shadow 0.2s;
+      }
+      .check input::after {
+        content: "";
+        width: 9px;
+        height: 5px;
+        border-left: 2.5px solid #03121a;
+        border-bottom: 2.5px solid #03121a;
+        transform: rotate(-45deg) translate(1px, -1px) scale(0);
+        transition: transform 0.2s cubic-bezier(0.3, 1.9, 0.5, 1);
+      }
+      .check input:checked {
+        background: linear-gradient(135deg, var(--good), #9dffd8);
+        border-color: transparent;
+        box-shadow: 0 0 14px rgba(61, 255, 176, 0.6);
+      }
+      .check input:checked::after {
+        transform: rotate(-45deg) translate(1px, -1px) scale(1);
+      }
+      .check input:hover {
+        border-color: var(--a1);
+      }
+      .check input:focus-visible {
+        outline: 2px solid var(--a1);
+        outline-offset: 3px;
+      }
+      .check.pop input {
+        animation: pop 0.5s cubic-bezier(0.3, 1.7, 0.5, 1);
+      }
+      .check.pop input::before {
+        content: "";
+        position: absolute;
+        inset: -2px;
+        border-radius: 8px;
+        border: 2px solid var(--good);
+        animation: ripple 0.6s ease-out forwards;
+      }
+      @keyframes pop {
+        0% {
+          transform: scale(0.6);
+        }
+        60% {
+          transform: scale(1.35);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      @keyframes ripple {
+        from {
+          transform: scale(1);
+          opacity: 0.9;
+        }
+        to {
+          transform: scale(2.6);
+          opacity: 0;
+        }
+      }
+
+      /* scroll-driven reveal (no JS, no replay on re-render) */
+      @supports (animation-timeline: view()) {
+        .chapter,
+        .subject-heading,
+        .mission,
+        .notice {
+          animation: reveal cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+          animation-timeline: view();
+          animation-range: entry 0% entry 42%;
+        }
+        .chapter.flash {
+          animation: flash 1.8s ease-out;
+        }
+      }
+      @keyframes reveal {
+        from {
+          opacity: 0;
+          transform: translateY(34px) scale(0.97);
+        }
+      }
+
+      /* ---------- toast / modal ---------- */
+      .toast {
+        background: rgba(8, 13, 28, 0.92);
+        border: 1px solid rgba(var(--a-rgb), 0.4);
+        color: #fff;
+        -webkit-backdrop-filter: blur(12px);
+        backdrop-filter: blur(12px);
+        box-shadow:
+          0 0 30px rgba(var(--a-rgb), 0.25),
+          var(--shadow);
+        z-index: 40;
+        max-width: 90vw;
+        text-align: center;
+      }
+      .modal-backdrop {
+        -webkit-backdrop-filter: blur(8px);
+        backdrop-filter: blur(8px);
+        background: rgba(3, 6, 14, 0.62);
+      }
+      .modal {
+        background: #0b1226;
+        border: 1px solid rgba(var(--a-rgb), 0.3);
+        box-shadow:
+          0 30px 100px rgba(0, 0, 0, 0.6),
+          0 0 60px rgba(var(--a-rgb), 0.12);
+      }
+      .modal-backdrop.open .modal {
+        animation: modalIn 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.15);
+      }
+      @keyframes modalIn {
+        from {
+          opacity: 0;
+          transform: translateY(18px) scale(0.95);
+        }
+      }
+
+      /* ---------- overlays: palette + achievements ---------- */
+      .ov {
+        position: fixed;
+        inset: 0;
+        z-index: 20;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 12vh 16px 16px;
+        background: rgba(3, 6, 14, 0.62);
+        -webkit-backdrop-filter: blur(8px);
+        backdrop-filter: blur(8px);
+        opacity: 0;
+        visibility: hidden;
+        transition:
+          opacity 0.2s,
+          visibility 0s 0.2s;
+      }
+      .ov.show {
+        opacity: 1;
+        visibility: visible;
+        transition-delay: 0s;
+      }
+      .pal,
+      .hall {
+        width: 100%;
+        max-width: 640px;
+        border-radius: 20px;
+        background: rgba(10, 16, 32, 0.97);
+        border: 1px solid rgba(var(--a-rgb), 0.3);
+        box-shadow:
+          0 30px 100px rgba(0, 0, 0, 0.6),
+          0 0 60px rgba(var(--a-rgb), 0.12);
+        overflow: hidden;
+        transform: translateY(-14px) scale(0.97);
+        transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.15);
+      }
+      .ov.show .pal,
+      .ov.show .hall {
+        transform: none;
+      }
+      .pal-in {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--line);
+      }
+      .pal-in span {
+        color: var(--a1);
+        font-size: 20px;
+      }
+      .pal-in input {
+        flex: 1;
+        min-width: 0;
+        background: none;
+        border: 0;
+        color: var(--ink);
+        font-size: 16px;
+      }
+      .pal-in input:focus-visible {
+        outline: 0;
+      }
+      .pal-in:focus-within {
+        box-shadow: inset 0 -2px 0 var(--a1);
+      }
+      #palList {
+        list-style: none;
+        margin: 0;
+        padding: 8px;
+        max-height: min(52vh, 430px);
+        overflow: auto;
+      }
+      #palList li {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 9px 12px;
+        border-radius: 12px;
+        cursor: pointer;
+      }
+      #palList li[aria-selected="true"] {
+        background: rgba(var(--a-rgb), 0.13);
+        box-shadow: inset 0 0 0 1px rgba(var(--a-rgb), 0.35);
+      }
+      #palList li.none {
+        cursor: default;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .pi-ic {
+        flex: none;
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
+        display: grid;
+        place-items: center;
+        font: 700 14px var(--fd);
+        color: var(--a1);
+        background: rgba(var(--a-rgb), 0.1);
+        border: 1px solid rgba(var(--a-rgb), 0.25);
+      }
+      .pi-tx {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+      }
+      .pi-tx b {
+        font-weight: 650;
+        font-size: 14px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .pi-tx small {
+        font-size: 12px;
+        color: var(--muted);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      #palList em {
+        font-style: normal;
+        font-size: 11px;
+        color: var(--muted);
+        border: 1px solid var(--line);
+        border-radius: 99px;
+        padding: 2px 8px;
+        white-space: nowrap;
+      }
+      .pal-foot {
+        display: flex;
+        gap: 16px;
+        padding: 9px 16px;
+        border-top: 1px solid var(--line);
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .hall {
+        padding: 20px;
+        max-height: 80vh;
+        overflow: auto;
+      }
+      .hall-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+      .hall-top h2 {
+        margin: 0;
+        font: 700 22px var(--fd);
+      }
+      .hall-stats {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
+        margin-bottom: 14px;
+      }
+      .hall-stats div {
+        padding: 10px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--line);
+      }
+      .hall-stats b {
+        display: block;
+        font: 700 16px var(--fd);
+        color: #fff;
+      }
+      .hall-stats small {
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .hall-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+      }
+      .bd {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        padding: 12px;
+        border-radius: 14px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.03);
+        opacity: 0.5;
+        filter: grayscale(1);
+      }
+      .bd.on {
+        opacity: 1;
+        filter: none;
+        border-color: rgba(var(--a-rgb), 0.4);
+        box-shadow: 0 0 22px rgba(var(--a-rgb), 0.12);
+      }
+      .bd b {
+        display: block;
+        font-size: 13px;
+      }
+      .bd small {
+        font-size: 12px;
+        color: var(--muted);
+        line-height: 1.35;
+        display: block;
+      }
+      .hex {
+        flex: none;
+        width: 38px;
+        height: 42px;
+        display: grid;
+        place-items: center;
+        clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+        background: #33405f;
+        color: #03121a;
+        font: 700 15px var(--fd);
+      }
+      .bd.on .hex {
+        background: linear-gradient(135deg, var(--a1), var(--a2));
+      }
+
+      /* ---------- focus timer dock ---------- */
+      .dock {
+        position: fixed;
+        right: 16px;
+        bottom: 16px;
+        z-index: 6;
+      }
+      .dock-fab {
+        position: relative;
+        width: 62px;
+        height: 62px;
+        padding: 0;
+        border-radius: 50%;
+        border: 1px solid rgba(var(--a-rgb), 0.4);
+        background: rgba(8, 13, 28, 0.88);
+        -webkit-backdrop-filter: blur(12px);
+        backdrop-filter: blur(12px);
+        color: var(--ink);
+        display: grid;
+        place-items: center;
+        box-shadow:
+          0 8px 30px rgba(0, 0, 0, 0.5),
+          0 0 22px rgba(var(--a-rgb), 0.2);
+        transition: transform 0.2s;
+      }
+      .dock-fab:hover {
+        transform: scale(1.07);
+      }
+      .dock-fab svg {
+        position: absolute;
+        inset: 3px;
+        width: calc(100% - 6px);
+        height: calc(100% - 6px);
+        transform: rotate(-90deg);
+      }
+      .dock-fab span {
+        position: relative;
+        font: 600 12px var(--fd);
+        font-variant-numeric: tabular-nums;
+      }
+      .dock.running .dock-fab {
+        animation: fabPulse 2s ease-in-out infinite;
+      }
+      @keyframes fabPulse {
+        50% {
+          box-shadow:
+            0 8px 30px rgba(0, 0, 0, 0.5),
+            0 0 36px rgba(var(--a-rgb), 0.6);
+        }
+      }
+      .dock svg circle {
+        fill: none;
+        stroke-width: 3;
+      }
+      .dock .tr {
+        stroke: rgba(255, 255, 255, 0.1);
+      }
+      .dock .ar {
+        stroke: var(--a1);
+        stroke-linecap: round;
+        transition: stroke-dashoffset 0.3s linear;
+        filter: drop-shadow(0 0 4px var(--a1));
+      }
+      .dock-panel {
+        position: absolute;
+        right: 0;
+        bottom: 74px;
+        width: 250px;
+        padding: 16px;
+        border-radius: 20px;
+        text-align: center;
+        background: rgba(8, 13, 28, 0.93);
+        border: 1px solid rgba(var(--a-rgb), 0.3);
+        -webkit-backdrop-filter: blur(18px);
+        backdrop-filter: blur(18px);
+        box-shadow: var(--shadow);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(12px) scale(0.96);
+        transform-origin: 100% 100%;
+        transition:
+          opacity 0.25s,
+          transform 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.2),
+          visibility 0s 0.3s;
+      }
+      .dock.open .dock-panel {
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        transition-delay: 0s;
+      }
+      .dk-ring {
+        position: relative;
+        width: 142px;
+        height: 142px;
+        margin: 2px auto 12px;
+      }
+      .dk-ring svg {
+        width: 100%;
+        height: 100%;
+        transform: rotate(-90deg);
+      }
+      .dk-ring .ar {
+        stroke-width: 4;
+      }
+      .dk-ring .tr {
+        stroke-width: 4;
+      }
+      .dk-ring b {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        font: 700 32px var(--fd);
+        font-variant-numeric: tabular-nums;
+      }
+      .dk-modes {
+        display: flex;
+        gap: 6px;
+        justify-content: center;
+        margin-bottom: 12px;
+      }
+      .dk-modes button {
+        padding: 5px 10px;
+        border-radius: 99px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .dk-modes button[aria-pressed="true"] {
+        background: rgba(var(--a-rgb), 0.16);
+        border-color: rgba(var(--a-rgb), 0.5);
+        color: var(--a1);
+      }
+      .dk-act {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+      }
+      .dk-note {
+        margin: 12px 0 0;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      /* ---------- particles (sparks + confetti) ---------- */
+      .fxp {
+        position: fixed;
+        z-index: 60;
+        pointer-events: none;
+        width: 7px;
+        height: 7px;
+        margin: -3px 0 0 -3px;
+        border-radius: 50%;
+        background: var(--c);
+        box-shadow: 0 0 10px var(--c);
+        animation: fxSpark var(--d) cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+        will-change: transform, opacity;
+      }
+      .fxp.confetti {
+        width: 8px;
+        height: 13px;
+        margin: -6px 0 0 -4px;
+        border-radius: 2px;
+        box-shadow: none;
+        animation-name: fxFall;
+        animation-timing-function: linear;
+      }
+      @keyframes fxSpark {
+        from {
+          transform: translate3d(0, 0, 0) scale(1);
+          opacity: 1;
+        }
+        to {
+          transform: translate3d(var(--dx), var(--dy), 0) scale(0);
+          opacity: 0;
+        }
+      }
+      @keyframes fxFall {
+        0% {
+          transform: translate3d(0, 0, 0) rotate(0);
+          opacity: 1;
+          animation-timing-function: cubic-bezier(0.1, 0.8, 0.3, 1);
+        }
+        38% {
+          transform: translate3d(calc(var(--dx) * 0.7), var(--dy), 0)
+            rotate(calc(var(--rot) * 0.5));
+          opacity: 1;
+          animation-timing-function: cubic-bezier(0.5, 0, 1, 1);
+        }
+        100% {
+          transform: translate3d(var(--dx), var(--fall), 0) rotate(var(--rot));
+          opacity: 0;
+        }
+      }
+
+      /* ---------- responsive ---------- */
+      @media (max-width: 1000px) {
+        .mission {
+          grid-template-columns: 1fr 1fr;
+        }
+        .ms-main {
+          grid-column: 1/-1;
+        }
+      }
+      @media (max-width: 900px) {
+        .hero {
+          grid-template-columns: 1fr;
+          padding: 26px;
+        }
+        .reactor {
+          margin: 6px auto 0;
+          width: 200px;
+          height: 200px;
+        }
+        .rx-core b {
+          font-size: 38px;
+        }
+      }
+      @media (max-width: 600px) {
+        .mission {
+          grid-template-columns: 1fr;
+        }
+        .xpn {
+          display: none;
+        }
+        .hall-stats {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .cu {
+          min-width: 56px;
+        }
+        .cu b {
+          font-size: 22px;
+        }
+        .stat-value {
+          font-size: 28px;
+        }
+        .ov {
+          padding-top: 8vh;
+        }
+      }
+      @media (hover: none) {
+        .fx-cursor {
+          display: none;
+        }
+      }
+
+      /* ---------- performance + accessibility switches ---------- */
+      html.lite .fx-aurora,
+      html.lite .fx-grid::before,
+      html.lite .reactor::after,
+      html.lite .hero::before,
+      html.lite .progress-fill::after,
+      html.lite .hud-logo {
+        animation: none;
+      }
+      html.lite .fx-aurora {
+        filter: none;
+        opacity: 0.18;
+      }
+      html.lite .fx-cursor {
+        display: none;
+      }
+      html.lite .stat,
+      html.lite .hero,
+      html.lite .toast,
+      html.lite .dock-fab,
+      html.lite .dock-panel {
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation: none !important;
+          transition: none !important;
+          scroll-behavior: auto !important;
+        }
+        .fx-cursor,
+        .fxp {
+          display: none;
+        }
+        .hero h1 {
+          background-position: 30% 0;
+        }
+      }
+
+      /* ---------- print: calm, ink-friendly ---------- */
+      @media print {
+        :root {
+          color-scheme: light;
+          --bg: #fff;
+          --panel: #fff;
+          --ink: #111;
+          --muted: #555;
+          --line: #ddd;
+          --good: #0a7a55;
+        }
+        .fx-bg,
+        .fx-scroll,
+        .fx-cursor,
+        .mission,
+        .dock,
+        .ov,
+        .reactor,
+        .count,
+        .fxp,
+        .sring,
+        .hero::before {
+          display: none !important;
+        }
+        body {
+          background: #fff;
+          color: #111;
+        }
+        .hero {
+          display: block;
+          -webkit-backdrop-filter: none;
+          backdrop-filter: none;
+        }
+        .hero h1 {
+          background: none;
+          -webkit-text-fill-color: #111;
+          color: #111;
+          animation: none;
+        }
+        .stat,
+        .chapter,
+        .notice {
+          background: #fff;
+          -webkit-backdrop-filter: none;
+          backdrop-filter: none;
+          animation: none;
+        }
+        .stat-value,
+        .stat-label,
+        .chapter-title {
+          color: #111;
+          text-shadow: none;
+        }
+        .stat::before,
+        .stat::after,
+        .chapter::before,
+        .chapter::after {
+          display: none;
+        }
+        .chapter-num {
+          background: #eee;
+          color: #333;
+          border-color: #ccc;
+        }
+        .check {
+          color: #222;
+        }
+        .check input {
+          -webkit-appearance: checkbox;
+          appearance: auto;
+          width: 12px;
+          height: 12px;
+          border: 0;
+          background: none;
+          box-shadow: none;
+        }
+        .check input::after {
+          display: none;
+        }
+      }
+
+      /* =====================================================================
+   SIDEBAR + MOBILE LAYOUT  (replaces the old sticky top bar)
+   ===================================================================== */
+      .sb {
+        position: fixed;
+        z-index: 24;
+        left: 14px;
+        top: 14px;
+        bottom: 14px;
+        width: 258px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        padding: 18px 14px 14px;
+        border-radius: 24px;
+        background:
+          linear-gradient(180deg, rgba(var(--a-rgb), 0.09), transparent 38%),
+          rgba(8, 13, 28, 0.84);
+        border: 1px solid var(--line);
+        -webkit-backdrop-filter: blur(18px) saturate(1.4);
+        backdrop-filter: blur(18px) saturate(1.4);
+        box-shadow: var(--shadow);
+        overflow-y: auto;
+        overflow-x: hidden;
+        overscroll-behavior: contain;
+        scrollbar-width: none;
+      }
+      .sb::-webkit-scrollbar {
+        display: none;
+      }
+      .sb::after {
+        content: "";
+        position: absolute;
+        left: 22px;
+        right: 22px;
+        top: 0;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--a1), transparent);
+        opacity: 0.8;
+      }
+      .sb-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .sb-brand b {
+        display: block;
+        font: 700 18px/1.15 var(--fd);
+      }
+      .sb-brand small {
+        display: flex;
+        align-items: center;
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+      .sb-brand .live {
+        margin-right: 6px;
+        width: 7px;
+        height: 7px;
+      }
+      .sb-x {
+        display: none;
+        margin-left: auto;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--ink);
+        place-items: center;
+        padding: 0;
+      }
+      .sb-card {
+        display: grid;
+        gap: 8px;
+        padding: 12px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--line);
+      }
+      .sb-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .sb-row .lv {
+        font: 700 14px var(--fd);
+        color: var(--a1);
+      }
+      .sb-card .xp {
+        height: 8px;
+      }
+      .sb-nav {
+        display: grid;
+        gap: 4px;
+      }
+      .sb-sec {
+        display: grid;
+        gap: 6px;
+      }
+      .sb-sec > small {
+        padding: 0 4px;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--muted);
+      }
+      .sb-i {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        min-height: 46px;
+        padding: 8px 10px;
+        border: 0;
+        border-radius: 13px;
+        background: transparent;
+        color: #b9c5e6;
+        font-weight: 650;
+        font-size: 14px;
+        text-align: left;
+        transition:
+          background 0.2s,
+          color 0.2s,
+          transform 0.2s;
+        animation: navIn 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+        animation-delay: calc(var(--i, 0) * 55ms);
+      }
+      .sb-nav .sb-i:nth-child(1) {
+        --i: 1;
+      }
+      .sb-nav .sb-i:nth-child(2) {
+        --i: 2;
+      }
+      .sb-nav .sb-i:nth-child(3) {
+        --i: 3;
+      }
+      .sb-nav .sb-i:nth-child(4) {
+        --i: 4;
+      }
+      .sb-nav .sb-i:nth-child(5) {
+        --i: 5;
+      }
+      .sb-nav .sb-i:nth-child(6) {
+        --i: 6;
+      }
+      .sb-i .ic {
+        flex: none;
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        background: rgba(var(--a-rgb), 0.08);
+        border: 1px solid rgba(var(--a-rgb), 0.22);
+        color: var(--a1);
+        font: 700 14px var(--fd);
+        transition:
+          background 0.2s,
+          box-shadow 0.2s;
+      }
+      .sb-i:hover {
+        background: rgba(var(--a-rgb), 0.09);
+        color: #fff;
+        transform: translateX(3px);
+      }
+      .sb-i:hover .ic {
+        box-shadow: 0 0 14px rgba(var(--a-rgb), 0.35);
+      }
+      .sb-i[aria-current="page"] {
+        background: rgba(var(--a-rgb), 0.15);
+        color: #fff;
+        box-shadow: inset 0 0 0 1px rgba(var(--a-rgb), 0.35);
+      }
+      .sb-i[aria-current="page"] .ic {
+        background: var(--a1);
+        color: #03121a;
+        border-color: transparent;
+      }
+      .sb-i[aria-current="page"]::before {
+        content: "";
+        position: absolute;
+        left: -14px;
+        top: 24%;
+        bottom: 24%;
+        width: 4px;
+        border-radius: 0 4px 4px 0;
+        background: var(--a1);
+        box-shadow: 0 0 12px var(--a1);
+      }
+      .sb-i em {
+        margin-left: auto;
+        font: 600 11px var(--fd);
+        font-style: normal;
+        color: var(--muted);
+      }
+      .sb-i kbd {
+        margin-left: auto;
+      }
+      .sb-seg {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 4px;
+        padding: 4px;
+        border-radius: 13px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--line);
+      }
+      .sb-seg button {
+        min-height: 38px;
+        padding: 6px 2px;
+        border: 0;
+        border-radius: 10px;
+        background: transparent;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 750;
+        transition:
+          background 0.2s,
+          color 0.2s;
+      }
+      .sb-seg button[aria-pressed="true"] {
+        background: rgba(var(--a-rgb), 0.16);
+        color: var(--a1);
+        box-shadow: inset 0 0 0 1px rgba(var(--a-rgb), 0.4);
+      }
+      .sb-foot {
+        margin-top: auto;
+        display: grid;
+        gap: 8px;
+        padding-top: 14px;
+        border-top: 1px solid var(--line);
+      }
+      .sb-foot .sw {
+        padding: 0 4px;
+        gap: 12px;
+      }
+      .sb-foot .sw button {
+        width: 22px;
+        height: 22px;
+      }
+      .sb-sw {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        min-height: 40px;
+        padding: 4px;
+        border: 0;
+        background: transparent;
+        color: #b9c5e6;
+        font-size: 13px;
+        font-weight: 650;
+      }
+      .sb-sw i {
+        position: relative;
+        width: 40px;
+        height: 23px;
+        border-radius: 99px;
+        background: rgba(255, 255, 255, 0.14);
+        transition: background 0.25s;
+      }
+      .sb-sw i::after {
+        content: "";
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 17px;
+        height: 17px;
+        border-radius: 50%;
+        background: #fff;
+        transition:
+          transform 0.28s cubic-bezier(0.3, 1.5, 0.5, 1),
+          background 0.2s;
+      }
+      .sb-sw[aria-checked="true"] i {
+        background: var(--a1);
+      }
+      .sb-sw[aria-checked="true"] i::after {
+        transform: translateX(17px);
+        background: #03121a;
+      }
+      @keyframes navIn {
+        from {
+          opacity: 0;
+          transform: translateX(-16px);
+        }
+      }
+
+      .sb-back,
+      .sb-fab,
+      .mbar {
+        display: none;
+      }
+      .lvchip {
+        margin-left: auto;
+        padding: 5px 11px;
+        border-radius: 99px;
+        font: 700 12px var(--fd);
+        color: var(--a1);
+        background: rgba(var(--a-rgb), 0.1);
+        border: 1px solid rgba(var(--a-rgb), 0.35);
+      }
+      .toolbar > .btn {
+        display: none;
+      } /* Admin / Export / Print now live in the sidebar */
+
+      /* desktop: content sits beside the sidebar, nothing sticks to the top */
+      @media (min-width: 1001px) {
+        .shell {
+          max-width: 1480px;
+          margin: 0 0 0 286px;
+          padding: 22px 28px 48px 14px;
+        }
+      }
+
+      /* tablet + phone: sidebar becomes a swipe drawer */
+      @media (max-width: 1000px) {
+        .sb {
+          left: max(10px, env(safe-area-inset-left));
+          top: max(10px, env(safe-area-inset-top));
+          bottom: max(10px, env(safe-area-inset-bottom));
+          width: min(310px, 86vw);
+          z-index: 26;
+          transform: translateX(calc(-100% - 24px));
+          visibility: hidden;
+          transition:
+            transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1),
+            visibility 0s 0.4s;
+        }
+        .sb-open .sb {
+          transform: none;
+          visibility: visible;
+          transition-delay: 0s;
+        }
+        .sb-x {
+          display: grid;
+        }
+        .sb-back {
+          display: block;
+          position: fixed;
+          inset: 0;
+          z-index: 25;
+          background: rgba(3, 6, 14, 0.62);
+          -webkit-backdrop-filter: blur(4px);
+          backdrop-filter: blur(4px);
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.3s;
+        }
+        .sb-open .sb-back {
+          opacity: 1;
+          pointer-events: auto;
+        }
+        .sb-open,
+        .sb-open body {
+          overflow: hidden;
+        }
+        .sb-fab {
+          display: grid;
+          position: fixed;
+          z-index: 6;
+          left: max(14px, env(safe-area-inset-left));
+          bottom: max(16px, env(safe-area-inset-bottom));
+          width: 60px;
+          height: 60px;
+          padding: 0;
+          place-items: center;
+          border-radius: 50%;
+          border: 1px solid rgba(var(--a-rgb), 0.4);
+          background: rgba(8, 13, 28, 0.9);
+          color: var(--a1);
+          font-size: 22px;
+          box-shadow:
+            0 8px 30px rgba(0, 0, 0, 0.5),
+            0 0 22px rgba(var(--a-rgb), 0.2);
+          transition:
+            transform 0.2s,
+            opacity 0.2s;
+        }
+        .sb-fab:active {
+          transform: scale(0.92);
+        }
+        .sb-open .sb-fab {
+          opacity: 0;
+          pointer-events: none;
+        }
+        .mbar {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin: 0 0 14px;
+        }
+        .mbar b {
+          font: 700 18px var(--fd);
+        }
+        .mbar .btn {
+          width: 44px;
+          height: 44px;
+          padding: 0;
+          display: grid;
+          place-items: center;
+          font-size: 18px;
+        }
+        .shell {
+          padding: max(14px, env(safe-area-inset-top))
+            max(14px, env(safe-area-inset-right)) 96px
+            max(14px, env(safe-area-inset-left));
+        }
+        .dock {
+          right: max(14px, env(safe-area-inset-right));
+          bottom: max(16px, env(safe-area-inset-bottom));
+        }
+        .toast {
+          bottom: max(88px, calc(env(safe-area-inset-bottom) + 76px));
+        }
+      }
+
+      /* phone polish */
+      @media (max-width: 600px) {
+        .search input,
+        select,
+        .fld input,
+        .fld textarea,
+        .arow input[type="text"],
+        .arow > input:not([type]),
+        #bk,
+        .modal textarea,
+        .pal-in input {
+          font-size: 16px;
+        }
+        .hero {
+          padding: 20px 18px;
+          border-radius: 22px;
+          gap: 14px;
+        }
+        .reactor {
+          order: -1;
+          width: 176px;
+          height: 176px;
+          margin: 0 auto;
+        }
+        .rx-core b {
+          font-size: 34px;
+        }
+        .rx-core span {
+          font-size: 11px;
+        }
+        .hero h1 {
+          font-size: clamp(26px, 8.2vw, 34px);
+        }
+        .hero-meta {
+          gap: 6px;
+          margin-top: 16px;
+        }
+        .pill {
+          font-size: 11px;
+          padding: 6px 10px;
+        }
+        .count {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 6px;
+          margin-top: 16px;
+        }
+        .cu {
+          min-width: 0;
+          padding: 8px 4px 6px;
+        }
+        .cu b {
+          font-size: 21px;
+        }
+        .count-note {
+          grid-column: 1/-1;
+          margin: 2px 0 0;
+          font-size: 12px;
+        }
+        .stats {
+          margin: 14px 0;
+        }
+        .stat-label {
+          font-size: 11px;
+        }
+        .mission {
+          padding: 16px;
+          gap: 14px;
+        }
+        .ms-act .btn {
+          flex: 1;
+        }
+        .ms-txt h3 {
+          font-size: 16px;
+        }
+        .toolbar {
+          gap: 8px;
+          margin: 18px 0 12px;
+        }
+        .tab {
+          padding: 10px 6px;
+          font-size: 13px;
+        }
+        .notice {
+          font-size: 12.5px;
+        }
+        .subject-heading {
+          flex-direction: row;
+          align-items: center;
+          margin: 22px 0 10px;
+        }
+        .subject-heading h2 {
+          font-size: 19px;
+        }
+        .sring {
+          width: 40px;
+          height: 40px;
+        }
+        .chapter {
+          padding: 14px;
+          border-radius: 15px;
+        }
+        .chapter-title {
+          font-size: 15px;
+        }
+        .checks {
+          gap: 2px 10px;
+        }
+        .check {
+          font-size: 12.5px;
+          min-height: 38px;
+          align-items: center;
+          gap: 9px;
+        }
+        .check input {
+          width: 21px;
+          height: 21px;
+        }
+        .footer {
+          flex-direction: column;
+          align-items: stretch;
+          text-align: center;
+        }
+        .footer .btn {
+          width: 100%;
+        }
+        .modal {
+          padding: 18px;
+        }
+        .modal-actions .btn {
+          flex: 1;
+        }
+        .modal textarea {
+          height: 200px;
+        }
+        .hall {
+          padding: 16px;
+        }
+        .hall-grid {
+          grid-template-columns: 1fr;
+        }
+        .pal-foot {
+          display: none;
+        }
+        .dock-panel {
+          width: min(250px, calc(100vw - 28px));
+        }
+        .admin-top {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .admin-top .btn {
+          width: 100%;
+        }
+        .atabs {
+          display: flex;
+          flex-wrap: nowrap;
+          overflow-x: auto;
+          width: 100%;
+          scrollbar-width: none;
+        }
+        .atabs::-webkit-scrollbar {
+          display: none;
+        }
+        .atabs .tab {
+          white-space: nowrap;
+          flex: none;
+        }
+        .btn.sm {
+          min-height: 38px;
+          min-width: 38px;
+        }
+        .acard {
+          padding: 14px;
+        }
+        .fx-aurora {
+          filter: blur(60px);
+        }
+        .fx-grid {
+          opacity: 0.32;
+        }
+      }
+      @media (max-width: 360px) {
+        .stat-value {
+          font-size: 24px;
+        }
+        .reactor {
+          width: 156px;
+          height: 156px;
+        }
+        .rx-core b {
+          font-size: 30px;
+        }
+        .check {
+          font-size: 12px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .sb {
+          transition: none !important;
+        }
+        .sb-i {
+          animation: none !important;
+        }
+      }
+      @media print {
+        .sb,
+        .sb-back,
+        .sb-fab,
+        .mbar {
+          display: none !important;
+        }
+        .shell {
+          margin: 0 !important;
+          padding: 0 !important;
+          max-width: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="fx-bg" aria-hidden="true">
+      <div class="fx-aurora a1"></div>
+      <div class="fx-aurora a2"></div>
+      <div class="fx-aurora a3"></div>
+      <div class="fx-grid"></div>
+      <div class="fx-vignette"></div>
+    </div>
+    <div class="fx-scroll" aria-hidden="true"></div>
+    <div class="fx-cursor" id="cglow" aria-hidden="true"></div>
+    <aside class="sb" id="sb" aria-label="Main menu">
+      <div class="sb-brand">
+        <span class="hud-logo" aria-hidden="true"></span>
+        <div>
+          <b>CST Matrix</b
+          ><small
+            ><i class="live" aria-hidden="true"></i>Study system online</small
+          >
+        </div>
+        <button class="sb-x" id="sbClose" aria-label="Close menu">✕</button>
+      </div>
+      <div
+        class="sb-card"
+        title="Experience: 10 xp per task, 50 per chapter, 25 per focus session"
+      >
+        <div class="sb-row">
+          <span class="lv" id="hudLv">Lv 1</span
+          ><span
+            class="chip"
+            id="hudStreak"
+            title="Days in a row with a checked task"
+            >🔥 0</span
+          >
+        </div>
+        <div class="xp"><i id="hudXp"></i></div>
+        <span class="xpn" id="hudXpn">0/60 xp</span>
+      </div>
+      <nav class="sb-nav" aria-label="Sections">
+        <button class="sb-i" data-nav="dash" aria-current="page">
+          <span class="ic" aria-hidden="true">▦</span>Dashboard
+        </button>
+        <button class="sb-i" data-nav="next">
+          <span class="ic" aria-hidden="true">▸</span>Next up
+        </button>
+        <button class="sb-i" data-nav="hall">
+          <span class="ic" aria-hidden="true">✦</span>Achievements<em
+            id="sbHallN"
+            >0/10</em
+          >
+        </button>
+        <button class="sb-i" data-nav="focus">
+          <span class="ic" aria-hidden="true">◔</span>Focus timer
+        </button>
+        <button class="sb-i" id="hudK">
+          <span class="ic" aria-hidden="true">⌕</span>Search<kbd>Ctrl K</kbd>
+        </button>
+        <button class="sb-i" data-nav="admin">
+          <span class="ic" aria-hidden="true">⚙</span>Admin panel
+        </button>
+      </nav>
+      <div class="sb-sec">
+        <small>Syllabus</small>
+        <div class="sb-seg" role="group" aria-label="Syllabus filter">
+          <button data-sf="all" aria-pressed="true">All</button
+          ><button data-sf="mid" aria-pressed="false">Mid-Term</button
+          ><button data-sf="extra" aria-pressed="false">Final extra</button>
+        </div>
+      </div>
+      <div class="sb-sec">
+        <small>Tools</small>
+        <button class="sb-i" data-nav="export">
+          <span class="ic" aria-hidden="true">⇪</span>Export checklist
+        </button>
+        <button class="sb-i" data-nav="print">
+          <span class="ic" aria-hidden="true">⎙</span>Print
+        </button>
+      </div>
+      <div class="sb-foot">
+        <div class="sw" role="group" aria-label="Accent colour">
+          <button
+            style="--c: #22e4ff"
+            data-acc="cyan"
+            aria-label="Cyan accent"
+            aria-pressed="true"
+          ></button
+          ><button
+            style="--c: #a78bfa"
+            data-acc="violet"
+            aria-label="Violet accent"
+            aria-pressed="false"
+          ></button
+          ><button
+            style="--c: #ff4fa3"
+            data-acc="magenta"
+            aria-label="Magenta accent"
+            aria-pressed="false"
+          ></button
+          ><button
+            style="--c: #b6ff3d"
+            data-acc="lime"
+            aria-label="Lime accent"
+            aria-pressed="false"
+          ></button>
+        </div>
+        <button class="sb-sw" id="sbLite" role="switch" aria-checked="false">
+          <span>Lite effects</span><i aria-hidden="true"></i>
+        </button>
+      </div>
+    </aside>
+    <div class="sb-back" id="sbBack" aria-hidden="true"></div>
+    <button class="sb-fab" id="sbFab" aria-label="Open menu" aria-controls="sb">
+      <span aria-hidden="true">☰</span>
+    </button>
+    <div class="shell">
+      <div class="mbar">
+        <button
+          class="btn"
+          id="mbMenu"
+          aria-label="Open menu"
+          aria-controls="sb"
+        >
+          ☰</button
+        ><b>CST Matrix</b><span class="lvchip" id="mbLv">Lv 1</span>
+      </div>
+      <div id="dashView">
+        <header class="hero">
+          <div class="hero-copy">
+            <div class="eyebrow" id="eb">
+              Personal learning dashboard · 2026
+            </div>
+            <h1 id="ttl">CST Semester Study Matrix</h1>
+            <p id="dsc">
+              A practical chapter-by-chapter tracker for your Mid-Term and
+              Semester Final. Track question types, study tasks, revisions, and
+              self-tests in one place.
+            </p>
+            <div class="hero-meta" id="heroMeta">
+              <span class="pill"
+                ><span class="dot"></span> Mid-Term target · 01 Dec 2026</span
+              >
+              <span class="pill">6 subjects</span>
+              <span class="pill">Graphics Design excluded</span>
+              <span class="pill">Goal · 80% coverage</span>
+            </div>
+            <div
+              class="count"
+              id="count"
+              aria-label="Time left until the Mid-Term target"
+            >
+              <div class="cu"><b id="cD">00</b><small>days</small></div>
+              <div class="cu"><b id="cH">00</b><small>hours</small></div>
+              <div class="cu"><b id="cM">00</b><small>min</small></div>
+              <div class="cu"><b id="cS">00</b><small>sec</small></div>
+              <span class="count-note" id="cNote"
+                >until the Mid-Term target</span
+              >
+            </div>
+          </div>
+          <div
+            class="reactor"
+            id="reactor"
+            role="img"
+            aria-label="Overall coverage"
+          >
+            <svg viewBox="0 0 220 220" aria-hidden="true">
+              <defs>
+                <linearGradient id="rg" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" style="stop-color: var(--a1)" />
+                  <stop offset="1" style="stop-color: var(--a3)" />
+                </linearGradient>
+              </defs>
+              <g class="rx-spin1">
+                <circle cx="110" cy="110" r="106" class="rx-dash" />
+              </g>
+              <g class="rx-spin2">
+                <circle cx="110" cy="110" r="97" class="rx-ticks" />
+              </g>
+              <circle cx="110" cy="110" r="84" class="rx-track" />
+              <circle
+                cx="110"
+                cy="110"
+                r="84"
+                class="rx-arc"
+                id="rxArc"
+                stroke="url(#rg)"
+              />
+              <circle cx="110" cy="110" r="66" class="rx-track2" />
+              <circle cx="110" cy="110" r="66" class="rx-arc2" id="rxArc2" />
+              <g class="rx-goal" id="rxGoal">
+                <rect
+                  x="108.5"
+                  y="17"
+                  width="3"
+                  height="18"
+                  rx="1.5"
+                  fill="#ffd24a"
+                />
+              </g>
+            </svg>
+            <div class="rx-core">
+              <b id="rxPct">0%</b><span id="rxLbl">Level 1, Rookie</span>
+            </div>
+          </div>
+        </header>
+
+        <section class="stats" aria-label="Progress summary">
+          <div class="stat">
+            <div class="stat-label">CHAPTERS / UNITS</div>
+            <div class="stat-value" id="totalChapters">69</div>
+            <div class="stat-foot" id="subFoot">Across 6 subjects</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">FULLY COMPLETED</div>
+            <div class="stat-value" id="completedChapters">0</div>
+            <div class="stat-foot" id="allFoot">All 8 tasks checked</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">TASKS COMPLETED</div>
+            <div class="stat-value" id="taskProgress">0%</div>
+            <div class="stat-foot" id="taskCount">0 of 552 tasks</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">TARGET COVERAGE</div>
+            <div class="stat-value" id="goalVal">80%</div>
+            <div class="stat-foot">Aim before Mid-Term</div>
+            <div class="progress-track">
+              <div class="progress-fill" id="overallBar"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="mission" id="mission" aria-label="Next up">
+          <div class="ms-main">
+            <span class="sring lg" id="msRing"><b id="msRingN">0/8</b></span>
+            <div class="ms-txt">
+              <small>Next up</small>
+              <h3 id="msTitle">Loading</h3>
+              <p id="msSub"></p>
+            </div>
+          </div>
+          <div class="ms-act">
+            <button class="btn primary" id="msGo">Open chapter</button
+            ><button class="btn" id="msFocus">Focus 25 min</button>
+          </div>
+          <div class="ms-heat">
+            <div
+              class="bars"
+              id="msBars"
+              role="img"
+              aria-label="Tasks checked per day over the last 14 days"
+            ></div>
+            <small id="msStreak"></small>
+          </div>
+        </section>
+
+        <div class="toolbar">
+          <label class="search"
+            ><span>⌕</span
+            ><input
+              id="search"
+              type="search"
+              placeholder="Search subject or chapter…"
+              aria-label="Search chapters"
+          /></label>
+          <select id="subjectFilter" aria-label="Filter by subject">
+            <option value="all">All subjects</option>
+          </select>
+          <div class="tabs" role="tablist" aria-label="Syllabus filter">
+            <button
+              class="tab active"
+              data-scope="all"
+              role="tab"
+              aria-selected="true"
+            >
+              All
+            </button>
+            <button
+              class="tab"
+              data-scope="mid"
+              role="tab"
+              aria-selected="false"
+            >
+              Mid-Term
+            </button>
+            <button
+              class="tab"
+              data-scope="extra"
+              role="tab"
+              aria-selected="false"
+            >
+              Final Extra
+            </button>
+          </div>
+          <button class="btn primary" id="adminBtn">⚙ Admin</button>
+          <button class="btn" id="exportBtn">Export checklist</button>
+          <button class="btn" id="printBtn">Print</button>
+        </div>
+
+        <div class="notice" id="noticeBox">
+          <strong>How completion works:</strong> Every chapter has 4
+          question-preparation tasks and 4 study-workflow tasks. A chapter
+          counts as complete only when all 8 are checked. The Mid-Term ranges
+          for subjects other than Mathematics-III are estimates—confirm them
+          against your college syllabus.
+        </div>
+        <main id="matrix"></main>
+        <div class="footer">
+          <span id="ftxt"
+            >Progress is saved automatically in this browser on this
+            device.</span
+          >
+          <button class="btn ghost" id="resetBtn">Reset all progress</button>
+        </div>
+      </div>
+      <section id="adminView" hidden>
+        <div class="admin-top">
+          <div>
+            <h1>Admin panel</h1>
+            <p>
+              Subject, chapter, task, text — সব এখান থেকে add / edit / delete
+              করো। Auto-save হয়।
+            </p>
+          </div>
+          <button class="btn primary" id="backBtn">← Back to dashboard</button>
+        </div>
+        <div class="tabs atabs" role="tablist">
+          <button class="tab active" data-atab="general">General</button
+          ><button class="tab" data-atab="subjects">
+            Subjects &amp; Chapters</button
+          ><button class="tab" data-atab="tasks">Tasks</button
+          ><button class="tab" data-atab="data">Backup / Reset</button>
+        </div>
+        <div id="adminBody"></div>
+      </section>
+    </div>
+    <div class="ov" id="palette" aria-hidden="true">
+      <div
+        class="pal"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Command palette"
+      >
+        <div class="pal-in">
+          <span aria-hidden="true">⌕</span
+          ><input
+            id="palIn"
+            type="text"
+            placeholder="Jump to a chapter or run a command"
+            autocomplete="off"
+            spellcheck="false"
+            aria-label="Search chapters and commands"
+          />
+        </div>
+        <ul id="palList" role="listbox"></ul>
+        <div class="pal-foot">
+          <span>↑ ↓ to move</span><span>Enter to run</span
+          ><span>Esc to close</span>
+        </div>
+      </div>
+    </div>
+    <div class="ov" id="hallModal" aria-hidden="true">
+      <div
+        class="hall"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="hallTitle"
+      >
+        <div class="hall-top">
+          <h2 id="hallTitle">Achievements</h2>
+          <button class="btn sm" id="hallClose">Close</button>
+        </div>
+        <div class="hall-stats" id="hallStats"></div>
+        <div class="hall-grid" id="hallGrid"></div>
+      </div>
+    </div>
+    <div class="dock" id="dock">
+      <div class="dock-panel" id="dkPanel">
+        <div class="dk-ring">
+          <svg viewBox="0 0 120 120" aria-hidden="true">
+            <circle class="tr" cx="60" cy="60" r="52" />
+            <circle
+              class="ar"
+              id="dkArc"
+              cx="60"
+              cy="60"
+              r="52"
+              stroke-dasharray="326.7"
+              stroke-dashoffset="0"
+            /></svg
+          ><b id="dkTime">25:00</b>
+        </div>
+        <div class="dk-modes" role="group" aria-label="Timer length">
+          <button data-m="25" aria-pressed="true">Focus 25</button
+          ><button data-m="50" aria-pressed="false">Deep 50</button
+          ><button data-m="5" aria-pressed="false">Break 5</button>
+        </div>
+        <div class="dk-act">
+          <button class="btn primary sm" id="dkGo">Start</button
+          ><button class="btn sm" id="dkReset">Reset</button>
+        </div>
+        <p class="dk-note" id="dkNote"></p>
+      </div>
+      <button
+        class="dock-fab"
+        id="dkFab"
+        aria-expanded="false"
+        aria-label="Focus timer"
+      >
+        <svg viewBox="0 0 44 44" aria-hidden="true">
+          <circle class="tr" cx="22" cy="22" r="19" />
+          <circle
+            class="ar"
+            id="dkMiniArc"
+            cx="22"
+            cy="22"
+            r="19"
+            stroke-dasharray="119.4"
+            stroke-dashoffset="0"
+          /></svg
+        ><span id="dkMini">25:00</span>
+      </button>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <div
+      class="modal-backdrop"
+      id="exportModal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="exportTitle"
+    >
+      <div class="modal">
+        <h2 id="exportTitle">Export your checklist</h2>
+        <p>
+          Copy this text into your notes or keep a backup of your current
+          progress.
+        </p>
+        <textarea id="exportText" readonly></textarea>
+        <div class="modal-actions">
+          <button class="btn" id="closeExport">Close</button
+          ><button class="btn primary" id="copyExport">Copy text</button>
+        </div>
+      </div>
+    </div>
+    <script>
+      const RAW = [
+        {
+          name: "Social Science",
+          chapters: [
+            "Basic Concepts of Social Science",
+            "Society and Citizenship",
+            "State, Government, Law and Good Governance",
+            "United Nations and World Peace",
+            "Socialization, Social Control and Social Change",
+            "Culture and Civilization of Bangladesh and Ethnic Communities",
+            "Basic Concepts of Economics",
+            "Demand, Supply, Utility and National Income",
+            "Economic and Sustainable Development of Bangladesh",
+            "Partition of the Subcontinent and Political Events Following Independence",
+          ],
+          midCount: 6,
+        },
+        {
+          name: "Physics-II",
+          chapters: [
+            "Thermometry",
+            "Effects of Heat on Matter",
+            "Nature of Heat and Mechanical Equivalent of Heat",
+            "Static Electricity",
+            "Magnetism",
+            "Reflection of Light",
+            "Refraction of Light",
+            "Physical Optics",
+            "Photoelectric Effect",
+            "Atomic Structure",
+            "Nuclear Physics",
+            "Modern Physics",
+            "Relativity and Astrophysics",
+          ],
+          midCount: 8,
+        },
+        {
+          name: "Mathematics-III",
+          chapters: [
+            "Partial Fractions",
+            "Exponential Series",
+            "Binomial Theorem",
+            "Circle",
+            "Conics and Conic Sections",
+            "Area of Triangles",
+            "Areas of Quadrilaterals, Parallelograms, Rhombuses and Trapeziums",
+            "Area of Regular Polygons",
+            "Areas of Circles, Sectors and Segments",
+            "Surface Area and Volume of Rectangular Solids",
+            "Surface Area and Volume of Prisms",
+            "Surface Area and Volume of Parallelepipeds and Cylinders",
+            "Surface Area and Volume of Pyramids",
+            "Surface Area and Volume of Cones and Spheres",
+          ],
+          midIndexes: [0, 1, 2, 4, 5, 6, 7, 9, 10],
+        },
+        {
+          name: "Application Development Using Python",
+          chapters: [
+            "Python Functions",
+            "File Handling in Python",
+            "Modules, Packages and Application Software",
+            "Fundamentals of Object-Oriented Programming",
+            "Four Core Principles of OOP",
+            "Python Iterators, Generators and Decorators",
+            "Exception and Error Handling",
+            "Logging in Python",
+            "Unit Testing",
+            "Regular Expressions (RegEx)",
+            "Application Software",
+          ],
+          midCount: 7,
+        },
+        {
+          name: "IT Support Services",
+          chapters: [
+            "Evolution and Generations of Computers",
+            "Types of Modern Digital Computers",
+            "Basic Organization of Digital Computer Systems",
+            "Computer Memory",
+            "Functions of Input Devices",
+            "Functions of Output Devices",
+            "Personal Protective Equipment (PPE)",
+            "Concepts of Hardware",
+            "Concepts of Software",
+            "Features of Application Software Packages",
+            "Internet and Its Resources",
+            "Concepts of Networking",
+          ],
+          midCount: 7,
+        },
+        {
+          name: "Digital Electronics-I",
+          chapters: [
+            "Fundamentals of Digital Electronics",
+            "Number Systems and Codes",
+            "Logic Gates",
+            "Simplification of Logic Circuits",
+            "Digital ICs and Logic Families",
+            "Combinational Logic Circuits",
+            "Arithmetic Logic Circuit",
+            "Multiplexers and Demultiplexers",
+            "Encoders and Decoders",
+            "Sequential Logic Circuits",
+          ],
+          midCount: 6,
+        },
+      ];
+      const DQ = [
+        { id: "veryShort", label: "Very Short Questions" },
+        { id: "short", label: "Short Questions" },
+        { id: "composition", label: "Compositional Questions" },
+        { id: "examples", label: "Example Questions" },
+      ];
+      const DS = [
+        { id: "study", label: "Study complete" },
+        { id: "practice", label: "Practice" },
+        { id: "revision", label: "Revision" },
+        { id: "selfTest", label: "Self-exam" },
+      ];
+      const DATA_KEY = "cst-study-data-v2";
+      const uid = () =>
+        "x" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+      function defaults() {
+        return {
+          cfg: {
+            eyebrow: "Personal learning dashboard · 2026",
+            title: "CST Semester\nStudy Matrix",
+            desc: "A practical chapter-by-chapter tracker for your Mid-Term and Semester Final. Track question types, study tasks, revisions, and self-tests in one place.",
+            target: "01 Dec 2026",
+            note: "Graphics Design excluded",
+            goal: 80,
+            noticeHead: "How completion works:",
+            notice:
+              "Every chapter has 4 question-preparation tasks and 4 study-workflow tasks. A chapter counts as complete only when all 8 are checked. The Mid-Term ranges for subjects other than Mathematics-III are estimates—confirm them against your college syllabus.",
+            footer:
+              "Progress is saved automatically in this browser on this device.",
+          },
+          subjects: RAW.map((s, si) => ({
+            id: "s" + si,
+            name: s.name,
+            chapters: s.chapters.map((t, ci) => ({
+              id: si + "-" + ci,
+              title: t,
+              mid: s.midIndexes ? s.midIndexes.includes(ci) : ci < s.midCount,
+            })),
+          })),
+          q: DQ.map((x) => ({ ...x })),
+          s: DS.map((x) => ({ ...x })),
+        };
+      }
+      let D;
+      try {
+        D = JSON.parse(localStorage.getItem(DATA_KEY));
+        if (
+          !D ||
+          !Array.isArray(D.subjects) ||
+          !Array.isArray(D.q) ||
+          !Array.isArray(D.s)
+        )
+          D = defaults();
+      } catch (e) {
+        D = defaults();
+      }
+      D.cfg = { ...defaults().cfg, ...D.cfg };
+      let subjects, questionTasks, studyTasks, allChapters;
+      function sync() {
+        subjects = D.subjects;
+        questionTasks = D.q;
+        studyTasks = D.s;
+        allChapters = [];
+        D.subjects.forEach((s) =>
+          s.chapters.forEach((c, i) =>
+            allChapters.push({
+              id: c.id,
+              subject: s.name,
+              title: c.title,
+              index: i + 1,
+              isMid: c.mid,
+            }),
+          ),
+        );
+      }
+      function saveD() {
+        try {
+          localStorage.setItem(DATA_KEY, JSON.stringify(D));
+        } catch (e) {
+          showToast("Browser storage unavailable. Take a backup.");
+        }
+      }
+      const T = () => questionTasks.length + studyTasks.length;
+      sync();
+      const STORAGE_KEY = "cst-study-matrix-v1";
+      let state = {};
+      let scope = "all";
+      try {
+        state = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}") || {};
+      } catch (e) {
+        state = {};
+      }
+      const $ = (id) => document.getElementById(id);
+      function taskKey(chapterId, taskId) {
+        return chapterId + "::" + taskId;
+      }
+      function isChecked(chapterId, taskId) {
+        return state[taskKey(chapterId, taskId)] === true;
+      }
+      function chapterTaskCount(c) {
+        return [...questionTasks, ...studyTasks].filter((t) =>
+          isChecked(c.id, t.id),
+        ).length;
+      }
+      function chapterComplete(c) {
+        return T() > 0 && chapterTaskCount(c) === T();
+      }
+      function save() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {
+          showToast("Browser storage unavailable. Export a backup.");
+        }
+      }
+      function renderStats() {
+        const done = allChapters.reduce((n, c) => n + chapterTaskCount(c), 0);
+        const completed = allChapters.filter(chapterComplete).length;
+        const total = allChapters.length * T() || 1;
+        $("totalChapters").textContent = allChapters.length;
+        $("completedChapters").textContent = completed;
+        $("taskProgress").textContent = Math.round((done / total) * 100) + "%";
+        $("taskCount").textContent = `${done} of ${total} tasks`;
+        $("overallBar").style.width = (done / total) * 100 + "%";
+        if (window.FX) FX.refresh();
+      }
+      function render() {
+        const query = $("search").value.trim().toLowerCase();
+        const subject = $("subjectFilter").value;
+        const filtered = allChapters.filter((c) => {
+          const scopeMatch =
+            scope === "all" ||
+            (scope === "mid" && c.isMid) ||
+            (scope === "extra" && !c.isMid);
+          const subjectMatch = subject === "all" || c.subject === subject;
+          const searchMatch =
+            !query || (c.subject + " " + c.title).toLowerCase().includes(query);
+          return scopeMatch && subjectMatch && searchMatch;
+        });
+        const root = $("matrix");
+        root.innerHTML = "";
+        if (!filtered.length) {
+          root.innerHTML =
+            '<div class="empty"><strong>No chapters found</strong><br>Try a different search or filter.</div>';
+          renderStats();
+          return;
+        }
+        const groups = subjects
+          .map((s) => ({
+            subject: s.name,
+            chapters: filtered.filter((c) => c.subject === s.name),
+          }))
+          .filter((g) => g.chapters.length);
+        groups.forEach((group) => {
+          const heading = document.createElement("div");
+          heading.className = "subject-heading";
+          const left = document.createElement("div");
+          const h = document.createElement("h2");
+          h.textContent = group.subject;
+          const p = document.createElement("p");
+          p.textContent = "Chapter-by-chapter learning and question tracker";
+          left.append(h, p);
+          const count = document.createElement("span");
+          count.className = "subject-count";
+          const completed = group.chapters.filter(chapterComplete).length;
+          count.textContent = `${completed}/${group.chapters.length} complete`;
+          heading.append(left, count);
+          root.append(heading);
+          const grid = document.createElement("div");
+          grid.className = "chapters";
+          group.chapters.forEach((c) => {
+            const card = document.createElement("article");
+            card.className =
+              "chapter" + (chapterComplete(c) ? " complete" : "");
+            const top = document.createElement("div");
+            top.className = "chapter-top";
+            const num = document.createElement("div");
+            num.className = "chapter-num";
+            num.textContent = String(c.index).padStart(2, "0");
+            const titleWrap = document.createElement("div");
+            titleWrap.style.flex = "1";
+            const title = document.createElement("div");
+            title.className = "chapter-title";
+            title.textContent = c.title;
+            const sub = document.createElement("div");
+            sub.className = "chapter-sub";
+            sub.textContent = c.isMid
+              ? "Mid-Term syllabus (estimated)"
+              : "Final extra syllabus";
+            titleWrap.append(title, sub);
+            const status = document.createElement("span");
+            status.className = "status" + (chapterComplete(c) ? " done" : "");
+            status.textContent = chapterComplete(c)
+              ? "✓ Complete"
+              : `${chapterTaskCount(c)}/${T()}`;
+            top.append(num, titleWrap, status);
+            card.append(top);
+            const mini = document.createElement("div");
+            mini.className = "mini-progress";
+            const bar = document.createElement("div");
+            bar.style.width = (chapterTaskCount(c) / (T() || 1)) * 100 + "%";
+            mini.append(bar);
+            card.append(mini);
+            const qlabel = document.createElement("div");
+            qlabel.className = "section-label";
+            qlabel.textContent = "01 · Question preparation";
+            card.append(qlabel);
+            const qgrid = document.createElement("div");
+            qgrid.className = "checks";
+            questionTasks.forEach((t) => qgrid.append(makeCheck(c, t)));
+            card.append(qgrid);
+            const slabel = document.createElement("div");
+            slabel.className = "section-label";
+            slabel.textContent = "02 · Study workflow";
+            card.append(slabel);
+            const sgrid = document.createElement("div");
+            sgrid.className = "checks";
+            studyTasks.forEach((t) => sgrid.append(makeCheck(c, t)));
+            card.append(sgrid);
+            grid.append(card);
+          });
+          root.append(grid);
+        });
+        renderStats();
+      }
+      function makeCheck(chapter, task) {
+        const label = document.createElement("label");
+        label.className = "check";
+        const input = document.createElement("input");
+        input.type = "checkbox";
+        input.checked = isChecked(chapter.id, task.id);
+        input.setAttribute("aria-label", chapter.title + ": " + task.label);
+        input.addEventListener("change", () => {
+          state[taskKey(chapter.id, task.id)] = input.checked;
+          save();
+          render();
+          showToast(input.checked ? "Progress updated" : "Task unchecked");
+        });
+        const span = document.createElement("span");
+        span.textContent = task.label;
+        label.append(input, span);
+        return label;
+      }
+      function showToast(message) {
+        const toast = $("toast");
+        toast.textContent = message;
+        toast.classList.add("show");
+        clearTimeout(showToast.timer);
+        showToast.timer = setTimeout(
+          () => toast.classList.remove("show"),
+          1900,
+        );
+      }
+      function exportData() {
+        const lines = [
+          D.cfg.title.replace(/\n/g, " ").toUpperCase(),
+          "Mid-Term target: " + D.cfg.target,
+          "",
+        ];
+        subjects.forEach((s) => {
+          lines.push(s.name);
+          allChapters
+            .filter((c) => c.subject === s.name)
+            .forEach((c) => {
+              lines.push(
+                `${chapterComplete(c) ? "[x]" : "[ ]"} ${c.index}. ${c.title} (${c.isMid ? "Mid-Term" : "Final extra"})`,
+              );
+              [...questionTasks, ...studyTasks].forEach((t) =>
+                lines.push(
+                  `   ${isChecked(c.id, t.id) ? "[x]" : "[ ]"} ${t.label}`,
+                ),
+              );
+            });
+          lines.push("");
+        });
+        return lines.join("\n");
+      }
+      const select = $("subjectFilter");
+      function fillSel() {
+        const cur = select.value;
+        select.innerHTML = '<option value="all">All subjects</option>';
+        subjects.forEach((s) => {
+          const o = document.createElement("option");
+          o.value = s.name;
+          o.textContent = s.name;
+          select.append(o);
+        });
+        select.value = subjects.some((s) => s.name === cur) ? cur : "all";
+      }
+      fillSel();
+      $("search").addEventListener("input", render);
+      select.addEventListener("change", render);
+      document.querySelectorAll("[data-scope]").forEach((btn) =>
+        btn.addEventListener("click", () => {
+          scope = btn.dataset.scope;
+          document.querySelectorAll("[data-scope]").forEach((b) => {
+            const active = b === btn;
+            b.classList.toggle("active", active);
+            b.setAttribute("aria-selected", String(active));
+          });
+          render();
+        }),
+      );
+      $("exportBtn").addEventListener("click", () => {
+        $("exportText").value = exportData();
+        $("exportModal").classList.add("open");
+      });
+      $("closeExport").addEventListener("click", () =>
+        $("exportModal").classList.remove("open"),
+      );
+      $("exportModal").addEventListener("click", (e) => {
+        if (e.target === $("exportModal"))
+          $("exportModal").classList.remove("open");
+      });
+      $("copyExport").addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText($("exportText").value);
+          showToast("Checklist copied to clipboard");
+        } catch (e) {
+          $("exportText").select();
+          document.execCommand("copy");
+          showToast("Checklist copy attempted");
+        }
+      });
+      $("printBtn").addEventListener("click", () => window.print());
+      $("resetBtn").addEventListener("click", () => {
+        if (confirm("Reset every checked task? This cannot be undone.")) {
+          state = {};
+          save();
+          render();
+          showToast("Progress reset");
+        }
+      });
+      function applyCfg() {
+        const g = D.cfg;
+        $("eb").textContent = g.eyebrow;
+        $("ttl").textContent = g.title;
+        $("dsc").textContent = g.desc;
+        document.title = g.title.replace(/\n/g, " ");
+        const hm = $("heroMeta");
+        hm.innerHTML = "";
+        [
+          "Mid-Term target · " + g.target,
+          subjects.length + " subjects",
+          g.note,
+          "Goal · " + g.goal + "% coverage",
+        ].forEach((t, i) => {
+          if (!t) return;
+          const p = document.createElement("span");
+          p.className = "pill";
+          if (i === 0) {
+            const d = document.createElement("span");
+            d.className = "dot";
+            p.append(d);
+          }
+          p.append(t);
+          hm.append(p);
+        });
+        const nb = $("noticeBox");
+        nb.innerHTML = "";
+        const st = document.createElement("strong");
+        st.textContent = g.noticeHead + " ";
+        nb.append(st, g.notice);
+        $("goalVal").textContent = g.goal + "%";
+        $("allFoot").textContent = `All ${T()} tasks checked`;
+        $("subFoot").textContent = "Across " + subjects.length + " subjects";
+        $("ftxt").textContent = g.footer;
+      }
+      const esc = (s) =>
+        String(s).replace(
+          /[&<>"]/g,
+          (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
+        );
+      const fS = (id) => D.subjects.find((s) => s.id === id);
+      const fC = (k) => {
+        const [a, b] = k.split("|");
+        return fS(a).chapters.find((c) => c.id === b);
+      };
+      const mv = (a, i, d) => {
+        const j = i + d;
+        if (i < 0 || j < 0 || j >= a.length) return;
+        [a[i], a[j]] = [a[j], a[i]];
+      };
+      let aTab = "general";
+      const btns = (act, attrs) =>
+        `<button class="btn sm" data-act="${act}up" ${attrs}>↑</button><button class="btn sm" data-act="${act}down" ${attrs}>↓</button><button class="btn sm danger" data-act="${act}del" ${attrs}>🗑</button>`;
+      function renderAdmin() {
+        document
+          .querySelectorAll("[data-atab]")
+          .forEach((b) =>
+            b.classList.toggle("active", b.dataset.atab === aTab),
+          );
+        let h = "";
+        if (aTab === "general") {
+          const F = [
+            ["eyebrow", "Eyebrow text"],
+            ["title", "Title (Enter = new line)", "t"],
+            ["desc", "Description", "t"],
+            ["target", "Mid-Term target date"],
+            ["note", "Extra pill (blank = hide)"],
+            ["goal", "Goal coverage %", "n"],
+            ["noticeHead", "Notice heading"],
+            ["notice", "Notice text", "t"],
+            ["footer", "Footer text"],
+          ];
+          h =
+            '<div class="panel pad">' +
+            F.map(
+              ([k, l, ty]) =>
+                `<label class="fld"><span>${l}</span>${ty === "t" ? `<textarea data-cfg="${k}" rows="${k === "title" ? 2 : 3}">${esc(D.cfg[k])}</textarea>` : `<input ${ty === "n" ? 'type="number" min="0" max="100"' : 'type="text"'} data-cfg="${k}" value="${esc(D.cfg[k])}">`}</label>`,
+            ).join("") +
+            "</div>";
+        } else if (aTab === "subjects") {
+          h =
+            D.subjects
+              .map(
+                (s) =>
+                  `<div class="panel acard"><div class="arow"><input type="text" class="grow" data-sn="${s.id}" value="${esc(s.name)}" aria-label="Subject name">${btns("s", `data-s="${s.id}"`)}</div>` +
+                  s.chapters
+                    .map(
+                      (c, i) =>
+                        `<div class="arow ch"><span class="n">${i + 1}</span><input type="text" class="grow" data-ct="${s.id}|${c.id}" value="${esc(c.title)}" aria-label="Chapter title"><label class="mid"><input type="checkbox" data-cm="${s.id}|${c.id}" ${c.mid ? "checked" : ""}> Mid</label>${btns("c", `data-s="${s.id}" data-c="${c.id}"`)}</div>`,
+                    )
+                    .join("") +
+                  `<div class="arow addrow"><input type="text" class="grow" data-newc="${s.id}" placeholder="New chapter title…"><button class="btn sm primary" data-act="cadd" data-s="${s.id}">+ Add chapter</button></div></div>`,
+              )
+              .join("") +
+            '<div class="panel acard"><div class="arow addrow" style="border:0;margin:0;padding:0"><input type="text" class="grow" id="newSub" placeholder="New subject name…"><button class="btn sm primary" data-act="sadd">+ Add subject</button></div></div>';
+        } else if (aTab === "tasks") {
+          h =
+            '<p class="hint">Chapter complete হবে যখন নিচের সব task (দুই group মিলিয়ে) checked থাকবে।</p><div class="dgrid">' +
+            [
+              ["q", "01 · Question preparation"],
+              ["s", "02 · Study workflow"],
+            ]
+              .map(
+                ([g, l]) =>
+                  `<div class="panel acard"><div class="section-label" style="margin-top:0">${l}</div>` +
+                  D[g]
+                    .map(
+                      (t) =>
+                        `<div class="arow"><input type="text" class="grow" data-tl="${g}|${t.id}" value="${esc(t.label)}" aria-label="Task label"><button class="btn sm danger" data-act="tdel" data-g="${g}" data-t="${t.id}">🗑</button></div>`,
+                    )
+                    .join("") +
+                  `<div class="arow addrow"><input type="text" class="grow" data-newt="${g}" placeholder="New task…"><button class="btn sm primary" data-act="tadd" data-g="${g}">+ Add</button></div></div>`,
+              )
+              .join("") +
+            "</div>";
+        } else {
+          h =
+            '<div class="panel pad"><p class="hint">Backup-এ content + progress দুটোই থাকে। Copy করে রাখো, দরকারে paste করে Restore দাও।</p><textarea id="bk" placeholder="Backup JSON এখানে আসবে / paste করো"></textarea><div class="arow"><button class="btn" data-act="backup">Generate backup</button><button class="btn" data-act="copybk">Copy</button><button class="btn primary" data-act="restore">Restore from text</button></div><div class="arow addrow"><button class="btn danger" data-act="resetData">Reset content to default</button><button class="btn danger" data-act="resetProg">Reset progress only</button></div></div>';
+        }
+        $("adminBody").innerHTML = h;
+      }
+      function upd() {
+        sync();
+        saveD();
+        applyCfg();
+        fillSel();
+        render();
+      }
+      const A = $("adminBody");
+      A.addEventListener("input", (e) => {
+        const t = e.target,
+          d = t.dataset;
+        if (d.cfg !== undefined)
+          D.cfg[d.cfg] =
+            d.cfg === "goal"
+              ? Math.max(0, Math.min(100, +t.value || 0))
+              : t.value;
+        else if (d.sn) fS(d.sn).name = t.value;
+        else if (d.ct) fC(d.ct).title = t.value;
+        else if (d.cm) fC(d.cm).mid = t.checked;
+        else if (d.tl) {
+          const [g, id] = d.tl.split("|");
+          D[g].find((x) => x.id === id).label = t.value;
+        } else return;
+        upd();
+      });
+      A.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && e.target.matches(".addrow input"))
+          e.target.nextElementSibling.click();
+      });
+      A.addEventListener("click", (e) => {
+        const b = e.target.closest("[data-act]");
+        if (!b) return;
+        const d = b.dataset,
+          a = d.act,
+          s = d.s && fS(d.s);
+        if (a === "sup" || a === "sdown")
+          mv(D.subjects, D.subjects.indexOf(s), a === "sup" ? -1 : 1);
+        else if (a === "sdel") {
+          if (!confirm(`Delete "${s.name}" and all its chapters?`)) return;
+          D.subjects.splice(D.subjects.indexOf(s), 1);
+        } else if (a === "cup" || a === "cdown")
+          mv(
+            s.chapters,
+            s.chapters.findIndex((c) => c.id === d.c),
+            a === "cup" ? -1 : 1,
+          );
+        else if (a === "cdel") {
+          if (!confirm("Delete this chapter?")) return;
+          s.chapters = s.chapters.filter((c) => c.id !== d.c);
+          Object.keys(state)
+            .filter((k) => k.startsWith(d.c + "::"))
+            .forEach((k) => delete state[k]);
+          save();
+        } else if (a === "cadd") {
+          const i = A.querySelector(`[data-newc="${d.s}"]`);
+          if (!i.value.trim()) return;
+          s.chapters.push({ id: uid(), title: i.value.trim(), mid: true });
+        } else if (a === "sadd") {
+          const i = $("newSub");
+          if (!i.value.trim()) return;
+          D.subjects.push({ id: uid(), name: i.value.trim(), chapters: [] });
+        } else if (a === "tadd") {
+          const i = A.querySelector(`[data-newt="${d.g}"]`);
+          if (!i.value.trim()) return;
+          D[d.g].push({ id: uid(), label: i.value.trim() });
+        } else if (a === "tdel") {
+          if (T() < 2) {
+            showToast("At least 1 task must remain");
+            return;
+          }
+          D[d.g] = D[d.g].filter((x) => x.id !== d.t);
+        } else if (a === "backup") {
+          $("bk").value = JSON.stringify({ data: D, progress: state }, null, 1);
+          return;
+        } else if (a === "copybk") {
+          $("bk").select();
+          document.execCommand("copy");
+          showToast("Copied");
+          return;
+        } else if (a === "restore") {
+          try {
+            const o = JSON.parse($("bk").value);
+            if (
+              !o.data ||
+              !Array.isArray(o.data.subjects) ||
+              !Array.isArray(o.data.q) ||
+              !Array.isArray(o.data.s)
+            )
+              throw 0;
+            D = o.data;
+            D.cfg = { ...defaults().cfg, ...D.cfg };
+            state = o.progress || {};
+            save();
+            showToast("Restored");
+          } catch (x) {
+            showToast("Invalid backup text");
+            return;
+          }
+        } else if (a === "resetData") {
+          if (
+            !confirm(
+              "Subjects, chapters, tasks, text — সব default-এ ফিরবে। Progress থাকবে। Continue?",
+            )
+          )
+            return;
+          D = defaults();
+        } else if (a === "resetProg") {
+          if (!confirm("সব checked task মুছে যাবে. Continue?")) return;
+          state = {};
+          save();
+          showToast("Progress reset");
+        }
+        upd();
+        renderAdmin();
+      });
+      document.querySelectorAll("[data-atab]").forEach((b) =>
+        b.addEventListener("click", () => {
+          aTab = b.dataset.atab;
+          renderAdmin();
+        }),
+      );
+      function showView(admin) {
+        $("dashView").hidden = admin;
+        $("adminView").hidden = !admin;
+        if (admin) renderAdmin();
+        else render();
+        window.scrollTo(0, 0);
+      }
+      $("adminBtn").addEventListener("click", () => showView(true));
+      $("backBtn").addEventListener("click", () => showView(false));
+      applyCfg();
+      render();
+    </script>
+    <script id="fxjs">
+      (() => {
+        "use strict";
+        const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+        const RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const store = {
+          get(k, d) {
+            try {
+              const v = JSON.parse(localStorage.getItem(k));
+              return v == null ? d : v;
+            } catch (e) {
+              return d;
+            }
+          },
+          set(k, v) {
+            try {
+              localStorage.setItem(k, JSON.stringify(v));
+            } catch (e) {}
+          },
+        };
+        const SK = "cst-fx-v1";
+        const S = Object.assign(
+          {
+            accent: "cyan",
+            days: {},
+            ach: [],
+            achInit: false,
+            focus: {},
+            focusDone: 0,
+            lite: null,
+          },
+          store.get(SK, {}),
+        );
+        if (S.lite === null) S.lite = (navigator.hardwareConcurrency || 8) <= 2;
+        const saveS = () => store.set(SK, S);
+        const root = document.documentElement;
+        const LITE = () => !!S.lite || RM;
+        const pad = (n) => String(n).padStart(2, "0");
+        const dayKey = (d = new Date()) =>
+          d.getFullYear() +
+          "-" +
+          pad(d.getMonth() + 1) +
+          "-" +
+          pad(d.getDate());
+        const RANKS = [
+          "Rookie",
+          "Cadet",
+          "Scout",
+          "Analyst",
+          "Operator",
+          "Specialist",
+          "Strategist",
+          "Veteran",
+          "Elite",
+          "Master",
+          "Grandmaster",
+          "Architect",
+          "Legend",
+        ];
+        const rank = (l) => RANKS[Math.min(l - 1, RANKS.length - 1)];
+        const COLORS = ["#22e4ff", "#8b5cf6", "#ff3d9a", "#3dffb0", "#ffd24a"];
+
+        /* ---------- settings: accent + lite mode ---------- */
+        function setAccent(n) {
+          root.dataset.accent = n;
+          S.accent = n;
+          saveS();
+          $$(".sw button").forEach((b) =>
+            b.setAttribute("aria-pressed", String(b.dataset.acc === n)),
+          );
+        }
+        function setLite(v) {
+          S.lite = v;
+          saveS();
+          root.classList.toggle("lite", v);
+          $("sbLite").setAttribute("aria-checked", String(v));
+          showToast(v ? "Lite effects on" : "Full effects on");
+        }
+
+        /* ---------- metrics ---------- */
+        function metrics() {
+          const done = allChapters.reduce((n, c) => n + chapterTaskCount(c), 0);
+          const total = allChapters.length * T() || 1;
+          const completed = allChapters.filter(chapterComplete).length;
+          const xp = done * 10 + completed * 50 + (S.focusDone || 0) * 25;
+          const level = Math.floor(Math.sqrt(xp / 60)) + 1;
+          const base = 60 * (level - 1) ** 2,
+            next = 60 * level ** 2;
+          return {
+            done,
+            total,
+            completed,
+            pct: (done / total) * 100,
+            xp,
+            level,
+            into: xp - base,
+            span: next - base,
+          };
+        }
+        function streak() {
+          let n = 0;
+          const d = new Date();
+          if (!(S.days[dayKey(d)] > 0)) d.setDate(d.getDate() - 1);
+          while (S.days[dayKey(d)] > 0) {
+            n++;
+            d.setDate(d.getDate() - 1);
+          }
+          return n;
+        }
+        function nextUp() {
+          const open = allChapters.filter((c) => !chapterComplete(c));
+          if (!open.length) return null;
+          const mid = open.filter((c) => c.isMid),
+            pool = mid.length ? mid : open;
+          return pool
+            .slice()
+            .sort((a, b) => chapterTaskCount(b) - chapterTaskCount(a))[0];
+        }
+
+        /* ---------- small helpers ---------- */
+        function countTo(el, to, fmt = (v) => Math.round(v), dur = 1000) {
+          const from = +el._v || 0;
+          el._v = to;
+          cancelAnimationFrame(el._r);
+          if (LITE() || from === to) {
+            el.textContent = fmt(to);
+            return;
+          }
+          const t0 = performance.now();
+          el.textContent = fmt(from);
+          const step = (t) => {
+            const k = Math.min(1, (t - t0) / dur),
+              e = 1 - Math.pow(1 - k, 4);
+            el.textContent = fmt(from + (to - from) * e);
+            if (k < 1) el._r = requestAnimationFrame(step);
+          };
+          el._r = requestAnimationFrame(step);
+        }
+        let qAt = 0;
+        function later(msg) {
+          const now = Date.now();
+          qAt = Math.max(now + 700, qAt + 2000);
+          setTimeout(() => showToast(msg), qAt - now);
+        }
+        function burst(x, y, n = 10, kind = "spark") {
+          if (LITE()) return;
+          const f = document.createDocumentFragment(),
+            big = kind === "confetti";
+          for (let i = 0; i < n; i++) {
+            const p = document.createElement("i");
+            p.className = "fxp" + (big ? " confetti" : "");
+            const a = Math.random() * Math.PI * 2;
+            const dx = big
+              ? (Math.random() * 2 - 1) * (120 + Math.random() * 240)
+              : Math.cos(a) * (26 + Math.random() * 46);
+            const dy = big
+              ? -(110 + Math.random() * 250)
+              : Math.sin(a) * (26 + Math.random() * 46);
+            p.style.cssText = `left:${x}px;top:${y}px;--dx:${dx}px;--dy:${dy}px;--fall:${280 + Math.random() * 320}px;--rot:${Math.random() * 900 - 450}deg;--c:${COLORS[i % COLORS.length]};--d:${big ? 1500 + Math.random() * 900 : 480 + Math.random() * 320}ms`;
+            p.addEventListener("animationend", () => p.remove(), {
+              once: true,
+            });
+            f.append(p);
+          }
+          document.body.append(f);
+        }
+        function findCard(c) {
+          return $$(".chapter").find((card) => {
+            const t = card.querySelector(".chapter-title"),
+              h =
+                card.parentElement &&
+                card.parentElement.previousElementSibling &&
+                card.parentElement.previousElementSibling.querySelector("h2");
+            return (
+              t && h && t.textContent === c.title && h.textContent === c.subject
+            );
+          });
+        }
+        function jumpTo(c) {
+          if ($("dashView").hidden) showView(false);
+          let card = findCard(c);
+          if (!card) {
+            $("search").value = "";
+            $("subjectFilter").value = "all";
+            document.querySelector('[data-scope="all"]').click();
+            card = findCard(c);
+          }
+          if (!card) return;
+          card.scrollIntoView({
+            behavior: RM ? "auto" : "smooth",
+            block: "center",
+          });
+          card.classList.remove("flash");
+          void card.offsetWidth;
+          card.classList.add("flash");
+        }
+
+        /* ---------- achievements ---------- */
+        const ACH = [
+          {
+            id: "first",
+            t: "First step",
+            d: "Check your first task",
+            ok: (m) => m.done >= 1,
+          },
+          {
+            id: "t25",
+            t: "Warm-up",
+            d: "Check 25 tasks",
+            ok: (m) => m.done >= 25,
+          },
+          {
+            id: "t100",
+            t: "Momentum",
+            d: "Check 100 tasks",
+            ok: (m) => m.done >= 100,
+          },
+          {
+            id: "ch1",
+            t: "Chapter closed",
+            d: "Fully complete one chapter",
+            ok: (m) => m.completed >= 1,
+          },
+          {
+            id: "ch5",
+            t: "Five down",
+            d: "Fully complete five chapters",
+            ok: (m) => m.completed >= 5,
+          },
+          {
+            id: "sub",
+            t: "Subject cleared",
+            d: "Complete every chapter of a subject",
+            ok: () => {
+              const ids = new Set(
+                allChapters.filter(chapterComplete).map((c) => c.id),
+              );
+              return subjects.some(
+                (s) =>
+                  s.chapters.length && s.chapters.every((c) => ids.has(c.id)),
+              );
+            },
+          },
+          {
+            id: "half",
+            t: "Halfway there",
+            d: "Reach 50% coverage",
+            ok: (m) => m.pct >= 50,
+          },
+          {
+            id: "goal",
+            t: "Goal locked",
+            d: "Reach your coverage goal",
+            ok: (m) => m.pct >= D.cfg.goal,
+          },
+          {
+            id: "str3",
+            t: "On a roll",
+            d: "Study 3 days in a row",
+            ok: () => streak() >= 3,
+          },
+          {
+            id: "focus",
+            t: "Deep work",
+            d: "Finish a focus session",
+            ok: () => (S.focusDone || 0) >= 1,
+          },
+        ];
+        function hallRender() {
+          const m = metrics(),
+            fm = Object.values(S.focus).reduce((a, b) => a + b, 0);
+          $("hallStats").innerHTML = [
+            ["Level", m.level + " " + rank(m.level)],
+            ["XP", m.xp],
+            ["Streak", streak() + " days"],
+            ["Focus", fm + " min"],
+          ]
+            .map(([k, v]) => `<div><b>${v}</b><small>${k}</small></div>`)
+            .join("");
+          $("hallGrid").innerHTML = ACH.map((a) => {
+            const on = S.ach.includes(a.id);
+            return `<div class="bd${on ? " on" : ""}"><span class="hex">${on ? "✦" : "•"}</span><div><b>${a.t}</b><small>${a.d}</small></div></div>`;
+          }).join("");
+        }
+
+        /* ---------- main refresh (called from renderStats) ---------- */
+        let prevComplete = null,
+          lastToggleAt = 0;
+        const bars = [];
+        function buildBars() {
+          const box = $("msBars");
+          for (let i = 0; i < 14; i++) {
+            const b = document.createElement("i");
+            box.append(b);
+            bars.push(b);
+          }
+        }
+        function drawBars() {
+          const vals = [];
+          const d = new Date();
+          d.setDate(d.getDate() - 13);
+          for (let i = 0; i < 14; i++) {
+            const k = dayKey(d);
+            vals.push([k, S.days[k] || 0]);
+            d.setDate(d.getDate() + 1);
+          }
+          const max = Math.max(5, ...vals.map((v) => v[1]));
+          vals.forEach(([k, n], i) => {
+            const b = bars[i];
+            b.style.setProperty("--h", (n ? 18 + (n / max) * 82 : 10) + "%");
+            b.className = n ? (i === 13 ? "t" : "") : "z";
+            b.title = `${k}: ${n} task${n === 1 ? "" : "s"}`;
+          });
+          const s = streak();
+          $("msStreak").textContent = s
+            ? `${s} day streak, keep it going`
+            : "No streak yet. Check a task today to start one.";
+          $("hudStreak").textContent = "🔥 " + s;
+        }
+        function refresh() {
+          const m = metrics(),
+            per = T() || 1;
+          /* numbers */
+          countTo($("totalChapters"), allChapters.length);
+          countTo($("completedChapters"), m.completed);
+          countTo(
+            $("taskProgress"),
+            Math.round(m.pct),
+            (v) => Math.round(v) + "%",
+          );
+          countTo($("rxPct"), Math.round(m.pct), (v) => Math.round(v) + "%");
+          $("overallBar").parentElement.style.setProperty(
+            "--goal",
+            D.cfg.goal + "%",
+          );
+          /* reactor */
+          $("rxArc").style.strokeDashoffset =
+            527.8 * (1 - Math.min(1, m.pct / 100));
+          $("rxArc2").style.strokeDashoffset =
+            414.7 *
+            (1 - (allChapters.length ? m.completed / allChapters.length : 0));
+          $("rxGoal").style.setProperty("--goal", D.cfg.goal);
+          $("rxLbl").textContent = `Level ${m.level}, ${rank(m.level)}`;
+          $("reactor").setAttribute(
+            "aria-label",
+            `Overall coverage ${Math.round(m.pct)} percent, goal ${D.cfg.goal} percent`,
+          );
+          /* HUD */
+          $("hudLv").textContent = "Lv " + m.level + " " + rank(m.level);
+          $("mbLv").textContent = "Lv " + m.level;
+          $("hudXp").style.width = (m.into / m.span) * 100 + "%";
+          $("hudXpn").textContent = `${m.into}/${m.span} xp`;
+          /* mission */
+          const n = nextUp();
+          if (n) {
+            const c = chapterTaskCount(n),
+              all = [...questionTasks, ...studyTasks],
+              nt = all.find((t) => !isChecked(n.id, t.id));
+            $("msTitle").textContent = n.title;
+            $("msSub").textContent =
+              `${n.subject}. ${c} of ${per} tasks done${nt ? ", next: " + nt.label : ""}`;
+            $("msRing").style.setProperty("--p", (c / per) * 100);
+            $("msRingN").textContent = `${c}/${per}`;
+            $("msGo").disabled = false;
+          } else {
+            $("msTitle").textContent = "Every chapter is complete";
+            $("msSub").textContent =
+              "Nothing left to do. Use revision tasks or reset progress to go again.";
+            $("msRing").style.setProperty("--p", 100);
+            $("msRingN").textContent = "100%";
+            $("msGo").disabled = true;
+          }
+          drawBars();
+          /* celebrate new chapter completions caused by a real click */
+          const ids = new Set(
+            allChapters.filter(chapterComplete).map((c) => c.id),
+          );
+          if (prevComplete && Date.now() - lastToggleAt < 900) {
+            allChapters
+              .filter((c) => ids.has(c.id) && !prevComplete.has(c.id))
+              .forEach((c) => {
+                const card = findCard(c),
+                  r = card && card.getBoundingClientRect();
+                burst(
+                  r ? r.left + r.width / 2 : innerWidth / 2,
+                  r ? r.top + r.height / 2 : innerHeight / 3,
+                  70,
+                  "confetti",
+                );
+                later("Chapter complete: " + c.title);
+              });
+          }
+          prevComplete = ids;
+          /* achievements */
+          const fresh = ACH.filter((a) => !S.ach.includes(a.id) && a.ok(m));
+          if (fresh.length) {
+            fresh.forEach((a) => S.ach.push(a.id));
+            if (S.achInit)
+              fresh.forEach((a) => later("Achievement unlocked: " + a.t));
+          }
+          if (!S.achInit || fresh.length) {
+            S.achInit = true;
+            saveS();
+          }
+          $("sbHallN").textContent = S.ach.length + "/" + ACH.length;
+          if ($("hallModal").classList.contains("show")) hallRender();
+        }
+        window.FX = { refresh };
+
+        /* ---------- decorate re-rendered DOM ---------- */
+        let pending = null;
+        function decorate() {
+          $$(".subject-heading").forEach((h) => {
+            if (h.querySelector(".sring")) return;
+            const name = h.querySelector("h2")?.textContent,
+              cs = allChapters.filter((c) => c.subject === name);
+            const tot = cs.length * (T() || 1) || 1,
+              p = Math.round(
+                (cs.reduce((n, c) => n + chapterTaskCount(c), 0) / tot) * 100,
+              );
+            const right = document.createElement("div");
+            right.className = "sh-right";
+            const ring = document.createElement("span");
+            ring.className = "sring";
+            ring.style.setProperty("--p", p);
+            ring.title = p + "% of tasks done in this subject";
+            const b = document.createElement("b");
+            b.textContent = p;
+            ring.append(b);
+            right.append(ring);
+            const cnt = h.querySelector(".subject-count");
+            if (cnt) right.append(cnt);
+            h.append(right);
+          });
+          if (pending && Date.now() - pending.t < 1500) {
+            const inp = $$(".check input").find(
+              (i) => i.getAttribute("aria-label") === pending.label,
+            );
+            if (inp) {
+              inp.parentElement.classList.add("pop");
+              if (pending.focus) inp.focus({ preventScroll: true });
+            }
+            pending = null;
+          }
+        }
+        $("matrix").addEventListener(
+          "change",
+          (e) => {
+            const t = e.target;
+            if (!t.matches(".check input")) return;
+            lastToggleAt = Date.now();
+            pending = {
+              label: t.getAttribute("aria-label"),
+              focus: document.activeElement === t,
+              t: lastToggleAt,
+            };
+            const k = dayKey();
+            S.days[k] = Math.max(0, (S.days[k] || 0) + (t.checked ? 1 : -1));
+            saveS();
+            if (t.checked) {
+              const r = t.getBoundingClientRect();
+              burst(r.left + r.width / 2, r.top + r.height / 2, 12, "spark");
+            }
+          },
+          true,
+        );
+
+        /* ---------- pointer: spotlight, tilt, cursor glow ---------- */
+        const glow = $("cglow");
+        let pe = null,
+          ticking = false,
+          cur = null;
+        function onMove() {
+          ticking = false;
+          if (!pe) return;
+          const e = pe,
+            t = e.target.closest
+              ? e.target.closest(".stat,.chapter,.mission,.reactor")
+              : null;
+          if (t !== cur) {
+            if (cur) cur.style.transform = "";
+            cur = t;
+          }
+          if (t) {
+            const r = t.getBoundingClientRect(),
+              x = e.clientX - r.left,
+              y = e.clientY - r.top;
+            t.style.setProperty("--mx", x + "px");
+            t.style.setProperty("--my", y + "px");
+            if (!LITE() && t.matches(".stat,.reactor"))
+              t.style.transform = `perspective(800px) rotateX(${(y / r.height - 0.5) * -10}deg) rotateY(${(x / r.width - 0.5) * 10}deg)`;
+          }
+          if (!LITE())
+            glow.style.transform = `translate3d(${e.clientX - 260}px,${e.clientY - 260}px,0)`;
+        }
+        document.addEventListener(
+          "pointermove",
+          (e) => {
+            if (e.pointerType === "touch") return;
+            pe = e;
+            if (!ticking) {
+              ticking = true;
+              requestAnimationFrame(onMove);
+            }
+          },
+          { passive: true },
+        );
+        document.addEventListener("pointerleave", () => {
+          if (cur) {
+            cur.style.transform = "";
+            cur = null;
+          }
+        });
+
+        /* ---------- overlays ---------- */
+        let lastFocus = null;
+        function openOv(el, focusEl) {
+          lastFocus = document.activeElement;
+          el.classList.add("show");
+          el.setAttribute("aria-hidden", "false");
+          setTimeout(() => focusEl && focusEl.focus(), 40);
+        }
+        function closeOv(el) {
+          el.classList.remove("show");
+          el.setAttribute("aria-hidden", "true");
+          if (lastFocus && lastFocus.focus)
+            lastFocus.focus({ preventScroll: true });
+          lastFocus = null;
+        }
+        ["palette", "hallModal"].forEach((id) =>
+          $(id).addEventListener("pointerdown", (e) => {
+            if (e.target.id === id) closeOv($(id));
+          }),
+        );
+        $("hallClose").addEventListener("click", () => closeOv($("hallModal")));
+        const openHall = () => {
+          hallRender();
+          openOv($("hallModal"), $("hallClose"));
+        };
+
+        /* ---------- command palette ---------- */
+        const pal = $("palette"),
+          palIn = $("palIn"),
+          palList = $("palList");
+        let items = [],
+          idx = 0;
+        const tab = (s) =>
+          document.querySelector(`[data-scope="${s}"]`).click();
+        function commands() {
+          return [
+            {
+              t: "Jump to next up chapter",
+              s: "Open the chapter we suggest",
+              ic: "▸",
+              run: () => {
+                const n = nextUp();
+                if (n) jumpTo(n);
+              },
+            },
+            {
+              t: "Start focus timer",
+              s: "25 minutes, no distractions",
+              ic: "◔",
+              run: () => {
+                dockOpen(true);
+                dkSet(25);
+                dkStart();
+              },
+            },
+            {
+              t: "Show achievements",
+              s: "Badges, level and streak",
+              ic: "✦",
+              run: openHall,
+            },
+            { t: "Show all chapters", ic: "≡", run: () => tab("all") },
+            {
+              t: "Show Mid-Term chapters only",
+              ic: "≡",
+              run: () => tab("mid"),
+            },
+            {
+              t: "Show Final Extra chapters only",
+              ic: "≡",
+              run: () => tab("extra"),
+            },
+            {
+              t: "Open admin panel",
+              s: "Edit subjects, chapters and tasks",
+              ic: "⚙",
+              run: () => $("adminBtn").click(),
+            },
+            {
+              t: "Export checklist",
+              ic: "⇪",
+              run: () => $("exportBtn").click(),
+            },
+            { t: "Print checklist", ic: "⎙", run: () => $("printBtn").click() },
+            { t: "Accent: cyan", ic: "●", run: () => setAccent("cyan") },
+            { t: "Accent: violet", ic: "●", run: () => setAccent("violet") },
+            { t: "Accent: magenta", ic: "●", run: () => setAccent("magenta") },
+            { t: "Accent: lime", ic: "●", run: () => setAccent("lime") },
+            {
+              t: S.lite ? "Turn on full effects" : "Turn on lite effects",
+              s: "Lite mode switches off heavy animation and blur",
+              ic: "⚡",
+              run: () => setLite(!S.lite),
+            },
+            {
+              t: "Back to top",
+              ic: "↑",
+              run: () => scrollTo({ top: 0, behavior: RM ? "auto" : "smooth" }),
+            },
+          ];
+        }
+        function build(q) {
+          q = q.trim().toLowerCase();
+          const toks = q.split(/\s+/).filter(Boolean),
+            ok = (t) => toks.every((k) => t.includes(k));
+          const cm = commands().filter((x) =>
+            ok((x.t + " " + (x.s || "")).toLowerCase()),
+          );
+          let ch = [];
+          if (toks.length)
+            ch = allChapters
+              .filter((x) => ok((x.title + " " + x.subject).toLowerCase()))
+              .sort(
+                (a, b) =>
+                  (b.title.toLowerCase().startsWith(q) ? 1 : 0) -
+                  (a.title.toLowerCase().startsWith(q) ? 1 : 0),
+              )
+              .slice(0, 30)
+              .map((x) => ({
+                t: x.title,
+                s: x.subject,
+                ic: "#",
+                tag: x.isMid ? "Mid-Term" : "Final extra",
+                run: () => jumpTo(x),
+              }));
+          items = [...ch, ...cm];
+          idx = 0;
+          draw();
+        }
+        function draw() {
+          palList.textContent = "";
+          if (!items.length) {
+            const li = document.createElement("li");
+            li.className = "none";
+            li.textContent =
+              "No match. Try a chapter name, or a command such as focus or export.";
+            palList.append(li);
+            return;
+          }
+          items.forEach((it, i) => {
+            const li = document.createElement("li");
+            li.setAttribute("role", "option");
+            li.setAttribute("aria-selected", String(i === idx));
+            li.dataset.i = i;
+            const ic = document.createElement("span");
+            ic.className = "pi-ic";
+            ic.textContent = it.ic;
+            const tx = document.createElement("span");
+            tx.className = "pi-tx";
+            const b = document.createElement("b");
+            b.textContent = it.t;
+            tx.append(b);
+            if (it.s) {
+              const s = document.createElement("small");
+              s.textContent = it.s;
+              tx.append(s);
+            }
+            li.append(ic, tx);
+            if (it.tag) {
+              const g = document.createElement("em");
+              g.textContent = it.tag;
+              li.append(g);
+            }
+            palList.append(li);
+          });
+        }
+        function setIdx(i) {
+          idx = (i + items.length) % items.length;
+          [...palList.children].forEach((li, j) =>
+            li.setAttribute("aria-selected", String(j === idx)),
+          );
+          const el = palList.children[idx];
+          if (el) el.scrollIntoView({ block: "nearest" });
+        }
+        function runItem(i) {
+          const it = items[i];
+          if (!it) return;
+          closeOv(pal);
+          setTimeout(it.run, 60);
+        }
+        function palOpen() {
+          palIn.value = "";
+          build("");
+          openOv(pal, palIn);
+        }
+        palIn.addEventListener("input", () => build(palIn.value));
+        palIn.addEventListener("keydown", (e) => {
+          if (e.key === "ArrowDown") {
+            e.preventDefault();
+            if (items.length) setIdx(idx + 1);
+          } else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            if (items.length) setIdx(idx - 1);
+          } else if (e.key === "Enter") {
+            e.preventDefault();
+            runItem(idx);
+          } else if (e.key === "Tab") e.preventDefault();
+        });
+        palList.addEventListener("pointermove", (e) => {
+          const li = e.target.closest("li[data-i]");
+          if (li && +li.dataset.i !== idx) setIdx(+li.dataset.i);
+        });
+        palList.addEventListener("click", (e) => {
+          const li = e.target.closest("li[data-i]");
+          if (li) runItem(+li.dataset.i);
+        });
+
+        /* ---------- focus timer ---------- */
+        const DK = {
+          mins: 25,
+          total: 25 * 6e4,
+          left: 25 * 6e4,
+          run: false,
+          end: 0,
+          timer: 0,
+        };
+        const fmtT = (ms) => {
+          const s = Math.max(0, Math.ceil(ms / 1000));
+          return pad(Math.floor(s / 60)) + ":" + pad(s % 60);
+        };
+        function dkDraw() {
+          const f = DK.left / DK.total;
+          $("dkTime").textContent = $("dkMini").textContent = fmtT(DK.left);
+          $("dkArc").style.strokeDashoffset = 326.7 * (1 - f);
+          $("dkMiniArc").style.strokeDashoffset = 119.4 * (1 - f);
+          $("dkGo").textContent = DK.run
+            ? "Pause"
+            : DK.left < DK.total
+              ? "Resume"
+              : "Start";
+          $("dock").classList.toggle("running", DK.run);
+          $$("[data-m]").forEach((b) =>
+            b.setAttribute("aria-pressed", String(+b.dataset.m === DK.mins)),
+          );
+          $("dkNote").textContent =
+            `Today: ${S.focus[dayKey()] || 0} min focused`;
+        }
+        function dkStop() {
+          DK.run = false;
+          clearInterval(DK.timer);
+          DK.timer = 0;
+        }
+        function dkStart() {
+          if (DK.run) return;
+          DK.end = Date.now() + DK.left;
+          DK.run = true;
+          DK.timer = setInterval(dkTick, 250);
+          dkDraw();
+        }
+        function dkSet(m) {
+          dkStop();
+          DK.mins = m;
+          DK.total = DK.left = m * 6e4;
+          dkDraw();
+        }
+        function beep() {
+          try {
+            const a = new (window.AudioContext || window.webkitAudioContext)();
+            [660, 880, 1100].forEach((f, i) => {
+              const o = a.createOscillator(),
+                g = a.createGain(),
+                t = a.currentTime + i * 0.18;
+              o.type = "sine";
+              o.frequency.value = f;
+              g.gain.setValueAtTime(0.0001, t);
+              g.gain.exponentialRampToValueAtTime(0.16, t + 0.02);
+              g.gain.exponentialRampToValueAtTime(0.0001, t + 0.16);
+              o.connect(g);
+              g.connect(a.destination);
+              o.start(t);
+              o.stop(t + 0.2);
+            });
+          } catch (e) {}
+        }
+        function dkTick() {
+          DK.left = DK.end - Date.now();
+          if (DK.left <= 0) {
+            dkStop();
+            DK.left = 0;
+            dkDraw();
+            if (DK.mins >= 10) {
+              const k = dayKey();
+              S.focus[k] = (S.focus[k] || 0) + DK.mins;
+              S.focusDone = (S.focusDone || 0) + 1;
+              saveS();
+              showToast(`Focus session done: ${DK.mins} min, +25 xp`);
+              burst(innerWidth - 70, innerHeight - 70, 40, "confetti");
+            } else showToast("Break over. Ready for the next session?");
+            beep();
+            DK.left = DK.total;
+            dkDraw();
+            refresh();
+            return;
+          }
+          dkDraw();
+        }
+        function dockOpen(v) {
+          $("dock").classList.toggle("open", v);
+          $("dkFab").setAttribute("aria-expanded", String(v));
+        }
+        $("dkFab").addEventListener("click", () =>
+          dockOpen(!$("dock").classList.contains("open")),
+        );
+        $("dkGo").addEventListener("click", () =>
+          DK.run ? (dkStop(), dkDraw()) : dkStart(),
+        );
+        $("dkReset").addEventListener("click", () => dkSet(DK.mins));
+        $$("[data-m]").forEach((b) =>
+          b.addEventListener("click", () => dkSet(+b.dataset.m)),
+        );
+        document.addEventListener("pointerdown", (e) => {
+          if (!e.target.closest("#dock")) dockOpen(false);
+        });
+
+        /* ---------- countdown to Mid-Term target ---------- */
+        function parseT(s) {
+          let t = Date.parse(s);
+          if (!isNaN(t)) return t;
+          const m = /(\d{1,2})\s+([A-Za-z]{3})[a-z]*\.?,?\s+(\d{4})/.exec(
+            s || "",
+          );
+          if (m) {
+            const i = [
+              "jan",
+              "feb",
+              "mar",
+              "apr",
+              "may",
+              "jun",
+              "jul",
+              "aug",
+              "sep",
+              "oct",
+              "nov",
+              "dec",
+            ].indexOf(m[2].toLowerCase());
+            if (i >= 0) return new Date(+m[3], i, +m[1]).getTime();
+          }
+          return NaN;
+        }
+        function setU(id, v) {
+          const el = $(id),
+            s = pad(v);
+          if (el.textContent !== s) {
+            el.textContent = s;
+            if (!LITE()) {
+              el.classList.remove("flip");
+              void el.offsetWidth;
+              el.classList.add("flip");
+            }
+          }
+        }
+        function countdown() {
+          if (document.hidden) return;
+          const t = parseT(D.cfg.target),
+            box = $("count");
+          if (isNaN(t)) {
+            box.hidden = true;
+            return;
+          }
+          box.hidden = false;
+          let ms = t - Date.now();
+          const past = ms < 0;
+          ms = Math.abs(ms);
+          setU("cD", Math.floor(ms / 864e5));
+          setU("cH", Math.floor(ms / 36e5) % 24);
+          setU("cM", Math.floor(ms / 6e4) % 60);
+          setU("cS", Math.floor(ms / 1e3) % 60);
+          $("cNote").textContent = past
+            ? "since the Mid-Term target"
+            : "until the Mid-Term target";
+        }
+
+        /* ---------- keyboard ---------- */
+        const anyOv = () =>
+          pal.classList.contains("show") ||
+          $("hallModal").classList.contains("show") ||
+          $("exportModal").classList.contains("open");
+        document.addEventListener("keydown", (e) => {
+          if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+            e.preventDefault();
+            pal.classList.contains("show") ? closeOv(pal) : palOpen();
+            return;
+          }
+          if (e.key === "Escape") {
+            if (pal.classList.contains("show")) closeOv(pal);
+            else if ($("hallModal").classList.contains("show"))
+              closeOv($("hallModal"));
+            else if ($("exportModal").classList.contains("open"))
+              $("exportModal").classList.remove("open");
+            else if (root.classList.contains("sb-open")) closeSb();
+            else dockOpen(false);
+            return;
+          }
+          if (
+            e.key === "/" &&
+            !anyOv() &&
+            !/^(input|textarea|select)$/i.test(
+              document.activeElement.tagName,
+            ) &&
+            !$("dashView").hidden
+          ) {
+            e.preventDefault();
+            $("search").focus();
+          }
+        });
+
+        /* ---------- sidebar / drawer ---------- */
+        const sb = $("sb");
+        let sbOpener = null;
+        function openSb(from) {
+          sbOpener = from || document.activeElement;
+          root.classList.add("sb-open");
+          setTimeout(() => $("sbClose").focus({ preventScroll: true }), 80);
+        }
+        function closeSb(restore = true) {
+          if (!root.classList.contains("sb-open")) return;
+          root.classList.remove("sb-open");
+          if (restore && sbOpener && sbOpener.focus)
+            sbOpener.focus({ preventScroll: true });
+          sbOpener = null;
+        }
+        const NAV = {
+          dash: () => {
+            if ($("dashView").hidden) showView(false);
+            else scrollTo({ top: 0, behavior: RM ? "auto" : "smooth" });
+          },
+          next: () => {
+            const n = nextUp();
+            if (n) jumpTo(n);
+            else showToast("Every chapter is complete");
+          },
+          hall: openHall,
+          focus: () => dockOpen(true),
+          admin: () => showView(true),
+          export: () => $("exportBtn").click(),
+          print: () => $("printBtn").click(),
+        };
+        sb.addEventListener("click", (e) => {
+          const b = e.target.closest(".sb-i");
+          if (!b) return;
+          if (b.dataset.nav) NAV[b.dataset.nav]();
+          closeSb(false);
+        });
+        $("sbFab").addEventListener("click", (e) => openSb(e.currentTarget));
+        $("mbMenu").addEventListener("click", (e) => openSb(e.currentTarget));
+        $("sbClose").addEventListener("click", () => closeSb());
+        $("sbBack").addEventListener("click", () => closeSb());
+        $("sbLite").addEventListener("click", () => setLite(!S.lite));
+        addEventListener("resize", () => {
+          if (innerWidth > 1000) closeSb(false);
+        });
+        /* swipe: from the left edge opens, swipe left closes */
+        let tx = 0,
+          ty = 0;
+        document.addEventListener(
+          "touchstart",
+          (e) => {
+            const t = e.touches[0];
+            tx = t.clientX;
+            ty = t.clientY;
+          },
+          { passive: true },
+        );
+        document.addEventListener(
+          "touchend",
+          (e) => {
+            if (innerWidth > 1000) return;
+            const t = e.changedTouches[0],
+              dx = t.clientX - tx,
+              dy = Math.abs(t.clientY - ty);
+            if (dy > 60 || Math.abs(dx) < 70) return;
+            const open = root.classList.contains("sb-open");
+            if (dx > 0 && tx < 26 && !open && !anyOv()) openSb(document.body);
+            else if (dx < 0 && open) closeSb();
+          },
+          { passive: true },
+        );
+        /* active states follow the app */
+        function syncNav() {
+          const admin = $("dashView").hidden;
+          const d = sb.querySelector('[data-nav="dash"]'),
+            a = sb.querySelector('[data-nav="admin"]');
+          admin
+            ? (d.removeAttribute("aria-current"),
+              a.setAttribute("aria-current", "page"))
+            : (a.removeAttribute("aria-current"),
+              d.setAttribute("aria-current", "page"));
+        }
+        function syncSeg() {
+          $$("[data-sf]").forEach((b) =>
+            b.setAttribute("aria-pressed", String(b.dataset.sf === scope)),
+          );
+        }
+        const _showView = showView;
+        showView = function (a) {
+          _showView(a);
+          syncNav();
+        };
+        $$("[data-scope]").forEach((b) => b.addEventListener("click", syncSeg));
+        $$("[data-sf]").forEach((b) =>
+          b.addEventListener("click", () => tab(b.dataset.sf)),
+        );
+
+        /* ---------- wiring + boot ---------- */
+        $$(".sw button").forEach((b) =>
+          b.addEventListener("click", () => setAccent(b.dataset.acc)),
+        );
+        $("hudK").addEventListener("click", palOpen);
+        $("msGo").addEventListener("click", () => {
+          const n = nextUp();
+          if (n) jumpTo(n);
+        });
+        $("msFocus").addEventListener("click", () => {
+          dockOpen(true);
+          dkSet(25);
+          dkStart();
+        });
+        $("hudK").querySelector("kbd").textContent = /Mac|iPhone|iPad/.test(
+          navigator.platform,
+        )
+          ? "⌘K"
+          : "Ctrl K";
+        setAccent(S.accent);
+        root.classList.toggle("lite", !!S.lite);
+        $("sbLite").setAttribute("aria-checked", String(!!S.lite));
+        syncNav();
+        syncSeg();
+        buildBars();
+        dkDraw();
+        decorate();
+        countdown();
+        setInterval(countdown, 1000);
+        new MutationObserver(decorate).observe($("matrix"), {
+          childList: true,
+        });
+        requestAnimationFrame(() => requestAnimationFrame(refresh));
+      })();
+    </script>
+    <style>
+      @media print {
+        body {
+          background: white;
+        }
+        .shell {
+          max-width: none;
+          padding: 0;
+        }
+        .hero {
+          background: #fff;
+          color: #111;
+          border: 1px solid #ddd;
+          box-shadow: none;
+          padding: 18px;
+        }
+        .hero p,
+        .eyebrow,
+        .hero-meta {
+          color: #333;
+        }
+        .hero:after,
+        .toolbar,
+        .footer,
+        .notice {
+          display: none !important;
+        }
+        .stats {
+          grid-template-columns: repeat(4, 1fr);
+        }
+        .stat,
+        .chapter {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+        .chapters {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .chapter {
+          padding: 10px;
+        }
+        .checks {
+          gap: 4px;
+        }
+        .check {
+          font-size: 10px;
+        }
+        .subject-heading {
+          break-after: avoid;
+        }
+      }
+    </style>
+    <style id="hubcss">
+      .fc {
+        display: grid;
+        align-content: center;
+        gap: 10px;
+        width: 100%;
+        min-height: 180px;
+        padding: 22px;
+        text-align: left;
+        border-radius: 18px;
+        border: 1px solid rgba(var(--a-rgb), 0.35);
+        background: rgba(var(--a-rgb), 0.06);
+        color: var(--ink);
+        white-space: pre-wrap;
+        margin-bottom: 12px;
+      }
+      .fc small {
+        color: var(--a1);
+        font-weight: 700;
+      }
+      .fc b {
+        font: 600 18px/1.45 var(--fb);
+      }
+      .row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .li {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .li .grow {
+        flex: 1;
+        min-width: 0;
+      }
+      .li small {
+        display: block;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .li b {
+        overflow-wrap: anywhere;
+      }
+      #hub .fld select,
+      #hub .fld input[type="date"],
+      #hub .fld input[type="number"],
+      #hub > .hall > div > input[type="search"] {
+        width: 100%;
+        padding: 9px 12px;
+        border-radius: 10px;
+      }
+      #hub .tabs {
+        flex-wrap: wrap;
+      }
+      @media print {
+        #hub {
+          display: none !important;
+        }
+      }
+    </style>
+    <script id="hubjs">
+      (() => {
+        "use strict";
+        /* ===== DataStore (schema v1, separate key; existing progress/backups untouched) ===== */
+        const KEY = "cst-hub-v1",
+          DAY = 864e5,
+          blank = () => ({ schema: 1, exams: [], cards: [], reviews: [] });
+        let H = blank();
+        try {
+          const r = JSON.parse(localStorage.getItem(KEY));
+          if (
+            r &&
+            r.schema === 1 &&
+            Array.isArray(r.cards) &&
+            Array.isArray(r.exams) &&
+            Array.isArray(r.reviews)
+          )
+            H = r;
+        } catch (e) {}
+        const save = () => {
+          try {
+            localStorage.setItem(KEY, JSON.stringify(H));
+            return true;
+          } catch (e) {
+            showToast("Storage is full. Export a backup first.");
+            return false;
+          }
+        };
+        const uid = () =>
+          "h" +
+          Date.now().toString(36) +
+          Math.random().toString(36).slice(2, 6);
+        const today = () => {
+          const d = new Date();
+          d.setHours(0, 0, 0, 0);
+          return d.getTime();
+        };
+        const el = (t, a = {}, ...k) => {
+          const e = document.createElement(t);
+          for (const [n, v] of Object.entries(a)) {
+            if (n === "class") e.className = v;
+            else if (n.startsWith("on")) e.addEventListener(n.slice(2), v);
+            else if (v !== false && v != null)
+              e.setAttribute(n, v === true ? "" : v);
+          }
+          e.append(...k.filter((x) => x != null));
+          return e;
+        };
+        const chap = (id) => allChapters.find((c) => c.id === id);
+
+        /* ===== ReviewEngine: SM-2 (Again=1, Hard=3, Good=4, Easy=5) ===== */
+        function sm2(c, q) {
+          let { ef, int, rep } = c;
+          if (q < 3) {
+            rep = 0;
+            int = 1;
+          } else {
+            int = rep === 0 ? 1 : rep === 1 ? 6 : Math.round(int * ef);
+            if (q === 5) int += 1;
+            rep++;
+          }
+          ef = Math.max(1.3, ef + 0.1 - (5 - q) * (0.08 + (5 - q) * 0.02));
+          return { ef, int, rep };
+        }
+        const dueCards = () =>
+          H.cards
+            .filter((c) => c.due <= Date.now())
+            .sort((a, b) => a.due - b.due);
+        function rate(c, q) {
+          const r = sm2(c, q);
+          H.reviews.push({
+            id: uid(),
+            cardId: c.id,
+            t: Date.now(),
+            q,
+            prev: c.int,
+            next: r.int,
+          });
+          if (H.reviews.length > 20000)
+            H.reviews.splice(0, H.reviews.length - 20000);
+          Object.assign(c, r, { due: today() + r.int * DAY });
+          save();
+          badge();
+        }
+
+        /* ===== Exams: readiness from syllabus completion + recall (kept separate) ===== */
+        function readiness(x) {
+          const sids = D.subjects.filter((s) => x.subs.includes(s.id));
+          const ids = new Set(
+            sids.flatMap((s) =>
+              s.chapters.filter((c) => !x.midOnly || c.mid).map((c) => c.id),
+            ),
+          );
+          const cs = allChapters.filter((c) => ids.has(c.id)),
+            tot = cs.length * T();
+          const done = cs.reduce((n, c) => n + chapterTaskCount(c), 0);
+          const cardIds = new Set(
+            H.cards.filter((c) => ids.has(c.cid)).map((c) => c.id),
+          );
+          const rv = H.reviews.filter(
+            (r) => cardIds.has(r.cardId) && r.t > Date.now() - 60 * DAY,
+          );
+          return {
+            pct: tot ? Math.round((done / tot) * 100) : null,
+            n: cs.length,
+            rv: rv.length,
+            recall:
+              rv.length >= 5
+                ? Math.round(
+                    (rv.filter((r) => r.q >= 3).length / rv.length) * 100,
+                  )
+                : null,
+          };
+        }
+
+        /* ===== ExportService: escaped CSV (formula-injection safe, UTF-8 BOM) + validated JSON ===== */
+        const cell = (v) => {
+          let s = v == null ? "" : String(v);
+          if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+          return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+        };
+        const csv = (head, rows) =>
+          "\ufeff" +
+          [head, ...rows].map((r) => r.map(cell).join(",")).join("\r\n");
+        function dl(name, text, type) {
+          const u = URL.createObjectURL(new Blob([text], { type }));
+          const a = el("a", { href: u, download: name });
+          document.body.append(a);
+          a.click();
+          a.remove();
+          setTimeout(() => URL.revokeObjectURL(u), 2e3);
+        }
+        const iso = (t) => new Date(t).toISOString();
+        const EXPORTS = {
+          cards: () =>
+            csv(
+              [
+                "id",
+                "chapter",
+                "front",
+                "back",
+                "interval_days",
+                "ease",
+                "due",
+              ],
+              H.cards.map((c) => [
+                c.id,
+                (chap(c.cid) || {}).title || "",
+                c.front,
+                c.back,
+                c.int,
+                c.ef.toFixed(2),
+                iso(c.due),
+              ]),
+            ),
+          reviews: () =>
+            csv(
+              [
+                "id",
+                "card_id",
+                "time",
+                "rating",
+                "prev_interval",
+                "next_interval",
+              ],
+              H.reviews.map((r) => [
+                r.id,
+                r.cardId,
+                iso(r.t),
+                r.q,
+                r.prev,
+                r.next,
+              ]),
+            ),
+          exams: () =>
+            csv(
+              [
+                "name",
+                "type",
+                "date",
+                "priority",
+                "target_percent",
+                "syllabus_completion",
+                "recall_percent",
+              ],
+              H.exams.map((x) => {
+                const r = readiness(x);
+                return [
+                  x.name,
+                  x.type,
+                  x.date,
+                  x.priority,
+                  x.target,
+                  r.pct == null ? "" : r.pct,
+                  r.recall == null ? "insufficient data" : r.recall,
+                ];
+              }),
+            ),
+        };
+        function validate(o) {
+          if (!o || o.schema !== 1)
+            throw new Error("Not a Study hub backup (schema 1).");
+          const s = (v, m) => typeof v === "string" && v.length <= m,
+            n = Number.isFinite;
+          return {
+            cards: (o.cards || [])
+              .filter(
+                (c) =>
+                  c &&
+                  s(c.id, 40) &&
+                  s(c.front, 2e3) &&
+                  s(c.back, 2e3) &&
+                  n(c.due) &&
+                  n(c.ef) &&
+                  n(c.int),
+              )
+              .map((c) => ({
+                id: c.id,
+                cid: s(c.cid, 80) ? c.cid : "",
+                front: c.front,
+                back: c.back,
+                ef: Math.max(1.3, c.ef),
+                int: Math.max(0, c.int),
+                rep: +c.rep || 0,
+                due: c.due,
+                created: +c.created || Date.now(),
+                updated: +c.updated || Date.now(),
+              })),
+            reviews: (o.reviews || [])
+              .filter(
+                (r) =>
+                  r &&
+                  s(r.id, 40) &&
+                  s(r.cardId, 40) &&
+                  n(r.t) &&
+                  [1, 3, 4, 5].includes(r.q),
+              )
+              .map((r) => ({
+                id: r.id,
+                cardId: r.cardId,
+                t: r.t,
+                q: r.q,
+                prev: +r.prev || 0,
+                next: +r.next || 0,
+              })),
+            exams: (o.exams || [])
+              .filter(
+                (x) =>
+                  x &&
+                  s(x.id, 40) &&
+                  s(x.name, 120) &&
+                  /^\d{4}-\d{2}-\d{2}$/.test(x.date),
+              )
+              .map((x) => ({
+                id: x.id,
+                name: x.name,
+                type: s(x.type, 30) ? x.type : "Custom",
+                date: x.date,
+                priority: ["Low", "Normal", "High"].includes(x.priority)
+                  ? x.priority
+                  : "Normal",
+                target: Math.min(100, Math.max(0, +x.target || 80)),
+                midOnly: !!x.midOnly,
+                subs: Array.isArray(x.subs)
+                  ? x.subs.filter((v) => s(v, 80))
+                  : [],
+              })),
+          };
+        }
+        function importJSON(text) {
+          const v = validate(JSON.parse(text));
+          let add = 0,
+            skip = 0;
+          for (const k of ["cards", "reviews", "exams"]) {
+            const have = new Set(H[k].map((x) => x.id));
+            v[k].forEach((x) => {
+              if (have.has(x.id)) skip++;
+              else {
+                H[k].push(x);
+                add++;
+              }
+            });
+          }
+          if (save()) showToast(`Imported ${add}, skipped ${skip} duplicates`);
+          badge();
+        }
+
+        /* ===== UI: overlay panel (reuses the existing overlay/dialog styles) ===== */
+        const ov = el("div", { class: "ov", id: "hub", "aria-hidden": "true" }),
+          box = el("div", {
+            class: "hall",
+            role: "dialog",
+            "aria-modal": "true",
+            "aria-label": "Study hub",
+          });
+        ov.append(box);
+        document.body.append(ov);
+        let tab = "review",
+          isOpen = false,
+          prev = null,
+          flip = false,
+          editId = null,
+          qf = "";
+        function show(t) {
+          if (t) tab = t;
+          prev = document.activeElement;
+          ov.classList.add("show");
+          ov.setAttribute("aria-hidden", "false");
+          isOpen = true;
+          draw();
+          setTimeout(() => {
+            const b = box.querySelector("button");
+            b && b.focus();
+          }, 50);
+        }
+        function hide() {
+          ov.classList.remove("show");
+          ov.setAttribute("aria-hidden", "true");
+          isOpen = false;
+          if (prev && prev.focus) prev.focus();
+        }
+        ov.addEventListener("pointerdown", (e) => {
+          if (e.target === ov) hide();
+        });
+        addEventListener(
+          "keydown",
+          (e) => {
+            if (isOpen && e.key === "Escape") {
+              e.stopImmediatePropagation();
+              hide();
+            }
+          },
+          true,
+        );
+        function draw() {
+          box.textContent = "";
+          const tabs = el(
+            "div",
+            { class: "tabs", role: "tablist" },
+            ...[
+              ["review", "Review"],
+              ["cards", "Cards"],
+              ["exams", "Exams"],
+              ["data", "Data"],
+            ].map(([k, l]) =>
+              el(
+                "button",
+                {
+                  class: "tab" + (k === tab ? " active" : ""),
+                  role: "tab",
+                  "aria-selected": String(k === tab),
+                  onclick: () => {
+                    tab = k;
+                    flip = false;
+                    draw();
+                  },
+                },
+                l,
+              ),
+            ),
+          );
+          box.append(
+            el(
+              "div",
+              { class: "hall-top" },
+              el("h2", {}, "Study hub"),
+              el("button", { class: "btn sm", onclick: hide }, "Close"),
+            ),
+            tabs,
+            el("div", { style: "margin-top:14px" }, VIEWS[tab]()),
+          );
+        }
+        const field = (label, node) =>
+          el("label", { class: "fld" }, el("span", {}, label), node);
+
+        function reviewView() {
+          const w = el("div"),
+            q = dueCards(),
+            mastered = H.cards.filter((c) => c.int >= 21).length;
+          w.append(
+            el(
+              "p",
+              { class: "hint" },
+              `${q.length} due, ${H.cards.length} cards, ${mastered} mastered (interval 21 days or more). Method: SM-2.`,
+            ),
+          );
+          if (!H.cards.length) {
+            w.append(
+              el(
+                "div",
+                { class: "empty" },
+                "No cards yet. Add one from a chapter in the Cards tab.",
+              ),
+            );
+            return w;
+          }
+          if (!q.length) {
+            w.append(
+              el(
+                "div",
+                { class: "empty" },
+                "All caught up. Next card is due " +
+                  new Date(
+                    Math.min(...H.cards.map((c) => c.due)),
+                  ).toLocaleDateString() +
+                  ".",
+              ),
+            );
+            return w;
+          }
+          const c = q[0],
+            ch = chap(c.cid);
+          w.append(
+            el(
+              "button",
+              {
+                class: "fc",
+                "aria-label": flip
+                  ? "Answer shown. Press to hide it."
+                  : "Question. Press to show the answer.",
+                onclick: () => {
+                  flip = !flip;
+                  draw();
+                },
+              },
+              el("small", {}, ch ? ch.title : "No chapter linked"),
+              el("b", {}, flip ? c.back : c.front),
+            ),
+          );
+          if (flip)
+            w.append(
+              el(
+                "div",
+                { class: "row" },
+                ...[
+                  ["Again", 1],
+                  ["Hard", 3],
+                  ["Good", 4],
+                  ["Easy", 5],
+                ].map(([l, v]) =>
+                  el(
+                    "button",
+                    {
+                      class: "btn" + (v === 4 ? " primary" : ""),
+                      onclick: () => {
+                        rate(c, v);
+                        flip = false;
+                        draw();
+                      },
+                    },
+                    `${l}, ${sm2(c, v).int}d`,
+                  ),
+                ),
+              ),
+            );
+          else
+            w.append(
+              el(
+                "p",
+                { class: "hint" },
+                "Try to recall the answer first, then flip the card.",
+              ),
+            );
+          return w;
+        }
+
+        function cardsView() {
+          const w = el("div"),
+            ed = H.cards.find((c) => c.id === editId);
+          const sel = el(
+            "select",
+            {},
+            el("option", { value: "" }, "No chapter"),
+            ...allChapters.map((c) =>
+              el(
+                "option",
+                { value: c.id, selected: !!ed && ed.cid === c.id },
+                c.subject + ": " + c.title,
+              ),
+            ),
+          );
+          const f = el(
+              "textarea",
+              { rows: 2, maxlength: 2000 },
+              ed ? ed.front : "",
+            ),
+            b = el("textarea", { rows: 3, maxlength: 2000 }, ed ? ed.back : "");
+          w.append(
+            field("Chapter", sel),
+            field("Front (question, term or formula)", f),
+            field("Back (answer)", b),
+            el(
+              "div",
+              { class: "row" },
+              el(
+                "button",
+                {
+                  class: "btn primary",
+                  onclick: () => {
+                    const fv = f.value.trim(),
+                      bv = b.value.trim();
+                    if (!fv || !bv) {
+                      showToast("Write both sides of the card");
+                      return;
+                    }
+                    if (ed)
+                      Object.assign(ed, {
+                        front: fv,
+                        back: bv,
+                        cid: sel.value,
+                        updated: Date.now(),
+                      });
+                    else
+                      H.cards.push({
+                        id: uid(),
+                        cid: sel.value,
+                        front: fv,
+                        back: bv,
+                        ef: 2.5,
+                        int: 0,
+                        rep: 0,
+                        due: Date.now(),
+                        created: Date.now(),
+                        updated: Date.now(),
+                      });
+                    showToast(
+                      ed ? "Card updated, review history kept" : "Card added",
+                    );
+                    editId = null;
+                    save();
+                    badge();
+                    draw();
+                  },
+                },
+                ed ? "Save changes" : "Add card",
+              ),
+              ed
+                ? el(
+                    "button",
+                    {
+                      class: "btn",
+                      onclick: () => {
+                        editId = null;
+                        draw();
+                      },
+                    },
+                    "Cancel edit",
+                  )
+                : null,
+            ),
+          );
+          const list = el("div", { style: "margin-top:14px" }),
+            inp = el("input", {
+              type: "search",
+              placeholder: "Filter cards",
+              value: qf,
+              "aria-label": "Filter cards",
+            });
+          const fill = () => {
+            list.textContent = "";
+            const k = qf.toLowerCase(),
+              m = H.cards.filter(
+                (c) => !k || (c.front + " " + c.back).toLowerCase().includes(k),
+              );
+            if (!m.length) {
+              list.append(el("div", { class: "empty" }, "No matching cards."));
+              return;
+            }
+            m.slice(0, 80).forEach((c) =>
+              list.append(
+                el(
+                  "div",
+                  { class: "li" },
+                  el(
+                    "div",
+                    { class: "grow" },
+                    el("b", {}, c.front.slice(0, 90)),
+                    el(
+                      "small",
+                      {},
+                      (chap(c.cid) || {}).title || "No chapter",
+                      ", due ",
+                      new Date(c.due).toLocaleDateString(),
+                    ),
+                  ),
+                  el(
+                    "button",
+                    {
+                      class: "btn sm",
+                      onclick: () => {
+                        editId = c.id;
+                        draw();
+                      },
+                    },
+                    "Edit",
+                  ),
+                  el(
+                    "button",
+                    {
+                      class: "btn sm danger",
+                      onclick: () => {
+                        if (
+                          confirm(
+                            "Delete this card? Its review history stays in your data.",
+                          )
+                        ) {
+                          H.cards = H.cards.filter((x) => x.id !== c.id);
+                          save();
+                          badge();
+                          draw();
+                        }
+                      },
+                    },
+                    "Delete",
+                  ),
+                ),
+              ),
+            );
+          };
+          inp.addEventListener("input", () => {
+            qf = inp.value;
+            fill();
+          });
+          fill();
+          w.append(inp, list);
+          return w;
+        }
+
+        function examsView() {
+          const w = el("div"),
+            name = el("input", {
+              type: "text",
+              maxlength: 120,
+              placeholder: "Exam name",
+            }),
+            date = el("input", { type: "date" });
+          const type = el(
+            "select",
+            {},
+            ...[
+              "Mid-term",
+              "Final",
+              "Class test",
+              "Practical",
+              "Assignment",
+              "Custom",
+            ].map((t) => el("option", {}, t)),
+          );
+          const pri = el(
+            "select",
+            {},
+            ...["Normal", "High", "Low"].map((t) => el("option", {}, t)),
+          );
+          const tgt = el("input", {
+              type: "number",
+              min: 0,
+              max: 100,
+              value: 80,
+            }),
+            mid = el("input", { type: "checkbox" });
+          const subs = D.subjects.map((s) => ({
+            s,
+            cb: el("input", { type: "checkbox" }),
+          }));
+          w.append(
+            field("Name", name),
+            field("Date", date),
+            field("Type", type),
+            field("Priority", pri),
+            field("Target syllabus completion %", tgt),
+            el(
+              "label",
+              { class: "check" },
+              mid,
+              el("span", {}, "Mid-Term chapters only"),
+            ),
+            el("div", { class: "section-label" }, "Included subjects"),
+            el(
+              "div",
+              { class: "checks" },
+              ...subs.map(({ s, cb }) =>
+                el("label", { class: "check" }, cb, el("span", {}, s.name)),
+              ),
+            ),
+            el(
+              "div",
+              { class: "row", style: "margin-top:12px" },
+              el(
+                "button",
+                {
+                  class: "btn primary",
+                  onclick: () => {
+                    if (!name.value.trim() || !date.value) {
+                      showToast("Add a name and date");
+                      return;
+                    }
+                    const ids = subs
+                      .filter((x) => x.cb.checked)
+                      .map((x) => x.s.id);
+                    if (!ids.length) {
+                      showToast("Pick at least one subject");
+                      return;
+                    }
+                    H.exams.push({
+                      id: uid(),
+                      name: name.value.trim(),
+                      type: type.value,
+                      date: date.value,
+                      priority: pri.value,
+                      target: Math.min(100, Math.max(0, +tgt.value || 80)),
+                      midOnly: mid.checked,
+                      subs: ids,
+                    });
+                    save();
+                    draw();
+                  },
+                },
+                "Add exam",
+              ),
+            ),
+          );
+          const list = el("div", { style: "margin-top:16px" });
+          [...H.exams]
+            .sort((a, b) => a.date.localeCompare(b.date))
+            .forEach((x) => {
+              const left = Math.ceil(
+                  (new Date(x.date + "T00:00:00").getTime() - today()) / DAY,
+                ),
+                r = readiness(x);
+              list.append(
+                el(
+                  "div",
+                  { class: "li" },
+                  el(
+                    "div",
+                    { class: "grow" },
+                    el("b", {}, x.name),
+                    el(
+                      "small",
+                      {},
+                      `${x.type}, ${x.priority} priority, ${left < 0 ? "passed " + -left + " days ago" : left === 0 ? "today" : left + " days left"}`,
+                    ),
+                    el(
+                      "small",
+                      {},
+                      `Syllabus completion ${r.pct == null ? "n/a" : r.pct + "%"} of ${x.target}% target (${r.n} chapters). Recall: ${r.recall == null ? "insufficient data (" + r.rv + " of 5 reviews)" : r.recall + "%"}`,
+                    ),
+                  ),
+                  el(
+                    "button",
+                    {
+                      class: "btn sm danger",
+                      onclick: () => {
+                        if (confirm("Delete this exam?")) {
+                          H.exams = H.exams.filter((e) => e.id !== x.id);
+                          save();
+                          draw();
+                        }
+                      },
+                    },
+                    "Delete",
+                  ),
+                ),
+              );
+            });
+          if (!H.exams.length)
+            list.append(
+              el(
+                "div",
+                { class: "empty" },
+                "No exams yet. Each exam can cover different subjects.",
+              ),
+            );
+          w.append(
+            list,
+            el(
+              "p",
+              { class: "hint" },
+              "Syllabus completion counts checked tasks. It is not proof of mastery. Recall comes from flashcard reviews in the last 60 days.",
+            ),
+          );
+          return w;
+        }
+
+        function dataView() {
+          const w = el("div"),
+            file = el("input", {
+              type: "file",
+              accept: "application/json,.json",
+              "aria-label": "Backup file",
+            });
+          file.addEventListener("change", async () => {
+            try {
+              importJSON(await file.files[0].text());
+              draw();
+            } catch (e) {
+              showToast("Import failed: " + (e.message || "invalid file"));
+            }
+          });
+          w.append(
+            el(
+              "p",
+              { class: "hint" },
+              "CSV files open in Excel or Sheets. Text starting with = + - or @ is neutralised so it cannot run as a formula.",
+            ),
+            el(
+              "div",
+              { class: "row" },
+              ...[
+                ["cards", "Cards CSV"],
+                ["reviews", "Reviews CSV"],
+                ["exams", "Exams CSV"],
+              ].map(([k, l]) =>
+                el(
+                  "button",
+                  {
+                    class: "btn",
+                    onclick: () =>
+                      dl(
+                        `cst-${k}.csv`,
+                        EXPORTS[k](),
+                        "text/csv;charset=utf-8",
+                      ),
+                  },
+                  l,
+                ),
+              ),
+              el(
+                "button",
+                {
+                  class: "btn primary",
+                  onclick: () =>
+                    dl(
+                      "cst-hub-backup.json",
+                      JSON.stringify(H, null, 1),
+                      "application/json",
+                    ),
+                },
+                "Backup JSON",
+              ),
+            ),
+            field("Restore from backup (merges, never overwrites)", file),
+            el(
+              "p",
+              { class: "hint" },
+              `Stored: ${H.cards.length} cards, ${H.reviews.length} reviews, ${H.exams.length} exams. Schema version ${H.schema}. Your chapter progress and the Admin backup are separate and unchanged.`,
+            ),
+          );
+          return w;
+        }
+        const VIEWS = {
+          review: reviewView,
+          cards: cardsView,
+          exams: examsView,
+          data: dataView,
+        };
+
+        /* ===== sidebar entries ===== */
+        const nav = document.querySelector(".sb-nav");
+        let dueEm;
+        function addNav(x, ic, label) {
+          const b = el(
+            "button",
+            { class: "sb-i", "data-x": x },
+            el("span", { class: "ic", "aria-hidden": "true" }, ic),
+            label,
+          );
+          return b;
+        }
+        const bc = addNav("review", "▤", "Flashcards"),
+          be = addNav("exams", "◷", "Exams");
+        dueEm = el("em", {});
+        bc.append(dueEm);
+        nav.insertBefore(bc, nav.children[2]);
+        nav.insertBefore(be, nav.children[3]);
+        nav.addEventListener("click", (e) => {
+          const b = e.target.closest("[data-x]");
+          if (b) show(b.dataset.x);
+        });
+        function badge() {
+          const n = dueCards().length;
+          dueEm.textContent = n ? n + " due" : "";
+        }
+        badge();
+        window.StudyHub = { show };
+      })();
+    </script>
+  </body>
+</html>

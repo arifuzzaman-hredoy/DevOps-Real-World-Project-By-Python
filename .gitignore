@@ -10,9 +10,6 @@ htmlcov/
 dist/
 build/
 *.egg-info/
-.terraform/
-terraform.tfstate
-terraform.tfstate.*
 crash.log
 *.pem
 *.key
@@ -23,3 +20,25 @@ instance/*.db
 instance/*.db-*
 
 
+# Terraform local configuration and state
+terraform/terraform.tfvars
+terraform/terraform.tfstate
+terraform/terraform.tfstate.*
+terraform/.terraform/
+
+
+
+# Terraform local configuration, state, plans, and crash logs
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+crash.*.log
+
+# Local Terraform variable files
+*.tfvars
+*.tfvars.json
+
+# Keep the provider dependency lock file tracked
+!terraform/.terraform.lock.hcl

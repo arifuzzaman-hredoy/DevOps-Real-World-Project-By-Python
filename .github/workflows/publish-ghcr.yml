@@ -8,19 +8,72 @@ on:
 
 permissions:
   contents: read
-  packages: write
 
 jobs:
   publish:
-    name: Build and Publish
+    name: Test, Build, Scan and Publish
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements-dev.txt
+
+      - name: Ruff lint
+        run: ruff check app tests
+
+      - name: Run tests
+        run: pytest -v
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image once
+        env:
+          IMAGE_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          docker buildx build \
+            --pull \
+            --load \
+            --tag "taskflow:${IMAGE_SHA}" \
+            .
+
+          docker image inspect "taskflow:${IMAGE_SHA}"
+
+      - name: Scan built image with Trivy
+        uses: aquasecurity/trivy-action@0.35.0
+        with:
+          image-ref: taskflow:${{ github.sha }}
+          format: table
+          exit-code: "1"
+          vuln-type: os,library
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+
+      - name: Generate image tags
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/arifuzzaman-hredoy/devops-real-world-project-by-python
+          tags: |
+            type=ref,event=branch
+            type=ref,event=tag
+            type=sha,format=long,prefix=sha-
+            type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
@@ -29,23 +82,19 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Generate image metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/${{ github.repository }}
-          tags: |
-            type=ref,event=branch
-            type=ref,event=tag
-            type=sha,format=long,prefix=sha-
-            type=raw,value=latest,enable={{is_default_branch}}
+      - name: Publish the scanned image
+        env:
+          IMAGE_SHA: ${{ github.sha }}
+          IMAGE_TAGS: ${{ steps.meta.outputs.tags }}
+        run: |
+          set -euo pipefail
 
-      - name: Build and publish image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          while IFS= read -r tag; do
+            [ -n "$tag" ] || continue
+
+            echo "Tagging scanned image: $tag"
+            docker tag "taskflow:${IMAGE_SHA}" "$tag"
+
+            echo "Publishing: $tag"
+            docker push "$tag"
+          done <<< "$IMAGE_TAGS"
