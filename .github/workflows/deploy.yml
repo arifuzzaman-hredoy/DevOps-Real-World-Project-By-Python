@@ -8,6 +8,12 @@ on:
         required: true
         type: string
 
+  workflow_run:
+    workflows:
+      - Publish TaskFlow image to GHCR
+    types:
+      - completed
+
 permissions:
   contents: read
 
@@ -17,15 +23,24 @@ concurrency:
 
 jobs:
   deploy:
-    name: Deploy to production
+    name: Deploy to EC2
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event.workflow_run.conclusion == 'success' &&
+        github.event.workflow_run.head_branch == 'main'
+      )
     runs-on: ubuntu-latest
     environment: production
 
+    env:
+      IMAGE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.image_tag || format('sha-{0}', github.event.workflow_run.head_sha) }}
+
     steps:
       - name: Validate image tag
-        env:
-          IMAGE_TAG: ${{ inputs.image_tag }}
         run: |
+          set -euo pipefail
+
           if [[ ! "$IMAGE_TAG" =~ ^[a-zA-Z0-9_][a-zA-Z0-9_.-]{0,127}$ ]]; then
             echo "Invalid image tag"
             exit 1
@@ -53,7 +68,6 @@ jobs:
       - name: Deploy selected image
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
-          IMAGE_TAG: ${{ inputs.image_tag }}
         run: |
           set -euo pipefail
 
@@ -68,8 +82,6 @@ jobs:
             "sudo /usr/local/bin/taskflow-deploy '$IMAGE_TAG'"
 
       - name: Verify public HTTPS health
-        env:
-          IMAGE_TAG: ${{ inputs.image_tag }}
         run: |
           set -euo pipefail
 
