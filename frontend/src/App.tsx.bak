@@ -1,0 +1,435 @@
+import { useCallback, useEffect, useMemo, useState } from "react";
+import "./App.css";
+import {
+  STUDY_STATE_KEYS,
+  studyApi,
+  type StudyStateKey,
+} from "./services/api";
+import type {
+  Chapter,
+  StudyData,
+  StudyStateResponse,
+  StudyTaskDefinition,
+} from "./types/study";
+
+type Progress = Record<string, boolean>;
+
+const DATA_KEY: StudyStateKey = "cst-study-data-v2";
+const PROGRESS_KEY: StudyStateKey = "cst-study-matrix-v1";
+
+function parseStudyData(value: unknown): StudyData | null {
+  if (!value || typeof value !== "object") return null;
+
+  const candidate = value as Partial<StudyData>;
+  if (!Array.isArray(candidate.subjects)) return null;
+
+  return {
+    cfg: candidate.cfg ?? {
+      eyebrow: "CST • SEMESTER PLANNER",
+      title: "Study Matrix",
+      desc: "Your semester study plan.",
+      target: "Consistent progress",
+      note: "",
+      goal: 100,
+      noticeHead: "",
+      notice: "",
+      footer: "Built for consistent learning.",
+    },
+    subjects: candidate.subjects.filter(
+      (subject) =>
+        subject &&
+        typeof subject.id === "string" &&
+        typeof subject.name === "string" &&
+        Array.isArray(subject.chapters),
+    ),
+    q: Array.isArray(candidate.q) ? candidate.q : [],
+    s: Array.isArray(candidate.s) ? candidate.s : [],
+  };
+}
+
+function parseProgress(value: unknown): Progress {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+
+  return Object.fromEntries(
+    Object.entries(value).filter((entry): entry is [string, boolean] =>
+      typeof entry[1] === "boolean",
+    ),
+  );
+}
+
+function readLocalState(key: StudyStateKey): unknown {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw === null ? undefined : JSON.parse(raw);
+  } catch {
+    return undefined;
+  }
+}
+
+function chapterTaskKey(
+  subjectIndex: number,
+  chapterIndex: number,
+  taskId: string,
+): string {
+  return `${subjectIndex}-${chapterIndex}::${taskId}`;
+}
+
+function getTasks(data: StudyData): StudyTaskDefinition[] {
+  const tasks = [...data.s, ...data.q];
+  return tasks.length > 0 ? tasks : [{ id: "study", label: "Study chapter" }];
+}
+
+export default function App() {
+  const [csrf, setCsrf] = useState("");
+  const [studyData, setStudyData] = useState<StudyData | null>(null);
+  const [progress, setProgress] = useState<Progress>({});
+  const [search, setSearch] = useState("");
+  const [scope, setScope] = useState<"all" | "mid" | "extra">("all");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const csrfResponse = await studyApi.getCsrf();
+      setCsrf(csrfResponse.csrf_token);
+
+      const remote: StudyStateResponse = await studyApi.getState();
+      const states: Record<string, unknown> = { ...remote.states };
+
+      // Import existing browser data only when the server has no copy.
+      for (const key of STUDY_STATE_KEYS) {
+        if (Object.hasOwn(states, key)) continue;
+
+        const local = readLocalState(key);
+        if (local === undefined) continue;
+
+        try {
+          await studyApi.saveState(key, local, csrfResponse.csrf_token);
+          states[key] = local;
+        } catch {
+          // A later explicit save can retry without blocking initial rendering.
+        }
+      }
+
+      const data = parseStudyData(states[DATA_KEY]);
+      const savedProgress = parseProgress(states[PROGRESS_KEY]);
+
+      setStudyData(data);
+      setProgress(savedProgress);
+
+      if (data) {
+        setMessage("Your study plan is loaded.");
+      } else {
+        setMessage("");
+      }
+    } catch (caught) {
+      if (!(caught instanceof Error && caught.message === "Authentication required")) {
+        setError(caught instanceof Error ? caught.message : "Could not load study data.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  const chapters = useMemo(() => {
+    if (!studyData) return [];
+
+    return studyData.subjects.flatMap((subject, subjectIndex) =>
+      subject.chapters.map((chapter: Chapter, chapterIndex) => ({
+        subject,
+        subjectIndex,
+        chapter,
+        chapterIndex,
+      })),
+    );
+  }, [studyData]);
+
+  const tasks = useMemo(
+    () => (studyData ? getTasks(studyData) : []),
+    [studyData],
+  );
+
+  const totalTasks = chapters.length * tasks.length;
+  const completedTasks = chapters.reduce(
+    (total, item) =>
+      total +
+      tasks.filter(
+        (task) =>
+          progress[
+            chapterTaskKey(item.subjectIndex, item.chapterIndex, task.id)
+          ],
+      ).length,
+    0,
+  );
+
+  const percentage =
+    totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
+
+  const filteredSubjects = useMemo(() => {
+    if (!studyData) return [];
+
+    const query = search.trim().toLowerCase();
+
+    return studyData.subjects
+      .map((subject, subjectIndex) => ({
+        ...subject,
+        subjectIndex,
+        chapters: subject.chapters
+          .map((chapter, chapterIndex) => ({ chapter, chapterIndex }))
+          .filter(({ chapter }) => {
+            const matchesSearch =
+              !query ||
+              subject.name.toLowerCase().includes(query) ||
+              chapter.title.toLowerCase().includes(query);
+
+            const matchesScope =
+              scope === "all" ||
+              (scope === "mid" && chapter.mid) ||
+              (scope === "extra" && !chapter.mid);
+
+            return matchesSearch && matchesScope;
+          }),
+      }))
+      .filter((subject) => subject.chapters.length > 0);
+  }, [studyData, search, scope]);
+
+  async function toggleTask(
+    subjectIndex: number,
+    chapterIndex: number,
+    taskId: string,
+  ) {
+    if (!csrf) return;
+
+    const key = chapterTaskKey(subjectIndex, chapterIndex, taskId);
+    const next = { ...progress, [key]: !progress[key] };
+
+    setProgress(next);
+    setSaving(true);
+    setError("");
+    setMessage("");
+
+    try {
+      await studyApi.saveState(PROGRESS_KEY, next, csrf);
+      localStorage.setItem(PROGRESS_KEY, JSON.stringify(next));
+      setMessage("Progress saved.");
+    } catch (caught) {
+      setProgress(progress);
+      setError(caught instanceof Error ? caught.message : "Save failed.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function logout() {
+    if (!csrf) return;
+    try {
+      await studyApi.logout(csrf);
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Logout failed.");
+    }
+  }
+
+  if (loading) {
+    return (
+      <main className="loading-screen">
+        <div className="loader" />
+        <p>Loading your study workspace…</p>
+      </main>
+    );
+  }
+
+  return (
+    <main className="app-shell">
+      <aside className="sidebar">
+        <a className="brand" href="/" aria-label="Study Matrix home">
+          <span className="brand-mark">S</span>
+          <span>
+            <strong>Study Matrix</strong>
+            <small>CST WORKSPACE</small>
+          </span>
+        </a>
+
+        <div className="sidebar-label">WORKSPACE</div>
+        <a className="nav-link active" href="#overview">▦ <span>Overview</span></a>
+        <a className="nav-link" href="#subjects">▤ <span>Subjects & chapters</span></a>
+        <a className="nav-link" href="/legacy">↗ <span>Legacy Study Matrix</span></a>
+
+        <div className="sidebar-bottom">
+          <span className="online-dot" />
+          <span>Connected workspace</span>
+          <button className="logout-button" onClick={() => void logout()}>
+            Log out
+          </button>
+        </div>
+      </aside>
+
+      <section className="main-panel">
+        <header className="topbar">
+          <div>
+            <div className="eyebrow">{studyData?.cfg.eyebrow || "CST • SEMESTER PLANNER"}</div>
+            <h1>{studyData?.cfg.title || "Your Study Workspace"}</h1>
+            <p className="subtitle">
+              {studyData?.cfg.desc || "Keep your semester plan organized and track your progress."}
+            </p>
+          </div>
+          <div className="user-chip"><span>H</span><div><strong>Student</strong><small>Personal workspace</small></div></div>
+        </header>
+
+        {error && <div className="notice error-notice" role="alert">{error}</div>}
+        {message && !error && <div className="status-message" role="status">{saving ? "Saving…" : message}</div>}
+
+        {!studyData ? (
+          <section className="empty-state">
+            <div className="empty-icon">▤</div>
+            <h2>No study plan found</h2>
+            <p>
+              Your server does not yet have a study plan. Open the existing Study Matrix
+              once to initialize or recover your plan, then return here.
+            </p>
+            <a className="primary-button" href="/legacy">Open Legacy Study Matrix ↗</a>
+            <button className="secondary-button" onClick={() => void load()}>Reload study data</button>
+          </section>
+        ) : (
+          <>
+            <section className="stats-grid" id="overview">
+              <article className="stat-card">
+                <span className="stat-label">TOTAL SUBJECTS</span>
+                <strong>{studyData.subjects.length}</strong>
+                <span className="stat-foot">In your semester plan</span>
+              </article>
+              <article className="stat-card">
+                <span className="stat-label">TOTAL CHAPTERS</span>
+                <strong>{chapters.length}</strong>
+                <span className="stat-foot">Across all subjects</span>
+              </article>
+              <article className="stat-card">
+                <span className="stat-label">TASKS COMPLETED</span>
+                <strong>{completedTasks}<small> / {totalTasks}</small></strong>
+                <span className="stat-foot">Saved to your account</span>
+              </article>
+              <article className="stat-card progress-stat">
+                <span className="stat-label">OVERALL PROGRESS</span>
+                <strong>{percentage}%</strong>
+                <div className="progress-track"><span style={{ width: `${percentage}%` }} /></div>
+              </article>
+            </section>
+
+            {studyData.cfg.notice && (
+              <section className="notice">
+                <strong>{studyData.cfg.noticeHead || "Study note"}</strong>
+                <p>{studyData.cfg.notice}</p>
+              </section>
+            )}
+
+            <section className="subjects-section" id="subjects">
+              <div className="section-heading">
+                <div>
+                  <div className="eyebrow">YOUR SEMESTER</div>
+                  <h2>Subjects & chapters</h2>
+                  <p>Track your work and save progress to the database.</p>
+                </div>
+                <input
+                  className="search-input"
+                  type="search"
+                  placeholder="Search subjects or chapters…"
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  aria-label="Search subjects or chapters"
+                />
+              </div>
+
+              <div className="filters" aria-label="Syllabus filter">
+                {(["all", "mid", "extra"] as const).map((item) => (
+                  <button
+                    key={item}
+                    className={scope === item ? "filter active-filter" : "filter"}
+                    onClick={() => setScope(item)}
+                  >
+                    {item === "all" ? "All chapters" : item === "mid" ? "Midterm" : "Extra"}
+                  </button>
+                ))}
+              </div>
+
+              {filteredSubjects.length === 0 ? (
+                <div className="empty-filter">No matching chapters found.</div>
+              ) : (
+                <div className="subject-list">
+                  {filteredSubjects.map((subject) => (
+                    <article className="subject-card" key={subject.id}>
+                      <div className="subject-heading">
+                        <span className="subject-number">
+                          {String(subject.subjectIndex + 1).padStart(2, "0")}
+                        </span>
+                        <div><h3>{subject.name}</h3><p>{subject.chapters.length} chapters shown</p></div>
+                      </div>
+
+                      <div className="chapter-list">
+                        {subject.chapters.map(({ chapter, chapterIndex }) => {
+                          const done = tasks.filter(
+                            (task) =>
+                              progress[chapterTaskKey(subject.subjectIndex, chapterIndex, task.id)],
+                          ).length;
+
+                          return (
+                            <div className="chapter-row" key={chapter.id}>
+                              <div className="chapter-info">
+                                <span className="chapter-title">{chapter.title}</span>
+                                <span className={chapter.mid ? "tag mid-tag" : "tag extra-tag"}>
+                                  {chapter.mid ? "MIDTERM" : "EXTRA"}
+                                </span>
+                              </div>
+                              <div className="task-checks">
+                                {tasks.map((task) => {
+                                  const taskKey = chapterTaskKey(
+                                    subject.subjectIndex,
+                                    chapterIndex,
+                                    task.id,
+                                  );
+                                  return (
+                                    <label className="task-check" key={task.id} title={task.label}>
+                                      <input
+                                        type="checkbox"
+                                        checked={Boolean(progress[taskKey])}
+                                        onChange={() =>
+                                          void toggleTask(
+                                            subject.subjectIndex,
+                                            chapterIndex,
+                                            task.id,
+                                          )
+                                        }
+                                      />
+                                      <span>{task.label}</span>
+                                    </label>
+                                  );
+                                })}
+                              </div>
+                              <span className="chapter-count">{done}/{tasks.length}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              )}
+            </section>
+          </>
+        )}
+
+        <footer className="footer">
+          <span>{studyData?.cfg.footer || "Study consistently. Improve every day."}</span>
+          <span>{saving ? "Saving…" : "● Synced with backend"}</span>
+        </footer>
+      </section>
+    </main>
+  );
+}

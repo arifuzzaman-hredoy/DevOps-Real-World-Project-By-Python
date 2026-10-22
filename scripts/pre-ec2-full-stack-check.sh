@@ -8,7 +8,7 @@ COMPOSE_FILE="compose.yaml"
 # Expected local service endpoints
 NGINX_URL="http://127.0.0.1:8080"
 PROMETHEUS_URL="http://127.0.0.1:9091"
-GRAFANA_URL="http://127.0.0.1:3000"
+GRAFANA_URL="http://127.0.0.1:3001"
 
 section() {
     printf '\n==========================================\n'
@@ -37,7 +37,7 @@ if [[ ! -f "$COMPOSE_FILE" ]]; then
     exit 1
 fi
 
-section "TaskFlow - Full-Stack Pre-EC2 Validation"
+section "CST Study Matrix - Full-Stack Pre-EC2 Validation"
 
 echo "[1/7] Validating Docker Compose configuration..."
 docker compose config --quiet
