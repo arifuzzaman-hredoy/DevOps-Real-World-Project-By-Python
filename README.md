@@ -1,132 +1,155 @@
-# DevOps Real-World Learning Project: TaskFlow
+# TaskFlow — Academic Study Workspace
 
-TaskFlow is a small task-management API used as the application for an end-to-end DevOps learning journey. The repository is intentionally structured like a real delivery project: application, tests, containerization, local orchestration, reverse proxy, monitoring, CI, infrastructure-as-code, configuration management, and operational runbooks.
+TaskFlow is an academic Study Matrix and progress dashboard backed by a Flask API
+and PostgreSQL. The React/TypeScript dashboard is the primary experience. The
+older Jinja page remains available at `/legacy` while its additional features are
+being ported.
 
-## What you will build
+## Architecture
 
-**Phase 1 — Application and Git**
-- Python Flask REST API
-- PostgreSQL persistence
-- Unit/integration tests and linting
-- Git branching, pull requests, tags, releases
+```text
+Browser
+  React/TypeScript academic dashboard and Study Matrix
+       |
+       | same-origin HTTPS/HTTP requests + session cookie
+       v
+Nginx reverse proxy
+       |
+       +--> Flask + Gunicorn API and built React assets
+       |      - Login/session and CSRF protection
+       |      - Study-state REST API
+       |      - Health/readiness and Prometheus metrics
+       |
+       +--> PostgreSQL
+  - study_states JSON documents
+  - persistent Docker volume
+```
 
-**Phase 2 — Containers**
-- Docker image
-- Docker Compose environment
-- Nginx reverse proxy
-- Persistent database volume and health checks
+The API image builds and contains the React production assets. In production the
+TLS Nginx proxy forwards application requests to Flask; the local development
+Nginx image serves the same frontend assets directly. The authenticated `/legacy`
+route preserves the existing Jinja experience, including features not yet
+available in React such as the study hub, focus timer, admin editing, and
+export/print.
 
-**Phase 3 — CI/CD**
-- GitHub Actions tests and image build
-- Container image publishing to GitHub Container Registry (GHCR)
-- Deployment workflow foundation (deployment is deliberately gated until credentials and infrastructure are configured)
+Study data is persisted as validated JSON documents, not a normalized
+per-subject/per-chapter schema. React never uploads browser-local data
+automatically: when no server plan exists, the user can explicitly restore a
+valid browser copy or supported JSON backup. Existing server data is preserved.
 
-**Phase 4 — Cloud**
-- Terraform provisions an AWS security group and EC2 instance
-- Ansible installs Docker and deploys the application
-- DNS/subdomain and HTTPS setup guide
+## Security
 
-**Phase 5 — Observability and operations**
-- Prometheus metrics
-- Grafana provisioning
-- Health/readiness endpoints
-- Incident, backup, restore, rollback, and troubleshooting runbooks
+- The app requires a login session before displaying the study UI or exposing study-state endpoints.
+- Mutating study-state API requests require a session CSRF token.
+- Production startup fails closed unless `SECRET_KEY`, `STUDY_APP_PASSWORD`,
+  PostgreSQL `DATABASE_URL`, and the built frontend are valid. Configure these
+  through the approved secret process before deployment.
+- Session cookies are HttpOnly and SameSite=Lax; Secure is enabled when `APP_ENV=production`.
+- Health and readiness remain publicly available for monitoring. The production
+  and local Nginx configurations deny public `/api/metrics` requests; Prometheus
+  scrapes the API directly over the private Docker network.
+- The local Compose Nginx port is bound to `127.0.0.1:8080`; it is intended for local development only.
+- Never commit `.env`, Terraform variable files, plans, state, passwords, tokens, or private keys.
 
-**Phase 6 — Advanced extensions**
-- Add Redis caching and Celery workers
-- Add Kubernetes (kind locally, then EKS only if budget allows)
-- Add Trivy image scanning, SBOM, dependency scanning, and policy checks
-- Add centralized logs and alerting
+## Local quick start
 
-## Important safety and cost notes
-
-- No real credentials are included. Never commit AWS keys, SSH private keys, tokens, passwords, or `.env` files.
-- The Terraform example can create billable AWS resources. Review `terraform plan` before applying and destroy resources when finished.
-- The AWS setup is a learning baseline, not a hardened production architecture. Production would need TLS termination, restricted ingress, IAM least privilege, secret management, backups, patching, and a multi-AZ design.
-- Start locally. Do not connect cloud credentials until the local application and CI workflow pass.
-
-## Quick start (local)
-
-Requirements: Docker Engine and Docker Compose plugin.
+Requirements: Docker Engine, Docker Compose plugin, Python 3.12+ for tests.
 
 ```bash
 cp .env.example .env
-docker compose up --build -d
-docker compose ps
-curl http://localhost/api/health
-curl http://localhost/api/tasks
 ```
 
-The API is behind Nginx on `http://localhost`. PostgreSQL is not published to the host by default.
-To stop:
+Edit `.env` and replace the placeholder values. Keep `POSTGRES_PASSWORD` as a local-only value unless you also understand the URL/credential setup. The Compose file constructs the database URL from `POSTGRES_USER`, `POSTGRES_PASSWORD`, and `POSTGRES_DB`.
+
+```bash
+docker compose config --quiet
+docker compose up --build -d
+docker compose ps
+curl http://127.0.0.1:8080/api/health
+curl http://127.0.0.1:8080/api/ready
+```
+
+Open `http://127.0.0.1:8080` and sign in with the value in `.env` named `STUDY_APP_PASSWORD`.
+
+To stop the stack without deleting database data:
 
 ```bash
 docker compose down
 ```
 
-To stop and **delete local database data**:
+**Do not use `docker compose down -v` unless you intentionally want to delete the local database volume.**
+
+The dashboard's Settings section downloads a JSON backup of the saved plan and
+progress. The explicit recovery flow never uploads browser-local data when a
+server plan already exists. The authenticated `/legacy` route remains available
+from Settings for focus timer, admin, achievements, and print/export workflows
+not yet ported to React.
+
+## Tests and deployment checks
+
+Run the full local test script. It creates `.venv` if necessary and installs the pinned development requirements when missing:
 
 ```bash
-docker compose down -v
+./scripts/test.sh
 ```
 
-## Run tests without Docker
-
-Python 3.12+ is recommended.
+Validate configuration, tests, and image build before deploying:
 
 ```bash
-python -m venv .venv
-# Linux/macOS:
-source .venv/bin/activate
-# Windows PowerShell:
-# .venv\Scripts\Activate.ps1
-pip install -r requirements.txt -r requirements-dev.txt
-pytest -q
+./scripts/pre-deploy-check.sh
 ```
 
-The application uses SQLite automatically when `DATABASE_URL` is not set, which makes local tests easy.
+Start/update the local stack only after the checks pass:
+
+```bash
+./scripts/deploy.sh local
+```
+
+The `production` mode of `scripts/deploy.sh` is deliberately a safety gate.
+The publish workflow builds and scans the API image; deployment is a separate
+manual GitHub Actions dispatch that accepts only an immutable
+`sha-<40-character commit SHA>` tag. The production Compose API service requires
+`SECRET_KEY` and `STUDY_APP_PASSWORD` from `/opt/taskflow/.env`. Do not deploy
+until the current production configuration, immutable target image, database
+backup, and rollback path have been verified. The deployment helper updates the
+API service only; production Nginx configuration is server-managed and requires
+a separately reviewed, backed-up change.
 
 ## API
 
 | Method | Path | Purpose |
 |---|---|---|
-| GET | `/api/health` | Liveness check |
-| GET | `/api/ready` | Readiness check including database connectivity |
-| GET | `/api/metrics` | Prometheus metrics |
-| GET | `/api/tasks` | List tasks |
-| POST | `/api/tasks` | Create task |
-| GET | `/api/tasks/<id>` | Read task |
-| PATCH | `/api/tasks/<id>` | Update title, description, or status |
-| DELETE | `/api/tasks/<id>` | Delete task |
+| GET | `/api/health` | Public liveness check |
+| GET | `/api/ready` | Public database readiness check |
+| GET | `/api/auth/csrf` | Create an anonymous login CSRF token |
+| POST | `/api/auth/login` | Sign in with password and login CSRF token |
+| POST | `/api/auth/logout` | Sign out (login + CSRF required) |
+| GET | `/api/csrf` | Authenticated mutation CSRF token |
+| GET | `/api/study/state` | Read persisted study documents (login required) |
+| PUT | `/api/study/state/<key>` | Save one allowed study document (login + CSRF required) |
+| DELETE | `/api/study/state/<key>` | Delete one allowed study document (login + CSRF required) |
+| GET | `/api/metrics` | Internal Prometheus metrics |
 
-Example:
+Allowed study keys are `cst-study-data-v2`, `cst-study-matrix-v1`, `cst-hub-v1`, and `cst-fx-v1`. Requests are size-limited and arbitrary keys are rejected.
 
-```bash
-curl -X POST http://localhost/api/tasks \
-  -H 'Content-Type: application/json' \
-  -d '{"title":"Learn Docker","description":"Build and inspect an image"}'
-```
+Legacy `/api/tasks` endpoints and the `tasks` model remain temporarily for rollback compatibility. They are no longer used by the Study Matrix frontend. Do not drop the old table as part of this update; remove it only after verifying no other deployment or workflow depends on it and after taking a database backup.
 
 ## Repository map
 
-- `app/` — Flask application and database models
-- `tests/` — automated tests
-- `docker/` — Nginx configuration
-- `monitoring/` — Prometheus and Grafana provisioning
-- `.github/workflows/` — CI and image publishing
-- `terraform/` — AWS EC2 and security group
-- `ansible/` — host configuration and deployment
-- `scripts/` — helper scripts
-- `docs/` — learning plan and operational runbooks
+- `app/` — Flask app, API routes, SQLAlchemy models, and existing study UI
+- `tests/` — API, persistence, CSRF, and authentication checks
+- `docker/` — Nginx reverse-proxy configuration
+- `monitoring/` — Prometheus/Grafana configuration
+- `.github/workflows/` — CI, GHCR publishing, deployment workflow
+- `terraform/` and `ansible/` — infrastructure and host configuration
+- `scripts/` — tests, smoke tests, pre-deployment checks, local deployment helper
+- `docs/` — architecture and operational runbooks
 
-## Recommended learning method
+Production-specific instructions are in [`docs/STUDY_MATRIX_DEPLOYMENT.md`](docs/STUDY_MATRIX_DEPLOYMENT.md).
 
-Do not just run every command. For each phase:
-1. Read the relevant docs.
-2. Draw the architecture from memory.
-3. Run the commands yourself.
-4. Break one thing intentionally and troubleshoot it.
-5. Capture terminal output and screenshots in your learning notes.
-6. Explain what happened and why before moving to the next phase.
+## Existing data and migration notes
 
-Start with `docs/LEARNING_PATH.md`.
+- Browser-local data is never migrated automatically; use the explicit empty-state recovery flow.
+- Existing PostgreSQL data is not dropped or rewritten by this update.
+- Existing `tasks` table and Docker volumes are retained for rollback.
+- Before production rollout, back up PostgreSQL and verify the new image locally. If old localStorage data is important, keep a JSON backup from the existing UI before switching versions.

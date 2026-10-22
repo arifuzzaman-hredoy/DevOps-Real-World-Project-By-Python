@@ -7,6 +7,173 @@
       content="width=device-width, initial-scale=1, viewport-fit=cover"
     />
     <meta name="theme-color" content="#060913" />
+    <script>
+      (() => {
+        "use strict";
+        const keys = new Set([
+          "cst-study-data-v2",
+          "cst-study-matrix-v1",
+          "cst-hub-v1",
+          "cst-fx-v1"
+        ]);
+        const remote = {{ remote_state|tojson }};
+        const csrf = {{ csrf_token|tojson }};
+        const pendingStorageKey = "cst-study-sync-pending-v1";
+        const nativeGet = Storage.prototype.getItem;
+        const nativeSet = Storage.prototype.setItem;
+        const nativeRemove = Storage.prototype.removeItem;
+        const queues = new Map();
+        const versions = new Map();
+        let pending = new Set();
+        let statusText = "Connected to study database";
+        let statusNode = null;
+
+        try {
+          pending = new Set(JSON.parse(nativeGet.call(localStorage, pendingStorageKey) || "[]"));
+        } catch (_) {
+          pending = new Set();
+        }
+
+        function persistPending() {
+          try { nativeSet.call(localStorage, pendingStorageKey, JSON.stringify([...pending])); }
+          catch (_) {}
+        }
+        function status(message, failed = false) {
+          statusText = message;
+          if (statusNode) {
+            statusNode.textContent = message;
+            statusNode.dataset.state = failed ? "error" : "ok";
+          }
+        }
+        function enqueue(key, raw) {
+          const version = (versions.get(key) || 0) + 1;
+          versions.set(key, version);
+          pending.add(key);
+          persistPending();
+          status("Syncing study progress…");
+          const previous = queues.get(key) || Promise.resolve();
+          const next = previous.catch(() => {}).then(async () => {
+            let value;
+            try { value = JSON.parse(raw); }
+            catch (_) {
+              status("Invalid local study data; export a backup", true);
+              return;
+            }
+            const response = await fetch("/api/study/state/" + encodeURIComponent(key), {
+              method: "PUT",
+              credentials: "same-origin",
+              headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-Token": csrf
+              },
+              body: JSON.stringify({ value })
+            });
+            if (!response.ok) {
+              throw new Error("HTTP " + response.status);
+            }
+            if (versions.get(key) === version) {
+              pending.delete(key);
+              persistPending();
+              status("All changes saved to PostgreSQL");
+            }
+          }).catch(() => {
+            pending.add(key);
+            persistPending();
+            status("Server sync unavailable — changes kept on this device", true);
+          });
+          queues.set(key, next);
+        }
+
+        Storage.prototype.getItem = function(key) {
+          if (this === localStorage && keys.has(key) &&
+              Object.prototype.hasOwnProperty.call(remote, key)) {
+            return remote[key];
+          }
+          return nativeGet.call(this, key);
+        };
+        Storage.prototype.setItem = function(key, value) {
+          nativeSet.call(this, key, value);
+          if (this === localStorage && keys.has(key)) {
+            remote[key] = String(value);
+            enqueue(key, String(value));
+          }
+        };
+        Storage.prototype.removeItem = function(key) {
+          nativeRemove.call(this, key);
+          if (this === localStorage && keys.has(key)) {
+            delete remote[key];
+            const previous = queues.get(key) || Promise.resolve();
+            const next = previous.catch(() => {}).then(async () => {
+              const response = await fetch("/api/study/state/" + encodeURIComponent(key), {
+                method: "DELETE",
+                credentials: "same-origin",
+                headers: { "X-CSRF-Token": csrf }
+              });
+              if (!response.ok && response.status !== 404) throw new Error("HTTP " + response.status);
+              pending.delete(key);
+              persistPending();
+            }).catch(() => {
+              pending.add(key);
+              persistPending();
+              status("Server sync unavailable — changes kept on this device", true);
+            });
+            queues.set(key, next);
+          }
+        };
+
+        // Restore unsynced local edits first; otherwise the server is authoritative.
+        for (const key of keys) {
+          const localValue = nativeGet.call(localStorage, key);
+          if (pending.has(key) && localValue !== null) {
+            remote[key] = localValue;
+            enqueue(key, localValue);
+          } else if (Object.prototype.hasOwnProperty.call(remote, key)) {
+            nativeSet.call(localStorage, key, remote[key]);
+          } else if (localValue !== null) {
+            // One-time migration of the existing browser-only data into PostgreSQL.
+            remote[key] = localValue;
+            enqueue(key, localValue);
+          }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+          const account = document.createElement("form");
+          account.id = "serverAccount";
+          account.className = "server-account";
+          account.method = "post";
+          account.action = "/logout";
+          account.innerHTML =
+            '<input type="hidden" name="csrf_token" value="' +
+            csrf.replace(/&/g, "&amp;").replace(/"/g, "&quot;") +
+            '"><button type="submit">Sign out</button>';
+          document.body.append(account);
+
+          statusNode = document.createElement("div");
+          statusNode.id = "studySyncStatus";
+          statusNode.setAttribute("role", "status");
+          statusNode.setAttribute("aria-live", "polite");
+          statusNode.textContent = statusText;
+          document.body.append(statusNode);
+          status(statusText, pending.size > 0);
+        });
+      })();
+    </script>
+    <style>
+      .server-account { position:fixed; left:14px; bottom:14px; z-index:1000; }
+      .server-account button { border:1px solid #dce3ef; border-radius:999px; background:#fff;
+        color:#334155; padding:8px 12px; font:600 12px/1.2 system-ui,sans-serif;
+        box-shadow:0 4px 18px #17203318; cursor:pointer; }
+      #studySyncStatus { position:fixed; right:14px; bottom:14px; z-index:1000;
+        max-width:min(75vw,390px); padding:8px 12px; border:1px solid #dce3ef;
+        border-radius:999px; background:#fff; color:#334155; font:600 12px/1.35 system-ui,sans-serif;
+        box-shadow:0 4px 18px #17203318; }
+      #studySyncStatus[data-state="error"] { color:#9f2424; border-color:#f3b6b6; }
+      @media(max-width:600px) {
+        #studySyncStatus { right:8px; bottom:58px; max-width:calc(100vw - 16px); }
+        .server-account { left:8px; bottom:8px; }
+      }
+    </style>
+
     <title>CST Semester Study Matrix</title>
     <style>
       :root {
