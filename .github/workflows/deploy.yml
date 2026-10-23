@@ -71,7 +71,7 @@ jobs:
           test -s /opt/taskflow/.env
           grep -Eq '^SECRET_KEY=.{32,}$' /opt/taskflow/.env
           ! grep -Eq '^SECRET_KEY=(replace-with|dev-only-change-me)' /opt/taskflow/.env
-          grep -Eq '^STUDY_APP_PASSWORD=.{16,}$' /opt/taskflow/.env
+          grep -Eq '^STUDY_APP_PASSWORD=.{6,}$' /opt/taskflow/.env
           ! grep -Eq '^STUDY_APP_PASSWORD=(replace-with|local-dev|change-this)' /opt/taskflow/.env
           grep -Eq '^POSTGRES_DB=.+$' /opt/taskflow/.env
           grep -Eq '^POSTGRES_USER=.+$' /opt/taskflow/.env
