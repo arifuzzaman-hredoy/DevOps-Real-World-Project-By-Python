@@ -73,9 +73,11 @@ elif args[:1] == ["inspect"]:
     else:
         result = 1
 elif args[:1] == ["compose"]:
-    if len(args) < 4 or args[-4:] != ["up", "-d", "--no-deps", "api"]:
-        result = 1
-    else:
+    if args[-2:] == ["config", "--quiet"]:
+        pass
+    elif args[-5:] == ["up", "-d", "--no-deps", "--force-recreate", "nginx"]:
+        state["nginx_recreate_count"] += 1
+    elif len(args) >= 4 and args[-4:] == ["up", "-d", "--no-deps", "api"]:
         image = os.environ.get("TASKFLOW_API_IMAGE", "")
         if image == state["new_image"]:
             state["new_up_count"] += 1
@@ -96,6 +98,8 @@ elif args[:1] == ["compose"]:
         else:
             result = 1
         state.setdefault("compose_images", []).append(image)
+    else:
+        result = 1
 elif args[:1] == ["exec"]:
     if len(args) > 2 and args[2] == "node":
         state.setdefault("internal_readiness_phases", []).append(state["phase"])
@@ -177,7 +181,9 @@ def _write_executable(path: Path, content: str) -> None:
     path.chmod(0o700)
 
 
-def run_deployment(tmp_path: Path, scenario: str):
+def run_deployment(
+    tmp_path: Path, scenario: str, with_rollback_config: bool = False
+):
     bin_dir = tmp_path / "bin"
     bin_dir.mkdir()
     _write_executable(bin_dir / "sudo", MOCK_SUDO)
@@ -199,6 +205,7 @@ def run_deployment(tmp_path: Path, scenario: str):
         "phase": "old",
         "new_up_count": 0,
         "rollback_count": 0,
+        "nginx_recreate_count": 0,
         "commands": [],
     }
     state_path.write_text(json.dumps(state), encoding="utf-8")
@@ -208,6 +215,17 @@ def run_deployment(tmp_path: Path, scenario: str):
     env["MOCK_STATE"] = str(state_path)
     env["TMPDIR"] = str(temp_dir)
     env.pop("TASKFLOW_API_IMAGE", None)
+    if with_rollback_config:
+        app_dir = tmp_path / "taskflow"
+        app_dir.mkdir()
+        (app_dir / "compose.yaml").write_text("candidate compose\n", encoding="utf-8")
+        (app_dir / "nginx.conf").write_text("candidate nginx\n", encoding="utf-8")
+        rollback_dir = tmp_path / "rollback"
+        rollback_dir.mkdir()
+        (rollback_dir / "compose.yaml").write_text("previous compose\n", encoding="utf-8")
+        (rollback_dir / "nginx.conf").write_text("previous nginx\n", encoding="utf-8")
+        env["TASKFLOW_APP_DIR"] = str(app_dir)
+        env["TASKFLOW_ROLLBACK_CONFIG_DIR"] = str(rollback_dir)
     result = subprocess.run(
         ["bash", str(SCRIPT), TAG],
         cwd=tmp_path,
@@ -255,7 +273,7 @@ def test_deployment_and_rollback_scenarios(
         compose_commands = [
             command for command in state["commands"] if command[:1] == ["compose"]
         ]
-        assert all(
+        assert any(
             command[-4:] == ["up", "-d", "--no-deps", "api"]
             for command in compose_commands
         )
@@ -263,6 +281,7 @@ def test_deployment_and_rollback_scenarios(
         assert sum(command[:1] == ["curl"] for command in state["commands"]) >= 1
     if scenario == "success":
         assert state["image_id"] == NEW_IMAGE_ID
+        assert state["nginx_recreate_count"] == 1
         assert "SUCCESS: TaskFlow deployment is healthy." in result.stdout
     if scenario in {
         "pull_fail",
@@ -308,9 +327,15 @@ def test_only_api_service_is_updated_and_no_destructive_docker_commands_run(tmp_
 
     assert result.returncode == 0
     assert state["compose_images"] == [state["new_image"]]
+    assert state["nginx_recreate_count"] == 1
     for command in state["commands"]:
         if command[:1] == ["compose"]:
-            assert command[-4:] == ["up", "-d", "--no-deps", "api"]
+            assert (
+                command[-4:] == ["up", "-d", "--no-deps", "api"]
+                or command[-5:]
+                == ["up", "-d", "--no-deps", "--force-recreate", "nginx"]
+                or command[-2:] == ["config", "--quiet"]
+            )
         assert command[:2] not in (
             ["compose", "down"],
             ["system", "prune"],
@@ -329,6 +354,22 @@ def test_public_health_payload_is_private_and_cleaned_up(tmp_path):
     assert state["response_dir_mode"] == 0o700
     assert list((tmp_path / "private-tmp").iterdir()) == []
     assert '"database": "ok"' not in result.stdout
+
+
+def test_rollback_restores_config_before_recreating_nginx(tmp_path):
+    result, state = run_deployment(
+        tmp_path, "public_fail", with_rollback_config=True
+    )
+
+    assert result.returncode != 0
+    assert "rollback succeeded and was verified" in result.stdout
+    assert (tmp_path / "taskflow" / "compose.yaml").read_text(
+        encoding="utf-8"
+    ) == "previous compose\n"
+    assert (tmp_path / "taskflow" / "nginx.conf").read_text(
+        encoding="utf-8"
+    ) == "previous nginx\n"
+    assert state["nginx_recreate_count"] == 2
 
 
 def test_script_rejects_mutable_or_non_sha_tags(tmp_path):
