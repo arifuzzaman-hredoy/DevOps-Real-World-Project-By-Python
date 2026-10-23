@@ -1,132 +1,90 @@
-# DevOps Real-World Learning Project: TaskFlow
+# CST Semester Study Matrix
 
-TaskFlow is a small task-management API used as the application for an end-to-end DevOps learning journey. The repository is intentionally structured like a real delivery project: application, tests, containerization, local orchestration, reverse proxy, monitoring, CI, infrastructure-as-code, configuration management, and operational runbooks.
+A full-stack study-progress application built with Next.js, React, TypeScript,
+Node.js route handlers, and PostgreSQL. The original interactive study matrix
+is preserved at `/legacy-matrix.html`; the Next.js dashboard, login, matrix
+workspace, and admin panel are the primary entry points.
 
-## What you will build
+## Local run
 
-**Phase 1 — Application and Git**
-- Python Flask REST API
-- PostgreSQL persistence
-- Unit/integration tests and linting
-- Git branching, pull requests, tags, releases
+Requirements: Docker Engine and the Docker Compose plugin.
 
-**Phase 2 — Containers**
-- Docker image
-- Docker Compose environment
-- Nginx reverse proxy
-- Persistent database volume and health checks
+1. Copy `.env.example` to `.env`.
+2. Set a private `SECRET_KEY`, `STUDY_APP_PASSWORD`, and PostgreSQL password.
+3. Start the stack:
 
-**Phase 3 — CI/CD**
-- GitHub Actions tests and image build
-- Container image publishing to GitHub Container Registry (GHCR)
-- Deployment workflow foundation (deployment is deliberately gated until credentials and infrastructure are configured)
+   ```bash
+   docker compose up --build -d
+   docker compose ps
+   ```
 
-**Phase 4 — Cloud**
-- Terraform provisions an AWS security group and EC2 instance
-- Ansible installs Docker and deploys the application
-- DNS/subdomain and HTTPS setup guide
+4. Open `http://localhost:8080/login` and sign in with `STUDY_APP_PASSWORD`.
 
-**Phase 5 — Observability and operations**
-- Prometheus metrics
-- Grafana provisioning
-- Health/readiness endpoints
-- Incident, backup, restore, rollback, and troubleshooting runbooks
+The app is served by Next.js on the private Compose network. Nginx exposes the
+site at port 8080, and PostgreSQL is not published to the host. Prometheus and
+Grafana are available on ports 9091 and 3001 respectively.
 
-**Phase 6 — Advanced extensions**
-- Add Redis caching and Celery workers
-- Add Kubernetes (kind locally, then EKS only if budget allows)
-- Add Trivy image scanning, SBOM, dependency scanning, and policy checks
-- Add centralized logs and alerting
-
-## Important safety and cost notes
-
-- No real credentials are included. Never commit AWS keys, SSH private keys, tokens, passwords, or `.env` files.
-- The Terraform example can create billable AWS resources. Review `terraform plan` before applying and destroy resources when finished.
-- The AWS setup is a learning baseline, not a hardened production architecture. Production would need TLS termination, restricted ingress, IAM least privilege, secret management, backups, patching, and a multi-AZ design.
-- Start locally. Do not connect cloud credentials until the local application and CI workflow pass.
-
-## Quick start (local)
-
-Requirements: Docker Engine and Docker Compose plugin.
-
-```bash
-cp .env.example .env
-docker compose up --build -d
-docker compose ps
-curl http://localhost/api/health
-curl http://localhost/api/tasks
-```
-
-The API is behind Nginx on `http://localhost`. PostgreSQL is not published to the host by default.
-To stop:
+To stop the stack without deleting data:
 
 ```bash
 docker compose down
 ```
 
-To stop and **delete local database data**:
+Do not use `docker compose down -v` unless you intend to delete the database
+and Grafana data volumes.
+
+## Node development and checks
+
+Requirements: Node.js 22 and npm.
 
 ```bash
-docker compose down -v
+cd frontend
+npm ci
+npm run typecheck
+npm run build
 ```
 
-## Run tests without Docker
-
-Python 3.12+ is recommended.
+The end-to-end API smoke test runs against a started Compose stack:
 
 ```bash
-python -m venv .venv
-# Linux/macOS:
-source .venv/bin/activate
-# Windows PowerShell:
-# .venv\Scripts\Activate.ps1
-pip install -r requirements.txt -r requirements-dev.txt
-pytest -q
+docker compose up --build -d api db nginx
+bash scripts/api-smoke-test.sh http://127.0.0.1:8080
 ```
-
-The application uses SQLite automatically when `DATABASE_URL` is not set, which makes local tests easy.
 
 ## API
 
 | Method | Path | Purpose |
 |---|---|---|
-| GET | `/api/health` | Liveness check |
-| GET | `/api/ready` | Readiness check including database connectivity |
-| GET | `/api/metrics` | Prometheus metrics |
-| GET | `/api/tasks` | List tasks |
-| POST | `/api/tasks` | Create task |
-| GET | `/api/tasks/<id>` | Read task |
-| PATCH | `/api/tasks/<id>` | Update title, description, or status |
-| DELETE | `/api/tasks/<id>` | Delete task |
+| GET | `/api/health` | Next.js service liveness |
+| GET | `/api/ready` | Readiness including PostgreSQL connectivity |
+| GET | `/api/metrics` | Private Prometheus metrics endpoint (not exposed through Nginx) |
+| GET, POST | `/api/tasks` | List or create tasks |
+| GET, PATCH, DELETE | `/api/tasks/:id` | Read, update, or delete a task |
+| GET | `/api/auth/csrf` | Issue a CSRF token |
+| POST | `/api/auth/login` | Sign in using `STUDY_APP_PASSWORD` |
+| GET | `/api/auth/me` | Check the signed-in session |
+| POST | `/api/auth/logout` | Sign out |
+| GET | `/api/study/state` | Read authenticated study data |
+| PUT, DELETE | `/api/study/state/:key` | Save or delete authenticated study data |
 
-Example:
+Task routes retain the original JSON API behavior. Study-state routes require
+an authenticated session and CSRF protection for writes. Production must set a
+stable signing secret and a private study password; the development defaults
+must not be used for a public deployment.
 
-```bash
-curl -X POST http://localhost/api/tasks \
-  -H 'Content-Type: application/json' \
-  -d '{"title":"Learn Docker","description":"Build and inspect an image"}'
-```
+## Project layout
 
-## Repository map
+- `frontend/` — Next.js app, API route handlers, and preserved matrix template
+- `compose.yaml`, `Dockerfile`, `docker/` — Node.js/PostgreSQL stack and Nginx
+- `monitoring/` — Prometheus and Grafana configuration
+- `.github/workflows/` — Node checks, image publishing, and deployment workflow
+- `terraform/`, `ansible/` — optional cloud infrastructure learning exercises
+- `docs/` — architecture, learning path, and operations runbooks
 
-- `app/` — Flask application and database models
-- `tests/` — automated tests
-- `docker/` — Nginx configuration
-- `monitoring/` — Prometheus and Grafana provisioning
-- `.github/workflows/` — CI and image publishing
-- `terraform/` — AWS EC2 and security group
-- `ansible/` — host configuration and deployment
-- `scripts/` — helper scripts
-- `docs/` — learning plan and operational runbooks
+## Operations and safety
 
-## Recommended learning method
-
-Do not just run every command. For each phase:
-1. Read the relevant docs.
-2. Draw the architecture from memory.
-3. Run the commands yourself.
-4. Break one thing intentionally and troubleshoot it.
-5. Capture terminal output and screenshots in your learning notes.
-6. Explain what happened and why before moving to the next phase.
-
-Start with `docs/LEARNING_PATH.md`.
+This is a learning project, not a hardened production service. Review the
+security checklist, production secrets, database backup/restore process,
+network exposure, TLS configuration, and rollback procedure before deploying.
+Terraform can create billable AWS resources; review every plan before applying.
+Never commit `.env`, Terraform state, credentials, or SSH private keys.

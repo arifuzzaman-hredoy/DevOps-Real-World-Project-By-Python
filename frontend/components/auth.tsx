@@ -10,5 +10,5 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
 
 export function LogoutButton() {
   const router = useRouter();
-  return <button className="textButton" onClick={async () => { await fetch("/api/auth/logout", { method: "POST", credentials: "include" }); router.replace("/login"); }}>Sign out</button>;
+  return <button className="textButton" onClick={async () => { const csrf = await fetch("/api/csrf", { credentials: "include" }).then(r => r.json()); await fetch("/api/auth/logout", { method: "POST", headers: { "X-CSRF-Token": csrf.csrf_token }, credentials: "include" }); router.replace("/login"); }}>Sign out</button>;
 }

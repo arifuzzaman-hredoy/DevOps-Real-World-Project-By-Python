@@ -35,7 +35,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "up{job=\"taskflow-api\"}",
+          "expr": "up{job=\"cst-matrix-next\"}",
           "legendFormat": "API",
           "instant": true
         }

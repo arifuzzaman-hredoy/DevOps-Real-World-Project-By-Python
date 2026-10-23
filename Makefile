@@ -1,10 +1,7 @@
-.PHONY: test lint run down logs
+.PHONY: test run down logs
 
 test:
-	pytest -q
-
-lint:
-	ruff check app tests
+	npm --prefix frontend run typecheck
 
 run:
 	docker compose up --build -d

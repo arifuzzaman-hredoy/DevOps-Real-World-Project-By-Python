@@ -1,7 +1,7 @@
 # Learning path (work through in order)
 
 ## Stage 0 — Establish your baseline
-Learn the difference between development, test, staging, and production. Install Git, Docker, Docker Compose, Python, and an editor. Keep a lab notebook.
+Learn the difference between development, test, staging, and production. Install Git, Docker, Docker Compose, Node.js 22, and an editor. Keep a lab notebook.
 
 **Checkpoint:** Explain the purpose of every top-level directory.
 
@@ -17,10 +17,10 @@ Create a repository, push this project, use feature branches and pull requests, 
 
 **Checkpoint:** Describe working tree vs staging area vs commit; explain merge vs rebase.
 
-## Stage 3 — Python/API basics
-Read `app/main.py`, `app/routes.py`, and `app/models.py`. Run tests. Add pagination, filtering by status, and stronger validation.
+## Stage 3 — Node.js/API basics
+Read the Next.js route handlers in `frontend/app/api/`. Run typechecking and the API smoke test. Add pagination, filtering by status, and stronger validation.
 
-**Checkpoint:** Explain an HTTP request from Nginx to Flask to PostgreSQL.
+**Checkpoint:** Explain an HTTP request from Nginx to Next.js/Node.js to PostgreSQL.
 
 ## Stage 4 — Docker
 Build the image, inspect layers, run a container, inspect logs, exec into it, stop/remove it, and compare a container filesystem with a named volume.

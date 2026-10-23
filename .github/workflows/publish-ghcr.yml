@@ -22,21 +22,35 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          python-version: "3.12"
-          cache: pip
-          cache-dependency-path: requirements-dev.txt
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
 
-      - name: Install dependencies
-        run: python -m pip install -r requirements-dev.txt
+      - name: Install frontend dependencies
+        run: npm ci --prefix frontend
 
-      - name: Ruff lint
-        run: ruff check app tests
+      - name: Audit Node.js dependencies
+        run: npm audit --prefix frontend --audit-level=high
 
-      - name: Run tests
-        run: pytest -v
+      - name: Typecheck
+        run: npm --prefix frontend run typecheck
+
+      - name: Build Next.js application
+        run: npm --prefix frontend run build
+
+      - name: Run container API smoke tests
+        env:
+          APP_ENV: development
+          STUDY_APP_PASSWORD: ci-study-password
+          SECRET_KEY: ci-test-signing-secret
+          POSTGRES_PASSWORD: ci-postgres-password
+        run: |
+          docker compose up --build -d api db nginx
+          bash scripts/api-smoke-test.sh http://127.0.0.1:8080
+          docker compose down
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
