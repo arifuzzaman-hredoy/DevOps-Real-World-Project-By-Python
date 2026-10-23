@@ -44,7 +44,7 @@ jobs:
       - name: Run container API smoke tests
         env:
           APP_ENV: development
-          STUDY_APP_PASSWORD: ci-study-password
+          STUDY_APP_PASSWORD: ci6Pwd
           SECRET_KEY: ci-test-signing-secret-for-release-smoke-tests
           POSTGRES_PASSWORD: ci-postgres-password
         run: |

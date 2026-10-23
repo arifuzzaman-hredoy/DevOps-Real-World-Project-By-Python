@@ -10,7 +10,8 @@ Set these values in the production environment file, outside Git:
 
 - `APP_ENV=production`
 - `SECRET_KEY`: stable private signing secret; changing it invalidates sessions.
-- `STUDY_APP_PASSWORD`: private sign-in password.
+- `STUDY_APP_PASSWORD`: private sign-in password of at least 6 characters. Use a
+  longer, unique password because this app uses a shared single-password login.
 - `POSTGRES_DB`, `POSTGRES_USER`, and `POSTGRES_PASSWORD`.
 - `GRAFANA_ADMIN_PASSWORD`.
 

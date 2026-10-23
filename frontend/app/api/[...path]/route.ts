@@ -87,11 +87,11 @@ function studyPassword() {
   if (
     process.env.NODE_ENV === "production" &&
     (!password ||
-      Buffer.byteLength(password) < 16 ||
+      Array.from(password).length < 6 ||
       password === "study-matrix-local" ||
       password.startsWith("replace-with"))
   ) {
-    throw new Error("A private study password of at least 16 bytes must be configured");
+    throw new Error("A private study password of at least 6 characters must be configured");
   }
   return password || "study-matrix-local";
 }
