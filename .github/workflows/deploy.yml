@@ -63,14 +63,15 @@ jobs:
           set -euo pipefail
           test -n "$EC2_HOST"
 
-          # এখানে সঠিক পাথ /home/ubuntu/taskflow-source ব্যবহার করা হয়েছে
+          # ১. প্রথমে ওল্ড ডকার কন্টেইনার স্টপ করে পোর্ট খালি করা হচ্ছে
+          # ২. তারপর নতুন ইমেজ পুল করে আপ করা হচ্ছে
           ssh \
             -i ~/.ssh/taskflow_deploy \
             -o IdentitiesOnly=yes \
             -o StrictHostKeyChecking=yes \
             -o BatchMode=yes \
             "ubuntu@$EC2_HOST" \
-            "cd /home/ubuntu/taskflow-source && sudo docker compose pull && sudo docker compose up -d"
+            "cd /home/ubuntu/taskflow-source && sudo docker compose down && sudo docker compose pull && sudo docker compose up -d"
 
       - name: Verify Live Container Status
         env:
