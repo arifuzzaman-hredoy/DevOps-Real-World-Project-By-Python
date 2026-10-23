@@ -2,10 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, viewport-fit=cover"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#060913" />
     <script>
       (() => {
@@ -159,18 +156,54 @@
       })();
     </script>
     <style>
-      .server-account { position:fixed; left:14px; bottom:14px; z-index:1000; }
-      .server-account button { border:1px solid #dce3ef; border-radius:999px; background:#fff;
-        color:#334155; padding:8px 12px; font:600 12px/1.2 system-ui,sans-serif;
-        box-shadow:0 4px 18px #17203318; cursor:pointer; }
-      #studySyncStatus { position:fixed; right:14px; bottom:14px; z-index:1000;
-        max-width:min(75vw,390px); padding:8px 12px; border:1px solid #dce3ef;
-        border-radius:999px; background:#fff; color:#334155; font:600 12px/1.35 system-ui,sans-serif;
-        box-shadow:0 4px 18px #17203318; }
-      #studySyncStatus[data-state="error"] { color:#9f2424; border-color:#f3b6b6; }
-      @media(max-width:600px) {
-        #studySyncStatus { right:8px; bottom:58px; max-width:calc(100vw - 16px); }
-        .server-account { left:8px; bottom:8px; }
+      .server-account {
+        position: fixed;
+        left: 14px;
+        bottom: 14px;
+        z-index: 1000;
+      }
+      .server-account button {
+        border: 1px solid #dce3ef;
+        border-radius: 999px;
+        background: #fff;
+        color: #334155;
+        padding: 8px 12px;
+        font:
+          600 12px/1.2 system-ui,
+          sans-serif;
+        box-shadow: 0 4px 18px #17203318;
+        cursor: pointer;
+      }
+      #studySyncStatus {
+        position: fixed;
+        right: 14px;
+        bottom: 14px;
+        z-index: 1000;
+        max-width: min(75vw, 390px);
+        padding: 8px 12px;
+        border: 1px solid #dce3ef;
+        border-radius: 999px;
+        background: #fff;
+        color: #334155;
+        font:
+          600 12px/1.35 system-ui,
+          sans-serif;
+        box-shadow: 0 4px 18px #17203318;
+      }
+      #studySyncStatus[data-state="error"] {
+        color: #9f2424;
+        border-color: #f3b6b6;
+      }
+      @media (max-width: 600px) {
+        #studySyncStatus {
+          right: 8px;
+          bottom: 58px;
+          max-width: calc(100vw - 16px);
+        }
+        .server-account {
+          left: 8px;
+          bottom: 8px;
+        }
       }
     </style>
 
@@ -852,9 +885,7 @@
         --soft: rgba(var(--a-rgb), 0.12);
         --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
         --fd: "Chakra Petch", "Segoe UI", system-ui, sans-serif;
-        --fb:
-          "Manrope", Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI",
-          sans-serif;
+        --fb: "Manrope", Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
       }
       html[data-accent="violet"] {
         --a1: #a78bfa;
@@ -971,11 +1002,7 @@
       .fx-vignette {
         position: absolute;
         inset: 0;
-        background: radial-gradient(
-          ellipse at 50% 40%,
-          transparent 45%,
-          rgba(2, 4, 10, 0.7)
-        );
+        background: radial-gradient(ellipse at 50% 40%, transparent 45%, rgba(2, 4, 10, 0.7));
       }
       .fx-cursor {
         position: fixed;
@@ -986,11 +1013,7 @@
         z-index: 0;
         pointer-events: none;
         border-radius: 50%;
-        background: radial-gradient(
-          circle,
-          rgba(var(--a-rgb), 0.13),
-          transparent 62%
-        );
+        background: radial-gradient(circle, rgba(var(--a-rgb), 0.13), transparent 62%);
         transform: translate3d(-999px, -999px, 0);
         transition: transform 0.28s ease-out;
         will-change: transform;
@@ -1193,12 +1216,7 @@
         border-radius: inherit;
         box-shadow: none;
         pointer-events: none;
-        background: linear-gradient(
-            180deg,
-            transparent,
-            rgba(var(--a-rgb), 0.24) 50%,
-            transparent
-          )
+        background: linear-gradient(180deg, transparent, rgba(var(--a-rgb), 0.24) 50%, transparent)
           no-repeat;
         background-size: 100% 36%;
         background-position: 0 -60%;
@@ -1244,13 +1262,7 @@
         font-family: var(--fd);
         font-weight: 700;
         letter-spacing: -0.02em;
-        background: linear-gradient(
-          100deg,
-          #fff 15%,
-          var(--a1) 42%,
-          #d8ccff 62%,
-          #fff 85%
-        );
+        background: linear-gradient(100deg, #fff 15%, var(--a1) 42%, #d8ccff 62%, #fff 85%);
         background-size: 260% 100%;
         -webkit-background-clip: text;
         background-clip: text;
@@ -1344,11 +1356,7 @@
         position: absolute;
         inset: 6%;
         border-radius: 50%;
-        background: radial-gradient(
-          circle,
-          rgba(var(--a-rgb), 0.28),
-          transparent 68%
-        );
+        background: radial-gradient(circle, rgba(var(--a-rgb), 0.28), transparent 68%);
         animation: breathe 4s ease-in-out infinite;
       }
       .reactor::after {
@@ -1537,12 +1545,7 @@
         content: "";
         position: absolute;
         inset: 0;
-        background: linear-gradient(
-          90deg,
-          transparent,
-          rgba(255, 255, 255, 0.7),
-          transparent
-        );
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
         transform: translateX(-100%);
         animation: shimmer 2.6s ease-in-out infinite;
       }
@@ -1564,12 +1567,7 @@
         margin: 0 0 6px;
         border-radius: 18px;
         background:
-          linear-gradient(
-            120deg,
-            rgba(var(--a-rgb), 0.1),
-            rgba(139, 92, 246, 0.07)
-          ),
-          var(--panel);
+          linear-gradient(120deg, rgba(var(--a-rgb), 0.1), rgba(139, 92, 246, 0.07)), var(--panel);
         border: 1px solid rgba(var(--a-rgb), 0.28);
         box-shadow: var(--shadow);
       }
@@ -1640,10 +1638,7 @@
         border-radius: 50%;
         display: grid;
         place-items: center;
-        background: conic-gradient(
-          var(--a1) calc(var(--p) * 1%),
-          rgba(255, 255, 255, 0.09) 0
-        );
+        background: conic-gradient(var(--a1) calc(var(--p) * 1%), rgba(255, 255, 255, 0.09) 0);
         transition: --p 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
         filter: drop-shadow(0 0 6px rgba(var(--a-rgb), 0.45));
       }
@@ -2406,8 +2401,7 @@
           animation-timing-function: cubic-bezier(0.1, 0.8, 0.3, 1);
         }
         38% {
-          transform: translate3d(calc(var(--dx) * 0.7), var(--dy), 0)
-            rotate(calc(var(--rot) * 0.5));
+          transform: translate3d(calc(var(--dx) * 0.7), var(--dy), 0) rotate(calc(var(--rot) * 0.5));
           opacity: 1;
           animation-timing-function: cubic-bezier(0.5, 0, 1, 1);
         }
@@ -2607,8 +2601,7 @@
         padding: 18px 14px 14px;
         border-radius: 24px;
         background:
-          linear-gradient(180deg, rgba(var(--a-rgb), 0.09), transparent 38%),
-          rgba(8, 13, 28, 0.84);
+          linear-gradient(180deg, rgba(var(--a-rgb), 0.09), transparent 38%), rgba(8, 13, 28, 0.84);
         border: 1px solid var(--line);
         -webkit-backdrop-filter: blur(18px) saturate(1.4);
         backdrop-filter: blur(18px) saturate(1.4);
@@ -2998,8 +2991,7 @@
           font-size: 18px;
         }
         .shell {
-          padding: max(14px, env(safe-area-inset-top))
-            max(14px, env(safe-area-inset-right)) 96px
+          padding: max(14px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) 96px
             max(14px, env(safe-area-inset-left));
         }
         .dock {
@@ -3245,25 +3237,14 @@
       <div class="sb-brand">
         <span class="hud-logo" aria-hidden="true"></span>
         <div>
-          <b>CST Matrix</b
-          ><small
-            ><i class="live" aria-hidden="true"></i>Study system online</small
-          >
+          <b>CST Matrix</b><small><i class="live" aria-hidden="true"></i>Study system online</small>
         </div>
         <button class="sb-x" id="sbClose" aria-label="Close menu">✕</button>
       </div>
-      <div
-        class="sb-card"
-        title="Experience: 10 xp per task, 50 per chapter, 25 per focus session"
-      >
+      <div class="sb-card" title="Experience: 10 xp per task, 50 per chapter, 25 per focus session">
         <div class="sb-row">
           <span class="lv" id="hudLv">Lv 1</span
-          ><span
-            class="chip"
-            id="hudStreak"
-            title="Days in a row with a checked task"
-            >🔥 0</span
-          >
+          ><span class="chip" id="hudStreak" title="Days in a row with a checked task">🔥 0</span>
         </div>
         <div class="xp"><i id="hudXp"></i></div>
         <span class="xpn" id="hudXpn">0/60 xp</span>
@@ -3276,10 +3257,7 @@
           <span class="ic" aria-hidden="true">▸</span>Next up
         </button>
         <button class="sb-i" data-nav="hall">
-          <span class="ic" aria-hidden="true">✦</span>Achievements<em
-            id="sbHallN"
-            >0/10</em
-          >
+          <span class="ic" aria-hidden="true">✦</span>Achievements<em id="sbHallN">0/10</em>
         </button>
         <button class="sb-i" data-nav="focus">
           <span class="ic" aria-hidden="true">◔</span>Focus timer
@@ -3346,55 +3324,33 @@
     </button>
     <div class="shell">
       <div class="mbar">
-        <button
-          class="btn"
-          id="mbMenu"
-          aria-label="Open menu"
-          aria-controls="sb"
-        >
-          ☰</button
+        <button class="btn" id="mbMenu" aria-label="Open menu" aria-controls="sb">☰</button
         ><b>CST Matrix</b><span class="lvchip" id="mbLv">Lv 1</span>
       </div>
       <div id="dashView">
         <header class="hero">
           <div class="hero-copy">
-            <div class="eyebrow" id="eb">
-              Personal learning dashboard · 2026
-            </div>
+            <div class="eyebrow" id="eb">Personal learning dashboard · 2026</div>
             <h1 id="ttl">CST Semester Study Matrix</h1>
             <p id="dsc">
-              A practical chapter-by-chapter tracker for your Mid-Term and
-              Semester Final. Track question types, study tasks, revisions, and
-              self-tests in one place.
+              A practical chapter-by-chapter tracker for your Mid-Term and Semester Final. Track
+              question types, study tasks, revisions, and self-tests in one place.
             </p>
             <div class="hero-meta" id="heroMeta">
-              <span class="pill"
-                ><span class="dot"></span> Mid-Term target · 01 Dec 2026</span
-              >
+              <span class="pill"><span class="dot"></span> Mid-Term target · 01 Dec 2026</span>
               <span class="pill">6 subjects</span>
               <span class="pill">Graphics Design excluded</span>
               <span class="pill">Goal · 80% coverage</span>
             </div>
-            <div
-              class="count"
-              id="count"
-              aria-label="Time left until the Mid-Term target"
-            >
+            <div class="count" id="count" aria-label="Time left until the Mid-Term target">
               <div class="cu"><b id="cD">00</b><small>days</small></div>
               <div class="cu"><b id="cH">00</b><small>hours</small></div>
               <div class="cu"><b id="cM">00</b><small>min</small></div>
               <div class="cu"><b id="cS">00</b><small>sec</small></div>
-              <span class="count-note" id="cNote"
-                >until the Mid-Term target</span
-              >
+              <span class="count-note" id="cNote">until the Mid-Term target</span>
             </div>
           </div>
-          <div
-            class="reactor"
-            id="reactor"
-            role="img"
-            aria-label="Overall coverage"
-          >
+          <div class="reactor" id="reactor" role="img" aria-label="Overall coverage">
             <svg viewBox="0 0 220 220" aria-hidden="true">
               <defs>
                 <linearGradient id="rg" x1="0" y1="0" x2="1" y2="1">
@@ -3409,30 +3365,14 @@
                 <circle cx="110" cy="110" r="97" class="rx-ticks" />
               </g>
               <circle cx="110" cy="110" r="84" class="rx-track" />
-              <circle
-                cx="110"
-                cy="110"
-                r="84"
-                class="rx-arc"
-                id="rxArc"
-                stroke="url(#rg)"
-              />
+              <circle cx="110" cy="110" r="84" class="rx-arc" id="rxArc" stroke="url(#rg)" />
               <circle cx="110" cy="110" r="66" class="rx-track2" />
               <circle cx="110" cy="110" r="66" class="rx-arc2" id="rxArc2" />
               <g class="rx-goal" id="rxGoal">
-                <rect
-                  x="108.5"
-                  y="17"
-                  width="3"
-                  height="18"
-                  rx="1.5"
-                  fill="#ffd24a"
-                />
+                <rect x="108.5" y="17" width="3" height="18" rx="1.5" fill="#ffd24a" />
               </g>
             </svg>
-            <div class="rx-core">
-              <b id="rxPct">0%</b><span id="rxLbl">Level 1, Rookie</span>
-            </div>
+            <div class="rx-core"><b id="rxPct">0%</b><span id="rxLbl">Level 1, Rookie</span></div>
           </div>
         </header>
 
@@ -3499,28 +3439,9 @@
             <option value="all">All subjects</option>
           </select>
           <div class="tabs" role="tablist" aria-label="Syllabus filter">
-            <button
-              class="tab active"
-              data-scope="all"
-              role="tab"
-              aria-selected="true"
-            >
-              All
-            </button>
-            <button
-              class="tab"
-              data-scope="mid"
-              role="tab"
-              aria-selected="false"
-            >
-              Mid-Term
-            </button>
-            <button
-              class="tab"
-              data-scope="extra"
-              role="tab"
-              aria-selected="false"
-            >
+            <button class="tab active" data-scope="all" role="tab" aria-selected="true">All</button>
+            <button class="tab" data-scope="mid" role="tab" aria-selected="false">Mid-Term</button>
+            <button class="tab" data-scope="extra" role="tab" aria-selected="false">
               Final Extra
             </button>
           </div>
@@ -3530,18 +3451,14 @@
         </div>
 
         <div class="notice" id="noticeBox">
-          <strong>How completion works:</strong> Every chapter has 4
-          question-preparation tasks and 4 study-workflow tasks. A chapter
-          counts as complete only when all 8 are checked. The Mid-Term ranges
-          for subjects other than Mathematics-III are estimates—confirm them
-          against your college syllabus.
+          <strong>How completion works:</strong> Every chapter has 4 question-preparation tasks and
+          4 study-workflow tasks. A chapter counts as complete only when all 8 are checked. The
+          Mid-Term ranges for subjects other than Mathematics-III are estimates—confirm them against
+          your college syllabus.
         </div>
         <main id="matrix"></main>
         <div class="footer">
-          <span id="ftxt"
-            >Progress is saved automatically in this browser on this
-            device.</span
-          >
+          <span id="ftxt">Progress is saved automatically in this browser on this device.</span>
           <button class="btn ghost" id="resetBtn">Reset all progress</button>
         </div>
       </div>
@@ -3550,16 +3467,14 @@
           <div>
             <h1>Admin panel</h1>
             <p>
-              Subject, chapter, task, text — সব এখান থেকে add / edit / delete
-              করো। Auto-save হয়।
+              Subject, chapter, task, text — সব এখান থেকে add / edit / delete করো। Auto-save হয়।
             </p>
           </div>
           <button class="btn primary" id="backBtn">← Back to dashboard</button>
         </div>
         <div class="tabs atabs" role="tablist">
           <button class="tab active" data-atab="general">General</button
-          ><button class="tab" data-atab="subjects">
-            Subjects &amp; Chapters</button
+          ><button class="tab" data-atab="subjects">Subjects &amp; Chapters</button
           ><button class="tab" data-atab="tasks">Tasks</button
           ><button class="tab" data-atab="data">Backup / Reset</button>
         </div>
@@ -3567,12 +3482,7 @@
       </section>
     </div>
     <div class="ov" id="palette" aria-hidden="true">
-      <div
-        class="pal"
-        role="dialog"
-        aria-modal="true"
-        aria-label="Command palette"
-      >
+      <div class="pal" role="dialog" aria-modal="true" aria-label="Command palette">
         <div class="pal-in">
           <span aria-hidden="true">⌕</span
           ><input
@@ -3586,18 +3496,12 @@
         </div>
         <ul id="palList" role="listbox"></ul>
         <div class="pal-foot">
-          <span>↑ ↓ to move</span><span>Enter to run</span
-          ><span>Esc to close</span>
+          <span>↑ ↓ to move</span><span>Enter to run</span><span>Esc to close</span>
         </div>
       </div>
     </div>
     <div class="ov" id="hallModal" aria-hidden="true">
-      <div
-        class="hall"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="hallTitle"
-      >
+      <div class="hall" role="dialog" aria-modal="true" aria-labelledby="hallTitle">
         <div class="hall-top">
           <h2 id="hallTitle">Achievements</h2>
           <button class="btn sm" id="hallClose">Close</button>
@@ -3633,12 +3537,7 @@
         </div>
         <p class="dk-note" id="dkNote"></p>
       </div>
-      <button
-        class="dock-fab"
-        id="dkFab"
-        aria-expanded="false"
-        aria-label="Focus timer"
-      >
+      <button class="dock-fab" id="dkFab" aria-expanded="false" aria-label="Focus timer">
         <svg viewBox="0 0 44 44" aria-hidden="true">
           <circle class="tr" cx="22" cy="22" r="19" />
           <circle
@@ -3663,10 +3562,7 @@
     >
       <div class="modal">
         <h2 id="exportTitle">Export your checklist</h2>
-        <p>
-          Copy this text into your notes or keep a backup of your current
-          progress.
-        </p>
+        <p>Copy this text into your notes or keep a backup of your current progress.</p>
         <textarea id="exportText" readonly></textarea>
         <div class="modal-actions">
           <button class="btn" id="closeExport">Close</button
@@ -3796,8 +3692,7 @@
         { id: "selfTest", label: "Self-exam" },
       ];
       const DATA_KEY = "cst-study-data-v2";
-      const uid = () =>
-        "x" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+      const uid = () => "x" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
       function defaults() {
         return {
           cfg: {
@@ -3810,8 +3705,7 @@
             noticeHead: "How completion works:",
             notice:
               "Every chapter has 4 question-preparation tasks and 4 study-workflow tasks. A chapter counts as complete only when all 8 are checked. The Mid-Term ranges for subjects other than Mathematics-III are estimates—confirm them against your college syllabus.",
-            footer:
-              "Progress is saved automatically in this browser on this device.",
+            footer: "Progress is saved automatically in this browser on this device.",
           },
           subjects: RAW.map((s, si) => ({
             id: "s" + si,
@@ -3829,12 +3723,7 @@
       let D;
       try {
         D = JSON.parse(localStorage.getItem(DATA_KEY));
-        if (
-          !D ||
-          !Array.isArray(D.subjects) ||
-          !Array.isArray(D.q) ||
-          !Array.isArray(D.s)
-        )
+        if (!D || !Array.isArray(D.subjects) || !Array.isArray(D.q) || !Array.isArray(D.s))
           D = defaults();
       } catch (e) {
         D = defaults();
@@ -3883,9 +3772,7 @@
         return state[taskKey(chapterId, taskId)] === true;
       }
       function chapterTaskCount(c) {
-        return [...questionTasks, ...studyTasks].filter((t) =>
-          isChecked(c.id, t.id),
-        ).length;
+        return [...questionTasks, ...studyTasks].filter((t) => isChecked(c.id, t.id)).length;
       }
       function chapterComplete(c) {
         return T() > 0 && chapterTaskCount(c) === T();
@@ -3913,12 +3800,9 @@
         const subject = $("subjectFilter").value;
         const filtered = allChapters.filter((c) => {
           const scopeMatch =
-            scope === "all" ||
-            (scope === "mid" && c.isMid) ||
-            (scope === "extra" && !c.isMid);
+            scope === "all" || (scope === "mid" && c.isMid) || (scope === "extra" && !c.isMid);
           const subjectMatch = subject === "all" || c.subject === subject;
-          const searchMatch =
-            !query || (c.subject + " " + c.title).toLowerCase().includes(query);
+          const searchMatch = !query || (c.subject + " " + c.title).toLowerCase().includes(query);
           return scopeMatch && subjectMatch && searchMatch;
         });
         const root = $("matrix");
@@ -3954,8 +3838,7 @@
           grid.className = "chapters";
           group.chapters.forEach((c) => {
             const card = document.createElement("article");
-            card.className =
-              "chapter" + (chapterComplete(c) ? " complete" : "");
+            card.className = "chapter" + (chapterComplete(c) ? " complete" : "");
             const top = document.createElement("div");
             top.className = "chapter-top";
             const num = document.createElement("div");
@@ -3968,9 +3851,7 @@
             title.textContent = c.title;
             const sub = document.createElement("div");
             sub.className = "chapter-sub";
-            sub.textContent = c.isMid
-              ? "Mid-Term syllabus (estimated)"
-              : "Final extra syllabus";
+            sub.textContent = c.isMid ? "Mid-Term syllabus (estimated)" : "Final extra syllabus";
             titleWrap.append(title, sub);
             const status = document.createElement("span");
             status.className = "status" + (chapterComplete(c) ? " done" : "");
@@ -4030,10 +3911,7 @@
         toast.textContent = message;
         toast.classList.add("show");
         clearTimeout(showToast.timer);
-        showToast.timer = setTimeout(
-          () => toast.classList.remove("show"),
-          1900,
-        );
+        showToast.timer = setTimeout(() => toast.classList.remove("show"), 1900);
       }
       function exportData() {
         const lines = [
@@ -4050,9 +3928,7 @@
                 `${chapterComplete(c) ? "[x]" : "[ ]"} ${c.index}. ${c.title} (${c.isMid ? "Mid-Term" : "Final extra"})`,
               );
               [...questionTasks, ...studyTasks].forEach((t) =>
-                lines.push(
-                  `   ${isChecked(c.id, t.id) ? "[x]" : "[ ]"} ${t.label}`,
-                ),
+                lines.push(`   ${isChecked(c.id, t.id) ? "[x]" : "[ ]"} ${t.label}`),
               );
             });
           lines.push("");
@@ -4089,12 +3965,9 @@
         $("exportText").value = exportData();
         $("exportModal").classList.add("open");
       });
-      $("closeExport").addEventListener("click", () =>
-        $("exportModal").classList.remove("open"),
-      );
+      $("closeExport").addEventListener("click", () => $("exportModal").classList.remove("open"));
       $("exportModal").addEventListener("click", (e) => {
-        if (e.target === $("exportModal"))
-          $("exportModal").classList.remove("open");
+        if (e.target === $("exportModal")) $("exportModal").classList.remove("open");
       });
       $("copyExport").addEventListener("click", async () => {
         try {
@@ -4171,9 +4044,7 @@
       function renderAdmin() {
         document
           .querySelectorAll("[data-atab]")
-          .forEach((b) =>
-            b.classList.toggle("active", b.dataset.atab === aTab),
-          );
+          .forEach((b) => b.classList.toggle("active", b.dataset.atab === aTab));
         let h = "";
         if (aTab === "general") {
           const F = [
@@ -4248,10 +4119,7 @@
         const t = e.target,
           d = t.dataset;
         if (d.cfg !== undefined)
-          D.cfg[d.cfg] =
-            d.cfg === "goal"
-              ? Math.max(0, Math.min(100, +t.value || 0))
-              : t.value;
+          D.cfg[d.cfg] = d.cfg === "goal" ? Math.max(0, Math.min(100, +t.value || 0)) : t.value;
         else if (d.sn) fS(d.sn).name = t.value;
         else if (d.ct) fC(d.ct).title = t.value;
         else if (d.cm) fC(d.cm).mid = t.checked;
@@ -4408,11 +4276,7 @@
         const LITE = () => !!S.lite || RM;
         const pad = (n) => String(n).padStart(2, "0");
         const dayKey = (d = new Date()) =>
-          d.getFullYear() +
-          "-" +
-          pad(d.getMonth() + 1) +
-          "-" +
-          pad(d.getDate());
+          d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
         const RANKS = [
           "Rookie",
           "Cadet",
@@ -4483,9 +4347,7 @@
           if (!open.length) return null;
           const mid = open.filter((c) => c.isMid),
             pool = mid.length ? mid : open;
-          return pool
-            .slice()
-            .sort((a, b) => chapterTaskCount(b) - chapterTaskCount(a))[0];
+          return pool.slice().sort((a, b) => chapterTaskCount(b) - chapterTaskCount(a))[0];
         }
 
         /* ---------- small helpers ---------- */
@@ -4524,9 +4386,7 @@
             const dx = big
               ? (Math.random() * 2 - 1) * (120 + Math.random() * 240)
               : Math.cos(a) * (26 + Math.random() * 46);
-            const dy = big
-              ? -(110 + Math.random() * 250)
-              : Math.sin(a) * (26 + Math.random() * 46);
+            const dy = big ? -(110 + Math.random() * 250) : Math.sin(a) * (26 + Math.random() * 46);
             p.style.cssText = `left:${x}px;top:${y}px;--dx:${dx}px;--dy:${dy}px;--fall:${280 + Math.random() * 320}px;--rot:${Math.random() * 900 - 450}deg;--c:${COLORS[i % COLORS.length]};--d:${big ? 1500 + Math.random() * 900 : 480 + Math.random() * 320}ms`;
             p.addEventListener("animationend", () => p.remove(), {
               once: true,
@@ -4542,9 +4402,7 @@
                 card.parentElement &&
                 card.parentElement.previousElementSibling &&
                 card.parentElement.previousElementSibling.querySelector("h2");
-            return (
-              t && h && t.textContent === c.title && h.textContent === c.subject
-            );
+            return t && h && t.textContent === c.title && h.textContent === c.subject;
           });
         }
         function jumpTo(c) {
@@ -4603,12 +4461,9 @@
             t: "Subject cleared",
             d: "Complete every chapter of a subject",
             ok: () => {
-              const ids = new Set(
-                allChapters.filter(chapterComplete).map((c) => c.id),
-              );
+              const ids = new Set(allChapters.filter(chapterComplete).map((c) => c.id));
               return subjects.some(
-                (s) =>
-                  s.chapters.length && s.chapters.every((c) => ids.has(c.id)),
+                (s) => s.chapters.length && s.chapters.every((c) => ids.has(c.id)),
               );
             },
           },
@@ -4694,22 +4549,13 @@
           /* numbers */
           countTo($("totalChapters"), allChapters.length);
           countTo($("completedChapters"), m.completed);
-          countTo(
-            $("taskProgress"),
-            Math.round(m.pct),
-            (v) => Math.round(v) + "%",
-          );
+          countTo($("taskProgress"), Math.round(m.pct), (v) => Math.round(v) + "%");
           countTo($("rxPct"), Math.round(m.pct), (v) => Math.round(v) + "%");
-          $("overallBar").parentElement.style.setProperty(
-            "--goal",
-            D.cfg.goal + "%",
-          );
+          $("overallBar").parentElement.style.setProperty("--goal", D.cfg.goal + "%");
           /* reactor */
-          $("rxArc").style.strokeDashoffset =
-            527.8 * (1 - Math.min(1, m.pct / 100));
+          $("rxArc").style.strokeDashoffset = 527.8 * (1 - Math.min(1, m.pct / 100));
           $("rxArc2").style.strokeDashoffset =
-            414.7 *
-            (1 - (allChapters.length ? m.completed / allChapters.length : 0));
+            414.7 * (1 - (allChapters.length ? m.completed / allChapters.length : 0));
           $("rxGoal").style.setProperty("--goal", D.cfg.goal);
           $("rxLbl").textContent = `Level ${m.level}, ${rank(m.level)}`;
           $("reactor").setAttribute(
@@ -4743,9 +4589,7 @@
           }
           drawBars();
           /* celebrate new chapter completions caused by a real click */
-          const ids = new Set(
-            allChapters.filter(chapterComplete).map((c) => c.id),
-          );
+          const ids = new Set(allChapters.filter(chapterComplete).map((c) => c.id));
           if (prevComplete && Date.now() - lastToggleAt < 900) {
             allChapters
               .filter((c) => ids.has(c.id) && !prevComplete.has(c.id))
@@ -4766,8 +4610,7 @@
           const fresh = ACH.filter((a) => !S.ach.includes(a.id) && a.ok(m));
           if (fresh.length) {
             fresh.forEach((a) => S.ach.push(a.id));
-            if (S.achInit)
-              fresh.forEach((a) => later("Achievement unlocked: " + a.t));
+            if (S.achInit) fresh.forEach((a) => later("Achievement unlocked: " + a.t));
           }
           if (!S.achInit || fresh.length) {
             S.achInit = true;
@@ -4786,9 +4629,7 @@
             const name = h.querySelector("h2")?.textContent,
               cs = allChapters.filter((c) => c.subject === name);
             const tot = cs.length * (T() || 1) || 1,
-              p = Math.round(
-                (cs.reduce((n, c) => n + chapterTaskCount(c), 0) / tot) * 100,
-              );
+              p = Math.round((cs.reduce((n, c) => n + chapterTaskCount(c), 0) / tot) * 100);
             const right = document.createElement("div");
             right.className = "sh-right";
             const ring = document.createElement("span");
@@ -4845,9 +4686,7 @@
           ticking = false;
           if (!pe) return;
           const e = pe,
-            t = e.target.closest
-              ? e.target.closest(".stat,.chapter,.mission,.reactor")
-              : null;
+            t = e.target.closest ? e.target.closest(".stat,.chapter,.mission,.reactor") : null;
           if (t !== cur) {
             if (cur) cur.style.transform = "";
             cur = t;
@@ -4894,8 +4733,7 @@
         function closeOv(el) {
           el.classList.remove("show");
           el.setAttribute("aria-hidden", "true");
-          if (lastFocus && lastFocus.focus)
-            lastFocus.focus({ preventScroll: true });
+          if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
           lastFocus = null;
         }
         ["palette", "hallModal"].forEach((id) =>
@@ -4915,8 +4753,7 @@
           palList = $("palList");
         let items = [],
           idx = 0;
-        const tab = (s) =>
-          document.querySelector(`[data-scope="${s}"]`).click();
+        const tab = (s) => document.querySelector(`[data-scope="${s}"]`).click();
         function commands() {
           return [
             {
@@ -4988,9 +4825,7 @@
           q = q.trim().toLowerCase();
           const toks = q.split(/\s+/).filter(Boolean),
             ok = (t) => toks.every((k) => t.includes(k));
-          const cm = commands().filter((x) =>
-            ok((x.t + " " + (x.s || "")).toLowerCase()),
-          );
+          const cm = commands().filter((x) => ok((x.t + " " + (x.s || "")).toLowerCase()));
           let ch = [];
           if (toks.length)
             ch = allChapters
@@ -5017,8 +4852,7 @@
           if (!items.length) {
             const li = document.createElement("li");
             li.className = "none";
-            li.textContent =
-              "No match. Try a chapter name, or a command such as focus or export.";
+            li.textContent = "No match. Try a chapter name, or a command such as focus or export.";
             palList.append(li);
             return;
           }
@@ -5108,17 +4942,12 @@
           $("dkTime").textContent = $("dkMini").textContent = fmtT(DK.left);
           $("dkArc").style.strokeDashoffset = 326.7 * (1 - f);
           $("dkMiniArc").style.strokeDashoffset = 119.4 * (1 - f);
-          $("dkGo").textContent = DK.run
-            ? "Pause"
-            : DK.left < DK.total
-              ? "Resume"
-              : "Start";
+          $("dkGo").textContent = DK.run ? "Pause" : DK.left < DK.total ? "Resume" : "Start";
           $("dock").classList.toggle("running", DK.run);
           $$("[data-m]").forEach((b) =>
             b.setAttribute("aria-pressed", String(+b.dataset.m === DK.mins)),
           );
-          $("dkNote").textContent =
-            `Today: ${S.focus[dayKey()] || 0} min focused`;
+          $("dkNote").textContent = `Today: ${S.focus[dayKey()] || 0} min focused`;
         }
         function dkStop() {
           DK.run = false;
@@ -5183,16 +5012,10 @@
           $("dock").classList.toggle("open", v);
           $("dkFab").setAttribute("aria-expanded", String(v));
         }
-        $("dkFab").addEventListener("click", () =>
-          dockOpen(!$("dock").classList.contains("open")),
-        );
-        $("dkGo").addEventListener("click", () =>
-          DK.run ? (dkStop(), dkDraw()) : dkStart(),
-        );
+        $("dkFab").addEventListener("click", () => dockOpen(!$("dock").classList.contains("open")));
+        $("dkGo").addEventListener("click", () => (DK.run ? (dkStop(), dkDraw()) : dkStart()));
         $("dkReset").addEventListener("click", () => dkSet(DK.mins));
-        $$("[data-m]").forEach((b) =>
-          b.addEventListener("click", () => dkSet(+b.dataset.m)),
-        );
+        $$("[data-m]").forEach((b) => b.addEventListener("click", () => dkSet(+b.dataset.m)));
         document.addEventListener("pointerdown", (e) => {
           if (!e.target.closest("#dock")) dockOpen(false);
         });
@@ -5201,9 +5024,7 @@
         function parseT(s) {
           let t = Date.parse(s);
           if (!isNaN(t)) return t;
-          const m = /(\d{1,2})\s+([A-Za-z]{3})[a-z]*\.?,?\s+(\d{4})/.exec(
-            s || "",
-          );
+          const m = /(\d{1,2})\s+([A-Za-z]{3})[a-z]*\.?,?\s+(\d{4})/.exec(s || "");
           if (m) {
             const i = [
               "jan",
@@ -5251,9 +5072,7 @@
           setU("cH", Math.floor(ms / 36e5) % 24);
           setU("cM", Math.floor(ms / 6e4) % 60);
           setU("cS", Math.floor(ms / 1e3) % 60);
-          $("cNote").textContent = past
-            ? "since the Mid-Term target"
-            : "until the Mid-Term target";
+          $("cNote").textContent = past ? "since the Mid-Term target" : "until the Mid-Term target";
         }
 
         /* ---------- keyboard ---------- */
@@ -5269,8 +5088,7 @@
           }
           if (e.key === "Escape") {
             if (pal.classList.contains("show")) closeOv(pal);
-            else if ($("hallModal").classList.contains("show"))
-              closeOv($("hallModal"));
+            else if ($("hallModal").classList.contains("show")) closeOv($("hallModal"));
             else if ($("exportModal").classList.contains("open"))
               $("exportModal").classList.remove("open");
             else if (root.classList.contains("sb-open")) closeSb();
@@ -5280,9 +5098,7 @@
           if (
             e.key === "/" &&
             !anyOv() &&
-            !/^(input|textarea|select)$/i.test(
-              document.activeElement.tagName,
-            ) &&
+            !/^(input|textarea|select)$/i.test(document.activeElement.tagName) &&
             !$("dashView").hidden
           ) {
             e.preventDefault();
@@ -5301,8 +5117,7 @@
         function closeSb(restore = true) {
           if (!root.classList.contains("sb-open")) return;
           root.classList.remove("sb-open");
-          if (restore && sbOpener && sbOpener.focus)
-            sbOpener.focus({ preventScroll: true });
+          if (restore && sbOpener && sbOpener.focus) sbOpener.focus({ preventScroll: true });
           sbOpener = null;
         }
         const NAV = {
@@ -5367,10 +5182,8 @@
           const d = sb.querySelector('[data-nav="dash"]'),
             a = sb.querySelector('[data-nav="admin"]');
           admin
-            ? (d.removeAttribute("aria-current"),
-              a.setAttribute("aria-current", "page"))
-            : (a.removeAttribute("aria-current"),
-              d.setAttribute("aria-current", "page"));
+            ? (d.removeAttribute("aria-current"), a.setAttribute("aria-current", "page"))
+            : (a.removeAttribute("aria-current"), d.setAttribute("aria-current", "page"));
         }
         function syncSeg() {
           $$("[data-sf]").forEach((b) =>
@@ -5383,9 +5196,7 @@
           syncNav();
         };
         $$("[data-scope]").forEach((b) => b.addEventListener("click", syncSeg));
-        $$("[data-sf]").forEach((b) =>
-          b.addEventListener("click", () => tab(b.dataset.sf)),
-        );
+        $$("[data-sf]").forEach((b) => b.addEventListener("click", () => tab(b.dataset.sf)));
 
         /* ---------- wiring + boot ---------- */
         $$(".sw button").forEach((b) =>
@@ -5401,9 +5212,7 @@
           dkSet(25);
           dkStart();
         });
-        $("hudK").querySelector("kbd").textContent = /Mac|iPhone|iPad/.test(
-          navigator.platform,
-        )
+        $("hudK").querySelector("kbd").textContent = /Mac|iPhone|iPad/.test(navigator.platform)
           ? "⌘K"
           : "Ctrl K";
         setAccent(S.accent);
@@ -5567,10 +5376,7 @@
             return false;
           }
         };
-        const uid = () =>
-          "h" +
-          Date.now().toString(36) +
-          Math.random().toString(36).slice(2, 6);
+        const uid = () => "h" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
         const today = () => {
           const d = new Date();
           d.setHours(0, 0, 0, 0);
@@ -5581,8 +5387,7 @@
           for (const [n, v] of Object.entries(a)) {
             if (n === "class") e.className = v;
             else if (n.startsWith("on")) e.addEventListener(n.slice(2), v);
-            else if (v !== false && v != null)
-              e.setAttribute(n, v === true ? "" : v);
+            else if (v !== false && v != null) e.setAttribute(n, v === true ? "" : v);
           }
           e.append(...k.filter((x) => x != null));
           return e;
@@ -5604,9 +5409,7 @@
           return { ef, int, rep };
         }
         const dueCards = () =>
-          H.cards
-            .filter((c) => c.due <= Date.now())
-            .sort((a, b) => a.due - b.due);
+          H.cards.filter((c) => c.due <= Date.now()).sort((a, b) => a.due - b.due);
         function rate(c, q) {
           const r = sm2(c, q);
           H.reviews.push({
@@ -5617,8 +5420,7 @@
             prev: c.int,
             next: r.int,
           });
-          if (H.reviews.length > 20000)
-            H.reviews.splice(0, H.reviews.length - 20000);
+          if (H.reviews.length > 20000) H.reviews.splice(0, H.reviews.length - 20000);
           Object.assign(c, r, { due: today() + r.int * DAY });
           save();
           badge();
@@ -5628,28 +5430,20 @@
         function readiness(x) {
           const sids = D.subjects.filter((s) => x.subs.includes(s.id));
           const ids = new Set(
-            sids.flatMap((s) =>
-              s.chapters.filter((c) => !x.midOnly || c.mid).map((c) => c.id),
-            ),
+            sids.flatMap((s) => s.chapters.filter((c) => !x.midOnly || c.mid).map((c) => c.id)),
           );
           const cs = allChapters.filter((c) => ids.has(c.id)),
             tot = cs.length * T();
           const done = cs.reduce((n, c) => n + chapterTaskCount(c), 0);
-          const cardIds = new Set(
-            H.cards.filter((c) => ids.has(c.cid)).map((c) => c.id),
-          );
-          const rv = H.reviews.filter(
-            (r) => cardIds.has(r.cardId) && r.t > Date.now() - 60 * DAY,
-          );
+          const cardIds = new Set(H.cards.filter((c) => ids.has(c.cid)).map((c) => c.id));
+          const rv = H.reviews.filter((r) => cardIds.has(r.cardId) && r.t > Date.now() - 60 * DAY);
           return {
             pct: tot ? Math.round((done / tot) * 100) : null,
             n: cs.length,
             rv: rv.length,
             recall:
               rv.length >= 5
-                ? Math.round(
-                    (rv.filter((r) => r.q >= 3).length / rv.length) * 100,
-                  )
+                ? Math.round((rv.filter((r) => r.q >= 3).length / rv.length) * 100)
                 : null,
           };
         }
@@ -5661,8 +5455,7 @@
           return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
         };
         const csv = (head, rows) =>
-          "\ufeff" +
-          [head, ...rows].map((r) => r.map(cell).join(",")).join("\r\n");
+          "\ufeff" + [head, ...rows].map((r) => r.map(cell).join(",")).join("\r\n");
         function dl(name, text, type) {
           const u = URL.createObjectURL(new Blob([text], { type }));
           const a = el("a", { href: u, download: name });
@@ -5675,15 +5468,7 @@
         const EXPORTS = {
           cards: () =>
             csv(
-              [
-                "id",
-                "chapter",
-                "front",
-                "back",
-                "interval_days",
-                "ease",
-                "due",
-              ],
+              ["id", "chapter", "front", "back", "interval_days", "ease", "due"],
               H.cards.map((c) => [
                 c.id,
                 (chap(c.cid) || {}).title || "",
@@ -5696,22 +5481,8 @@
             ),
           reviews: () =>
             csv(
-              [
-                "id",
-                "card_id",
-                "time",
-                "rating",
-                "prev_interval",
-                "next_interval",
-              ],
-              H.reviews.map((r) => [
-                r.id,
-                r.cardId,
-                iso(r.t),
-                r.q,
-                r.prev,
-                r.next,
-              ]),
+              ["id", "card_id", "time", "rating", "prev_interval", "next_interval"],
+              H.reviews.map((r) => [r.id, r.cardId, iso(r.t), r.q, r.prev, r.next]),
             ),
           exams: () =>
             csv(
@@ -5739,8 +5510,7 @@
             ),
         };
         function validate(o) {
-          if (!o || o.schema !== 1)
-            throw new Error("Not a Study hub backup (schema 1).");
+          if (!o || o.schema !== 1) throw new Error("Not a Study hub backup (schema 1).");
           const s = (v, m) => typeof v === "string" && v.length <= m,
             n = Number.isFinite;
           return {
@@ -5769,12 +5539,7 @@
               })),
             reviews: (o.reviews || [])
               .filter(
-                (r) =>
-                  r &&
-                  s(r.id, 40) &&
-                  s(r.cardId, 40) &&
-                  n(r.t) &&
-                  [1, 3, 4, 5].includes(r.q),
+                (r) => r && s(r.id, 40) && s(r.cardId, 40) && n(r.t) && [1, 3, 4, 5].includes(r.q),
               )
               .map((r) => ({
                 id: r.id,
@@ -5786,25 +5551,17 @@
               })),
             exams: (o.exams || [])
               .filter(
-                (x) =>
-                  x &&
-                  s(x.id, 40) &&
-                  s(x.name, 120) &&
-                  /^\d{4}-\d{2}-\d{2}$/.test(x.date),
+                (x) => x && s(x.id, 40) && s(x.name, 120) && /^\d{4}-\d{2}-\d{2}$/.test(x.date),
               )
               .map((x) => ({
                 id: x.id,
                 name: x.name,
                 type: s(x.type, 30) ? x.type : "Custom",
                 date: x.date,
-                priority: ["Low", "Normal", "High"].includes(x.priority)
-                  ? x.priority
-                  : "Normal",
+                priority: ["Low", "Normal", "High"].includes(x.priority) ? x.priority : "Normal",
                 target: Math.min(100, Math.max(0, +x.target || 80)),
                 midOnly: !!x.midOnly,
-                subs: Array.isArray(x.subs)
-                  ? x.subs.filter((v) => s(v, 80))
-                  : [],
+                subs: Array.isArray(x.subs) ? x.subs.filter((v) => s(v, 80)) : [],
               })),
           };
         }
@@ -5911,8 +5668,7 @@
             el("div", { style: "margin-top:14px" }, VIEWS[tab]()),
           );
         }
-        const field = (label, node) =>
-          el("label", { class: "fld" }, el("span", {}, label), node);
+        const field = (label, node) => el("label", { class: "fld" }, el("span", {}, label), node);
 
         function reviewView() {
           const w = el("div"),
@@ -5941,9 +5697,7 @@
                 "div",
                 { class: "empty" },
                 "All caught up. Next card is due " +
-                  new Date(
-                    Math.min(...H.cards.map((c) => c.due)),
-                  ).toLocaleDateString() +
+                  new Date(Math.min(...H.cards.map((c) => c.due))).toLocaleDateString() +
                   ".",
               ),
             );
@@ -5996,11 +5750,7 @@
             );
           else
             w.append(
-              el(
-                "p",
-                { class: "hint" },
-                "Try to recall the answer first, then flip the card.",
-              ),
+              el("p", { class: "hint" }, "Try to recall the answer first, then flip the card."),
             );
           return w;
         }
@@ -6020,11 +5770,7 @@
               ),
             ),
           );
-          const f = el(
-              "textarea",
-              { rows: 2, maxlength: 2000 },
-              ed ? ed.front : "",
-            ),
+          const f = el("textarea", { rows: 2, maxlength: 2000 }, ed ? ed.front : ""),
             b = el("textarea", { rows: 3, maxlength: 2000 }, ed ? ed.back : "");
           w.append(
             field("Chapter", sel),
@@ -6064,9 +5810,7 @@
                         created: Date.now(),
                         updated: Date.now(),
                       });
-                    showToast(
-                      ed ? "Card updated, review history kept" : "Card added",
-                    );
+                    showToast(ed ? "Card updated, review history kept" : "Card added");
                     editId = null;
                     save();
                     badge();
@@ -6100,9 +5844,7 @@
           const fill = () => {
             list.textContent = "";
             const k = qf.toLowerCase(),
-              m = H.cards.filter(
-                (c) => !k || (c.front + " " + c.back).toLowerCase().includes(k),
-              );
+              m = H.cards.filter((c) => !k || (c.front + " " + c.back).toLowerCase().includes(k));
             if (!m.length) {
               list.append(el("div", { class: "empty" }, "No matching cards."));
               return;
@@ -6140,11 +5882,7 @@
                     {
                       class: "btn sm danger",
                       onclick: () => {
-                        if (
-                          confirm(
-                            "Delete this card? Its review history stays in your data.",
-                          )
-                        ) {
+                        if (confirm("Delete this card? Its review history stays in your data.")) {
                           H.cards = H.cards.filter((x) => x.id !== c.id);
                           save();
                           badge();
@@ -6178,14 +5916,9 @@
           const type = el(
             "select",
             {},
-            ...[
-              "Mid-term",
-              "Final",
-              "Class test",
-              "Practical",
-              "Assignment",
-              "Custom",
-            ].map((t) => el("option", {}, t)),
+            ...["Mid-term", "Final", "Class test", "Practical", "Assignment", "Custom"].map((t) =>
+              el("option", {}, t),
+            ),
           );
           const pri = el(
             "select",
@@ -6209,12 +5942,7 @@
             field("Type", type),
             field("Priority", pri),
             field("Target syllabus completion %", tgt),
-            el(
-              "label",
-              { class: "check" },
-              mid,
-              el("span", {}, "Mid-Term chapters only"),
-            ),
+            el("label", { class: "check" }, mid, el("span", {}, "Mid-Term chapters only")),
             el("div", { class: "section-label" }, "Included subjects"),
             el(
               "div",
@@ -6235,9 +5963,7 @@
                       showToast("Add a name and date");
                       return;
                     }
-                    const ids = subs
-                      .filter((x) => x.cb.checked)
-                      .map((x) => x.s.id);
+                    const ids = subs.filter((x) => x.cb.checked).map((x) => x.s.id);
                     if (!ids.length) {
                       showToast("Pick at least one subject");
                       return;
@@ -6264,9 +5990,7 @@
           [...H.exams]
             .sort((a, b) => a.date.localeCompare(b.date))
             .forEach((x) => {
-              const left = Math.ceil(
-                  (new Date(x.date + "T00:00:00").getTime() - today()) / DAY,
-                ),
+              const left = Math.ceil((new Date(x.date + "T00:00:00").getTime() - today()) / DAY),
                 r = readiness(x);
               list.append(
                 el(
@@ -6356,12 +6080,7 @@
                   "button",
                   {
                     class: "btn",
-                    onclick: () =>
-                      dl(
-                        `cst-${k}.csv`,
-                        EXPORTS[k](),
-                        "text/csv;charset=utf-8",
-                      ),
+                    onclick: () => dl(`cst-${k}.csv`, EXPORTS[k](), "text/csv;charset=utf-8"),
                   },
                   l,
                 ),
@@ -6371,11 +6090,7 @@
                 {
                   class: "btn primary",
                   onclick: () =>
-                    dl(
-                      "cst-hub-backup.json",
-                      JSON.stringify(H, null, 1),
-                      "application/json",
-                    ),
+                    dl("cst-hub-backup.json", JSON.stringify(H, null, 1), "application/json"),
                 },
                 "Backup JSON",
               ),

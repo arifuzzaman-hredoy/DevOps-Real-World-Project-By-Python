@@ -43,10 +43,11 @@ settings. The deployment workflow accepts manual dispatch only with an immutable
 verify the previous image rollback target before an approved rollout.
 =======
 AWS EC2 Ubuntu host
-   |
-   +--> Nginx :80 --> Next.js frontend :3000 --> Node.js API :3001 --> PostgreSQL
-   |
-   +--> Prometheus scrapes backend /api/metrics --> Grafana dashboards
+|
++--> Nginx :80 --> Next.js frontend :3000 --> Node.js API :3001 --> PostgreSQL
+|
++--> Prometheus scrapes backend /api/metrics --> Grafana dashboards
+
 ```
 
 The local Compose stack mirrors the host stack. Nginx exposes the application on
@@ -56,3 +57,4 @@ initial AWS configuration is for learning only; use HTTPS, restricted admin
 access, managed secrets, backups, and a stronger production architecture before
 handling real user data.
 >>>>>>> integration/nextjs-main
+```

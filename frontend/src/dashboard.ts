@@ -1,7 +1,4 @@
-import type {
-  StudyData,
-  StudyTaskDefinition,
-} from "./types/study";
+import type { StudyData, StudyTaskDefinition } from "./types/study";
 
 export type Progress = Record<string, boolean>;
 export type ChapterStatus = "complete" | "in-progress" | "pending";
@@ -57,11 +54,7 @@ export interface DashboardAnalytics {
   examTasks: TaskCount[];
 }
 
-export function chapterTaskKey(
-  subjectIndex: number,
-  chapterIndex: number,
-  taskId: string,
-): string {
+export function chapterTaskKey(subjectIndex: number, chapterIndex: number, taskId: string): string {
   return `${subjectIndex}-${chapterIndex}::${taskId}`;
 }
 
@@ -115,11 +108,7 @@ function summarizeQuestionTasks(
     };
     for (const chapter of chapters) {
       category.total += 1;
-      if (progress[chapterTaskKey(
-        chapter.subjectIndex,
-        chapter.chapterIndex,
-        task.id,
-      )]) {
+      if (progress[chapterTaskKey(chapter.subjectIndex, chapter.chapterIndex, task.id)]) {
         category.completed += 1;
       }
     }
@@ -138,33 +127,25 @@ function matchingTaskCounts(
   return summarizeQuestionTasks(matching, chapters, progress);
 }
 
-export function buildDashboardAnalytics(
-  data: StudyData,
-  progress: Progress,
-): DashboardAnalytics {
+export function buildDashboardAnalytics(data: StudyData, progress: Progress): DashboardAnalytics {
   const questionTasks = data.q;
   const studyTasks = data.s;
   const tasks = [...studyTasks, ...questionTasks];
-  const effectiveTasks = tasks.length > 0
-    ? tasks
-    : [{ id: "study", label: "Study chapter" }];
+  const effectiveTasks = tasks.length > 0 ? tasks : [{ id: "study", label: "Study chapter" }];
 
-  const chapters: ChapterAnalytics[] = data.subjects.flatMap(
-    (subject, subjectIndex) => subject.chapters.map((chapter, chapterIndex) => {
+  const chapters: ChapterAnalytics[] = data.subjects.flatMap((subject, subjectIndex) =>
+    subject.chapters.map((chapter, chapterIndex) => {
       const completedTasks = effectiveTasks.reduce(
         (total, task) =>
-          total + Number(Boolean(progress[chapterTaskKey(
-            subjectIndex,
-            chapterIndex,
-            task.id,
-          )])),
+          total + Number(Boolean(progress[chapterTaskKey(subjectIndex, chapterIndex, task.id)])),
         0,
       );
-      const status: ChapterStatus = completedTasks === effectiveTasks.length
-        ? "complete"
-        : completedTasks > 0
-          ? "in-progress"
-          : "pending";
+      const status: ChapterStatus =
+        completedTasks === effectiveTasks.length
+          ? "complete"
+          : completedTasks > 0
+            ? "in-progress"
+            : "pending";
 
       return {
         subjectIndex,
@@ -179,27 +160,15 @@ export function buildDashboardAnalytics(
   );
 
   const subjects = data.subjects.map((subject, subjectIndex) => {
-    const subjectChapters = chapters.filter(
-      (chapter) => chapter.subjectIndex === subjectIndex,
-    );
+    const subjectChapters = chapters.filter((chapter) => chapter.subjectIndex === subjectIndex);
     const chapterIndexes = subjectChapters.map((chapter) => chapter.chapterIndex);
-    const subjectQuestionCounts = countTasks(
-      questionTasks,
-      subjectIndex,
-      chapterIndexes,
-      progress,
-    );
-    const nextChapter = subjectChapters.find(
-      (chapter) => chapter.status !== "complete",
-    );
-    const nextTask = nextChapter && effectiveTasks.find(
-      (task) =>
-        !progress[chapterTaskKey(
-          subjectIndex,
-          nextChapter.chapterIndex,
-          task.id,
-        )],
-    );
+    const subjectQuestionCounts = countTasks(questionTasks, subjectIndex, chapterIndexes, progress);
+    const nextChapter = subjectChapters.find((chapter) => chapter.status !== "complete");
+    const nextTask =
+      nextChapter &&
+      effectiveTasks.find(
+        (task) => !progress[chapterTaskKey(subjectIndex, nextChapter.chapterIndex, task.id)],
+      );
 
     return {
       subjectIndex,
@@ -207,95 +176,45 @@ export function buildDashboardAnalytics(
       name: subject.name,
       ...(typeof subject.code === "string" ? { code: subject.code } : {}),
       totalChapters: subjectChapters.length,
-      completedChapters: subjectChapters.filter(
-        (chapter) => chapter.status === "complete",
-      ).length,
-      inProgressChapters: subjectChapters.filter(
-        (chapter) => chapter.status === "in-progress",
-      ).length,
-      pendingChapters: subjectChapters.filter(
-        (chapter) => chapter.status === "pending",
-      ).length,
+      completedChapters: subjectChapters.filter((chapter) => chapter.status === "complete").length,
+      inProgressChapters: subjectChapters.filter((chapter) => chapter.status === "in-progress")
+        .length,
+      pendingChapters: subjectChapters.filter((chapter) => chapter.status === "pending").length,
       completion: completionPercent(
         subjectChapters.filter((chapter) => chapter.status === "complete").length,
         subjectChapters.length,
       ),
-      questionsCompleted: subjectQuestionCounts.reduce(
-        (total, task) => total + task.completed,
-        0,
-      ),
-      questionsTotal: subjectQuestionCounts.reduce(
-        (total, task) => total + task.total,
-        0,
-      ),
+      questionsCompleted: subjectQuestionCounts.reduce((total, task) => total + task.completed, 0),
+      questionsTotal: subjectQuestionCounts.reduce((total, task) => total + task.total, 0),
       ...(nextChapter && nextTask
         ? { nextAction: `${nextChapter.chapterTitle} · ${nextTask.label}` }
         : {}),
-      taskCounts: countTasks(
-        effectiveTasks,
-        subjectIndex,
-        chapterIndexes,
-        progress,
-      ),
+      taskCounts: countTasks(effectiveTasks, subjectIndex, chapterIndexes, progress),
     };
   });
 
-  const completedTasks = chapters.reduce(
-    (total, chapter) => total + chapter.completedTasks,
-    0,
-  );
-  const totalTasks = chapters.reduce(
-    (total, chapter) => total + chapter.totalTasks,
-    0,
-  );
-  const questionCategories = summarizeQuestionTasks(
-    questionTasks,
-    chapters,
-    progress,
-  );
+  const completedTasks = chapters.reduce((total, chapter) => total + chapter.completedTasks, 0);
+  const totalTasks = chapters.reduce((total, chapter) => total + chapter.totalTasks, 0);
+  const questionCategories = summarizeQuestionTasks(questionTasks, chapters, progress);
 
   return {
     subjects,
     chapters,
     totalChapters: chapters.length,
-    completedChapters: chapters.filter(
-      (chapter) => chapter.status === "complete",
-    ).length,
-    inProgressChapters: chapters.filter(
-      (chapter) => chapter.status === "in-progress",
-    ).length,
-    pendingChapters: chapters.filter(
-      (chapter) => chapter.status === "pending",
-    ).length,
+    completedChapters: chapters.filter((chapter) => chapter.status === "complete").length,
+    inProgressChapters: chapters.filter((chapter) => chapter.status === "in-progress").length,
+    pendingChapters: chapters.filter((chapter) => chapter.status === "pending").length,
     totalTasks,
     completedTasks,
     taskCompletion: completionPercent(completedTasks, totalTasks),
-    questionsTotal: questionCategories.reduce(
-      (total, category) => total + category.total,
-      0,
-    ),
+    questionsTotal: questionCategories.reduce((total, category) => total + category.total, 0),
     questionsCompleted: questionCategories.reduce(
       (total, category) => total + category.completed,
       0,
     ),
     questionCategories,
-    revisionTasks: matchingTaskCounts(
-      tasks,
-      chapters,
-      progress,
-      /revis|review/i,
-    ),
-    assignmentTasks: matchingTaskCounts(
-      tasks,
-      chapters,
-      progress,
-      /assign|practical/i,
-    ),
-    examTasks: matchingTaskCounts(
-      tasks,
-      chapters,
-      progress,
-      /exam|mock[\s_-]*test/i,
-    ),
+    revisionTasks: matchingTaskCounts(tasks, chapters, progress, /revis|review/i),
+    assignmentTasks: matchingTaskCounts(tasks, chapters, progress, /assign|practical/i),
+    examTasks: matchingTaskCounts(tasks, chapters, progress, /exam|mock[\s_-]*test/i),
   };
 }

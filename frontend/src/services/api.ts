@@ -12,10 +12,7 @@ export class ApiRequestError extends Error {
   }
 }
 
-async function request<T>(
-  path: string,
-  init: RequestInit = {},
-): Promise<T> {
+async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   const headers = new Headers(init.headers);
   headers.set("Accept", "application/json");
 

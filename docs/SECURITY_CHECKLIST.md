@@ -13,7 +13,6 @@
 - [ ] IAM permissions are least privilege; prefer roles over static access keys.
 - [ ] Backups are encrypted, off-host, and restore-tested.
 
-
 ## CST Study Matrix application controls
 
 - [ ] Configure unique `SECRET_KEY` (at least 32 random characters) and `STUDY_APP_PASSWORD` in the production environment.

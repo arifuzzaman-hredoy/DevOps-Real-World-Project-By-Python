@@ -14,7 +14,13 @@ services:
     restart: unless-stopped
     networks: [app-net]
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/api/ready', timeout=2)"]
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/api/ready', timeout=2)",
+        ]
       interval: 20s
       timeout: 4s
       retries: 5

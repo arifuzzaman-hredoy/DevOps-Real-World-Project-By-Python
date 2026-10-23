@@ -1,10 +1,5 @@
 import type { Progress } from "./dashboard";
-import type {
-  Chapter,
-  StudyData,
-  StudyTaskDefinition,
-  Subject,
-} from "./types/study";
+import type { Chapter, StudyData, StudyTaskDefinition, Subject } from "./types/study";
 
 export const DATA_KEY = "cst-study-data-v2";
 export const PROGRESS_KEY = "cst-study-matrix-v1";
@@ -14,14 +9,15 @@ export interface RecoveryBundle {
   progress?: Progress;
 }
 
-export function serializeRecoveryBundle(
-  data: StudyData,
-  progress: Progress,
-): string {
-  return JSON.stringify({
-    [DATA_KEY]: data,
-    [PROGRESS_KEY]: progress,
-  }, null, 2);
+export function serializeRecoveryBundle(data: StudyData, progress: Progress): string {
+  return JSON.stringify(
+    {
+      [DATA_KEY]: data,
+      [PROGRESS_KEY]: progress,
+    },
+    null,
+    2,
+  );
 }
 
 const DEFAULT_CONFIG: StudyData["cfg"] = {
@@ -41,11 +37,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 function isTask(value: unknown): value is StudyTaskDefinition {
-  return (
-    isRecord(value) &&
-    typeof value.id === "string" &&
-    typeof value.label === "string"
-  );
+  return isRecord(value) && typeof value.id === "string" && typeof value.label === "string";
 }
 
 function isChapter(value: unknown): value is Chapter {
@@ -110,11 +102,7 @@ export function parseStudyData(value: unknown): StudyData | null {
 function parseProgress(value: unknown): Progress | null {
   if (!isRecord(value)) return null;
   const entries = Object.entries(value);
-  if (
-    !entries.every(
-      (entry): entry is [string, boolean] => typeof entry[1] === "boolean",
-    )
-  ) {
+  if (!entries.every((entry): entry is [string, boolean] => typeof entry[1] === "boolean")) {
     return null;
   }
   return Object.fromEntries(entries);
@@ -131,9 +119,7 @@ export function parseRecoveryBundle(value: unknown): RecoveryBundle | null {
   const data = parseStudyData(dataValue);
   if (!data) return null;
 
-  const progressValue = Object.hasOwn(value, PROGRESS_KEY)
-    ? value[PROGRESS_KEY]
-    : value.progress;
+  const progressValue = Object.hasOwn(value, PROGRESS_KEY) ? value[PROGRESS_KEY] : value.progress;
   if (progressValue === undefined) return { data };
 
   const progress = parseProgress(progressValue);

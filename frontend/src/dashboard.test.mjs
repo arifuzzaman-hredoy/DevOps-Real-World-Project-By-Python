@@ -26,11 +26,7 @@ const { outputText: recoveryOutput } = ts.transpileModule(recoverySource, {
 const recoveryModule = await import(
   `data:text/javascript;base64,${Buffer.from(recoveryOutput).toString("base64")}`
 );
-const {
-  canRestorePlan,
-  parseRecoveryBundle,
-  serializeRecoveryBundle,
-} = recoveryModule;
+const { canRestorePlan, parseRecoveryBundle, serializeRecoveryBundle } = recoveryModule;
 
 const studyData = {
   cfg: {

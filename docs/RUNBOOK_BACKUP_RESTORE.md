@@ -5,22 +5,26 @@ This procedure is for the TaskFlow PostgreSQL database. Backups contain private
 study data and must be treated as sensitive data. Never store them in the Git
 working tree, print their contents, or attach them to an issue or chat.
 =======
+
 ## Backup
 
 ```bash
 mkdir -p backups
 docker compose -f devops/compose.yaml exec -T db pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB" > "backups/taskflow-$(date +%F-%H%M).sql"
 ```
->>>>>>> integration/nextjs-main
+
+> > > > > > > integration/nextjs-main
 
 ## Create and verify a production backup
 
 <<<<<<< HEAD
+
 1. Confirm the production database and available disk space. Schedule the backup
    during a low-write period. Record the time and the selected recovery point.
 2. Store the archive outside `/opt/taskflow`, in a directory restricted to the
    deployment operator:
-=======
+   =======
+
 ## Restore to a fresh database
 
 1. Stop writes / put the app into maintenance mode.
@@ -28,7 +32,8 @@ docker compose -f devops/compose.yaml exec -T db pg_dump -U "$POSTGRES_USER" "$P
 3. Restore with `psql -v ON_ERROR_STOP=1 -U USER -d DATABASE < backup.sql`.
 4. Verify task counts and sample records.
 5. Only then plan a production restore.
->>>>>>> integration/nextjs-main
+
+   > > > > > > > integration/nextjs-main
 
    ```bash
    set -Eeuo pipefail
@@ -40,10 +45,10 @@ docker compose -f devops/compose.yaml exec -T db pg_dump -U "$POSTGRES_USER" "$P
    partial_file="$backup_file.partial"
    ```
 
-3. Use PostgreSQL's custom archive format. `pg_dump` takes a consistent
-transaction snapshot while writes continue. Do not place credentials on the
-command line or print the Compose configuration. Write to a partial name so
-an interrupted dump is not mistaken for a complete backup:
+6. Use PostgreSQL's custom archive format. `pg_dump` takes a consistent
+   transaction snapshot while writes continue. Do not place credentials on the
+   command line or print the Compose configuration. Write to a partial name so
+   an interrupted dump is not mistaken for a complete backup:
 
    ```bash
    cd /opt/taskflow
@@ -59,7 +64,7 @@ an interrupted dump is not mistaken for a complete backup:
    chmod 600 "$backup_file" "$backup_file.sha256"
    ```
 
-4. Verify the archive by restoring it into a disposable PostgreSQL container
+7. Verify the archive by restoring it into a disposable PostgreSQL container
    on a private, internal-only Docker network. The database uses a temporary
    filesystem, not a volume. It does not connect to or alter production:
 
@@ -115,7 +120,8 @@ an interrupted dump is not mistaken for a complete backup:
    network carry the `taskflow.backup-restore-check=$stamp` label; remove only
    those two labeled resources with `docker rm -f "$restore_name"` and
    `docker network rm "$restore_network"`. Neither command removes a volume.
-5. Verify application compatibility against this restored disposable database
+
+8. Verify application compatibility against this restored disposable database
    using the exact candidate release image and temporary, generated-only test
    credentials. Attach the API test container to the same internal network,
    point it at `taskflow_recovery`, and check startup, health/readiness, login,
@@ -123,19 +129,19 @@ an interrupted dump is not mistaken for a complete backup:
    only this throwaway restored database; do not use production credentials or
    the production database. Remove only the labeled test API container after
    collecting its exit status and logs.
-6. Encrypt the archive with the organization's approved encryption tool and
+9. Encrypt the archive with the organization's approved encryption tool and
    transfer the encrypted copy to approved off-host storage. Verify its
    checksum after transfer. Keep the local copy until the off-host copy and
    restore test are verified.
-7. Apply the organization's approved retention schedule and record its owner,
-   retention deadline, and storage location. Never delete a backup if that
-   schedule or a valid replacement copy is uncertain. For secure deletion,
-   use approved encrypted-storage key destruction or the storage provider's
-   secure lifecycle/crypto-erasure procedure; ordinary `rm` or `shred` is not
-   proof of erasure on SSDs, snapshots, or cloud-backed storage. Record only
-   UTC timestamp, byte size, SHA-256, storage location, tool/image version,
-   retention deadline, and restore-test result. Do not record secrets or
-   study payloads.
+10. Apply the organization's approved retention schedule and record its owner,
+    retention deadline, and storage location. Never delete a backup if that
+    schedule or a valid replacement copy is uncertain. For secure deletion,
+    use approved encrypted-storage key destruction or the storage provider's
+    secure lifecycle/crypto-erasure procedure; ordinary `rm` or `shred` is not
+    proof of erasure on SSDs, snapshots, or cloud-backed storage. Record only
+    UTC timestamp, byte size, SHA-256, storage location, tool/image version,
+    retention deadline, and restore-test result. Do not record secrets or
+    study payloads.
 
 ## Recovery decision and restore
 

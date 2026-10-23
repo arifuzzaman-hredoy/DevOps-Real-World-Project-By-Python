@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+
 # TaskFlow — Academic Study Workspace
 
 TaskFlow is an academic Study Matrix and progress dashboard backed by a Flask API
@@ -72,8 +73,8 @@ curl http://127.0.0.1:8080/api/ready
 
 Open `http://127.0.0.1:8080` and sign in with the value in `.env` named `STUDY_APP_PASSWORD`.
 
-To stop the stack without deleting database data:
-=======
+# To stop the stack without deleting database data:
+
 # CST Semester Study Matrix
 
 A full-stack study-progress application built with Next.js, React, TypeScript,
@@ -104,7 +105,8 @@ site at port 8080, and PostgreSQL is not published to the host. Prometheus and
 Grafana are available on ports 9091 and 3001 respectively.
 
 To stop the stack without deleting data:
->>>>>>> integration/nextjs-main
+
+> > > > > > > integration/nextjs-main
 
 ```bash
 docker compose down
@@ -151,23 +153,23 @@ a separately reviewed, backed-up change.
 
 ## API
 
-| Method | Path | Purpose |
-|---|---|---|
-| GET | `/api/health` | Public liveness check |
-| GET | `/api/ready` | Public database readiness check |
-| GET | `/api/auth/csrf` | Create an anonymous login CSRF token |
-| POST | `/api/auth/login` | Sign in with password and login CSRF token |
-| POST | `/api/auth/logout` | Sign out (login + CSRF required) |
-| GET | `/api/csrf` | Authenticated mutation CSRF token |
-| GET | `/api/study/state` | Read persisted study documents (login required) |
-| PUT | `/api/study/state/<key>` | Save one allowed study document (login + CSRF required) |
+| Method | Path                     | Purpose                                                   |
+| ------ | ------------------------ | --------------------------------------------------------- |
+| GET    | `/api/health`            | Public liveness check                                     |
+| GET    | `/api/ready`             | Public database readiness check                           |
+| GET    | `/api/auth/csrf`         | Create an anonymous login CSRF token                      |
+| POST   | `/api/auth/login`        | Sign in with password and login CSRF token                |
+| POST   | `/api/auth/logout`       | Sign out (login + CSRF required)                          |
+| GET    | `/api/csrf`              | Authenticated mutation CSRF token                         |
+| GET    | `/api/study/state`       | Read persisted study documents (login required)           |
+| PUT    | `/api/study/state/<key>` | Save one allowed study document (login + CSRF required)   |
 | DELETE | `/api/study/state/<key>` | Delete one allowed study document (login + CSRF required) |
-| GET | `/api/metrics` | Internal Prometheus metrics |
+| GET    | `/api/metrics`           | Internal Prometheus metrics                               |
 
 Allowed study keys are `cst-study-data-v2`, `cst-study-matrix-v1`, `cst-hub-v1`, and `cst-fx-v1`. Requests are size-limited and arbitrary keys are rejected.
 
-Legacy `/api/tasks` endpoints and the `tasks` model remain temporarily for rollback compatibility. They are no longer used by the Study Matrix frontend. Do not drop the old table as part of this update; remove it only after verifying no other deployment or workflow depends on it and after taking a database backup.
-=======
+# Legacy `/api/tasks` endpoints and the `tasks` model remain temporarily for rollback compatibility. They are no longer used by the Study Matrix frontend. Do not drop the old table as part of this update; remove it only after verifying no other deployment or workflow depends on it and after taking a database backup.
+
 Do not use `docker compose down -v` unless you intend to delete the database
 and Grafana data volumes.
 
@@ -217,7 +219,8 @@ stable signing secret and a private study password; the development defaults
 must not be used for a public deployment.
 
 ## Project layout
->>>>>>> integration/nextjs-main
+
+> > > > > > > integration/nextjs-main
 
 - `frontend/` — Next.js app, API route handlers, and preserved matrix template
 - `compose.yaml`, `Dockerfile`, `docker/` — Node.js/PostgreSQL stack and Nginx
@@ -227,6 +230,7 @@ must not be used for a public deployment.
 - `docs/` — architecture, learning path, and operations runbooks
 
 <<<<<<< HEAD
+
 - `app/` — Flask app, API routes, SQLAlchemy models, and existing study UI
 - `tests/` — API, persistence, CSRF, and authentication checks
 - `docker/` — Nginx reverse-proxy configuration
@@ -243,8 +247,8 @@ Production-specific instructions are in [`docs/STUDY_MATRIX_DEPLOYMENT.md`](docs
 - Browser-local data is never migrated automatically; use the explicit empty-state recovery flow.
 - Existing PostgreSQL data is not dropped or rewritten by this update.
 - Existing `tasks` table and Docker volumes are retained for rollback.
-- Before production rollout, back up PostgreSQL and verify the new image locally. If old localStorage data is important, keep a JSON backup from the existing UI before switching versions.
-=======
+- # Before production rollout, back up PostgreSQL and verify the new image locally. If old localStorage data is important, keep a JSON backup from the existing UI before switching versions.
+
 ## Operations and safety
 
 This is a learning project, not a hardened production service. Review the
@@ -252,4 +256,5 @@ security checklist, production secrets, database backup/restore process,
 network exposure, TLS configuration, and rollback procedure before deploying.
 Terraform can create billable AWS resources; review every plan before applying.
 Never commit `.env`, Terraform state, credentials, or SSH private keys.
->>>>>>> integration/nextjs-main
+
+> > > > > > > integration/nextjs-main

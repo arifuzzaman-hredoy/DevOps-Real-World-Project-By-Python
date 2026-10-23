@@ -8,15 +8,8 @@ import {
   type FormEvent,
 } from "react";
 import "./App.css";
-import {
-  buildDashboardAnalytics,
-  chapterTaskKey,
-  type Progress,
-} from "./dashboard";
-import {
-  studyApi,
-  type StudyStateKey,
-} from "./services/api";
+import { buildDashboardAnalytics, chapterTaskKey, type Progress } from "./dashboard";
+import { studyApi, type StudyStateKey } from "./services/api";
 import {
   canRestorePlan,
   DATA_KEY,
@@ -26,19 +19,14 @@ import {
   serializeRecoveryBundle,
   type RecoveryBundle,
 } from "./recovery";
-import type {
-  Chapter,
-  StudyData,
-  StudyStateResponse,
-  StudyTaskDefinition,
-} from "./types/study";
+import type { Chapter, StudyData, StudyStateResponse, StudyTaskDefinition } from "./types/study";
 
 function parseProgress(value: unknown): Progress {
   if (!value || typeof value !== "object" || Array.isArray(value)) return {};
 
   return Object.fromEntries(
-    Object.entries(value).filter((entry): entry is [string, boolean] =>
-      typeof entry[1] === "boolean",
+    Object.entries(value).filter(
+      (entry): entry is [string, boolean] => typeof entry[1] === "boolean",
     ),
   );
 }
@@ -71,13 +59,16 @@ function LoginPage() {
 
   useEffect(() => {
     let active = true;
-    void studyApi.getLoginCsrf()
+    void studyApi
+      .getLoginCsrf()
       .then(({ csrf_token }) => {
         if (active) setCsrf(csrf_token);
       })
       .catch((caught: unknown) => {
         if (active) {
-          setError(caught instanceof Error ? caught.message : "Could not start a secure sign-in session.");
+          setError(
+            caught instanceof Error ? caught.message : "Could not start a secure sign-in session.",
+          );
         }
       })
       .finally(() => {
@@ -107,12 +98,20 @@ function LoginPage() {
       <section className="login-card" aria-labelledby="login-title">
         <a className="login-brand" href="/" aria-label="TaskFlow home">
           <span className="brand-mark">T</span>
-          <span>TaskFlow <small>ACADEMIC WORKSPACE</small></span>
+          <span>
+            TaskFlow <small>ACADEMIC WORKSPACE</small>
+          </span>
         </a>
         <p className="eyebrow">YOUR SEMESTER, IN FOCUS</p>
         <h1 id="login-title">Welcome back.</h1>
-        <p className="login-copy">Sign in to continue with your subjects, study plan, and saved progress.</p>
-        {error && <div className="notice error-notice" role="alert">{error}</div>}
+        <p className="login-copy">
+          Sign in to continue with your subjects, study plan, and saved progress.
+        </p>
+        {error && (
+          <div className="notice error-notice" role="alert">
+            {error}
+          </div>
+        )}
         <form className="login-form" onSubmit={(event) => void submit(event)}>
           <label htmlFor="study-password">Study app password</label>
           <input
@@ -124,11 +123,17 @@ function LoginPage() {
             required
             autoFocus
           />
-          <button className="primary-button login-submit" type="submit" disabled={loading || submitting || !csrf}>
+          <button
+            className="primary-button login-submit"
+            type="submit"
+            disabled={loading || submitting || !csrf}
+          >
             {loading ? "Preparing secure sign-in…" : submitting ? "Signing in…" : "Sign in"}
           </button>
         </form>
-        <p className="login-security">Your session is protected with a server-verified CSRF token.</p>
+        <p className="login-security">
+          Your session is protected with a server-verified CSRF token.
+        </p>
       </section>
     </main>
   );
@@ -208,9 +213,7 @@ function DashboardApp() {
       setServerPlanPresent(serverHasPlan);
       setServerProgressPresent(serverHasProgress);
       setLocalRecovery(localBundle);
-      setStateUpdatedAt(
-        remote.updated_at[PROGRESS_KEY] ?? remote.updated_at[DATA_KEY],
-      );
+      setStateUpdatedAt(remote.updated_at[PROGRESS_KEY] ?? remote.updated_at[DATA_KEY]);
       setStudyData(data);
       setProgress(savedProgress);
       setMessage(data ? "Your saved study plan is up to date." : "");
@@ -237,13 +240,10 @@ function DashboardApp() {
   }, [load]);
 
   const analytics = useMemo(
-    () => studyData ? buildDashboardAnalytics(studyData, progress) : null,
+    () => (studyData ? buildDashboardAnalytics(studyData, progress) : null),
     [studyData, progress],
   );
-  const tasks = useMemo(
-    () => studyData ? getTasks(studyData) : [],
-    [studyData],
-  );
+  const tasks = useMemo(() => (studyData ? getTasks(studyData) : []), [studyData]);
 
   const filteredSubjects = useMemo(() => {
     if (!studyData) return [];
@@ -265,19 +265,14 @@ function DashboardApp() {
               scope === "all" ||
               (scope === "mid" && chapter.mid) ||
               (scope === "extra" && !chapter.mid);
-            const matchesSubject =
-              !subjectFilter || subject.id === subjectFilter;
+            const matchesSubject = !subjectFilter || subject.id === subjectFilter;
             return matchesSearch && matchesScope && matchesSubject;
           }),
       }))
       .filter((subject) => subject.chapters.length > 0);
   }, [studyData, search, scope, subjectFilter]);
 
-  async function toggleTask(
-    subjectIndex: number,
-    chapterIndex: number,
-    taskId: string,
-  ) {
+  async function toggleTask(subjectIndex: number, chapterIndex: number, taskId: string) {
     if (!csrf || saving) return;
 
     const key = chapterTaskKey(subjectIndex, chapterIndex, taskId);
@@ -332,9 +327,7 @@ function DashboardApp() {
     }
   }
 
-  async function handleRecoveryFile(
-    event: ChangeEvent<HTMLInputElement>,
-  ) {
+  async function handleRecoveryFile(event: ChangeEvent<HTMLInputElement>) {
     const input = event.currentTarget;
     const file = input.files?.[0];
     input.value = "";
@@ -371,9 +364,7 @@ function DashboardApp() {
     if (!studyData) return;
     try {
       const backup = serializeRecoveryBundle(studyData, progress);
-      const url = URL.createObjectURL(
-        new Blob([backup], { type: "application/json" }),
-      );
+      const url = URL.createObjectURL(new Blob([backup], { type: "application/json" }));
       const link = document.createElement("a");
       link.href = url;
       link.download = "taskflow-study-backup.json";
@@ -400,7 +391,9 @@ function DashboardApp() {
         key={id}
         onClick={() => setActiveSection(id)}
       >
-        <span className="nav-icon" aria-hidden="true">{icon}</span>
+        <span className="nav-icon" aria-hidden="true">
+          {icon}
+        </span>
         <span>{label}</span>
       </a>
     );
@@ -415,8 +408,14 @@ function DashboardApp() {
           <p className="eyebrow">ACADEMIC WORKSPACE</p>
           <h1 id="load-error-title">Study data could not be loaded.</h1>
           <p>Check your connection and try again. No saved data was changed.</p>
-          {error && <div className="notice error-notice" role="alert">{error}</div>}
-          <button className="primary-button" onClick={() => void load()}>Retry loading</button>
+          {error && (
+            <div className="notice error-notice" role="alert">
+              {error}
+            </div>
+          )}
+          <button className="primary-button" onClick={() => void load()}>
+            Retry loading
+          </button>
         </section>
       </main>
     );
@@ -426,14 +425,28 @@ function DashboardApp() {
     return (
       <main className="empty-app">
         <section className="empty-state" aria-labelledby="empty-title">
-          <div className="empty-icon" aria-hidden="true">◈</div>
+          <div className="empty-icon" aria-hidden="true">
+            ◈
+          </div>
           <p className="eyebrow">ACADEMIC WORKSPACE</p>
-          <h1 id="empty-title">{serverPlanPresent ? "Your saved plan needs attention." : "Your study plan is waiting."}</h1>
-          <p>{serverPlanPresent
-            ? "The account contains saved plan data that this version cannot read. It has been preserved."
-            : "No study plan is saved in your account. Restore a verified browser copy or choose a Study Matrix JSON backup."}</p>
-          {error && <div className="notice error-notice" role="alert">{error}</div>}
-          {message && <div className="notice" role="status">{message}</div>}
+          <h1 id="empty-title">
+            {serverPlanPresent ? "Your saved plan needs attention." : "Your study plan is waiting."}
+          </h1>
+          <p>
+            {serverPlanPresent
+              ? "The account contains saved plan data that this version cannot read. It has been preserved."
+              : "No study plan is saved in your account. Restore a verified browser copy or choose a Study Matrix JSON backup."}
+          </p>
+          {error && (
+            <div className="notice error-notice" role="alert">
+              {error}
+            </div>
+          )}
+          {message && (
+            <div className="notice" role="status">
+              {message}
+            </div>
+          )}
           {!serverPlanPresent && localRecovery && (
             <button
               className="primary-button"
@@ -453,10 +466,17 @@ function DashboardApp() {
                 disabled={saving}
                 onChange={(event) => void handleRecoveryFile(event)}
               />
-              <p>Supported formats: a saved Study Matrix plan, or an object containing “cst-study-data-v2” and optionally “cst-study-matrix-v1”.</p>
+              <p>
+                Supported formats: a saved Study Matrix plan, or an object containing
+                “cst-study-data-v2” and optionally “cst-study-matrix-v1”.
+              </p>
             </div>
           )}
-          <button className="secondary-button" disabled={loading || saving} onClick={() => void load()}>
+          <button
+            className="secondary-button"
+            disabled={loading || saving}
+            onClick={() => void load()}
+          >
             Reload saved data
           </button>
         </section>
@@ -464,14 +484,8 @@ function DashboardApp() {
     );
   }
 
-  const chapterCompletion = percent(
-    analytics.completedChapters,
-    analytics.totalChapters,
-  );
-  const questionCompletion = percent(
-    analytics.questionsCompleted,
-    analytics.questionsTotal,
-  );
+  const chapterCompletion = percent(analytics.completedChapters, analytics.totalChapters);
+  const questionCompletion = percent(analytics.questionsCompleted, analytics.questionsTotal);
   const chapterStatuses = [
     { label: "Complete", count: analytics.completedChapters, className: "complete" },
     { label: "In progress", count: analytics.inProgressChapters, className: "in-progress" },
@@ -486,7 +500,10 @@ function DashboardApp() {
       <aside className="sidebar" aria-label="Main navigation">
         <a className="brand" href="#dashboard" aria-label="TaskFlow dashboard">
           <span className="brand-mark">T</span>
-          <span><strong>TaskFlow</strong><small>ACADEMIC WORKSPACE</small></span>
+          <span>
+            <strong>TaskFlow</strong>
+            <small>ACADEMIC WORKSPACE</small>
+          </span>
         </a>
         <div className="sidebar-label">YOUR SEMESTER</div>
         <nav className="navigation">
@@ -505,7 +522,9 @@ function DashboardApp() {
         <div className="sidebar-bottom">
           <span className="connection-indicator" aria-hidden="true" />
           <span>Private study workspace</span>
-          <button className="logout-button" onClick={() => void logout()}>Log out</button>
+          <button className="logout-button" onClick={() => void logout()}>
+            Log out
+          </button>
         </div>
       </aside>
 
@@ -521,13 +540,27 @@ function DashboardApp() {
           <div className="topbar-actions">
             <div className="user-chip">
               <span aria-hidden="true">S</span>
-              <div><strong>Student</strong><small>Personal workspace</small></div>
+              <div>
+                <strong>Student</strong>
+                <small>Personal workspace</small>
+              </div>
             </div>
-            <button className="icon-button" onClick={() => void load()} aria-label="Reload study data" title="Reload study data">↻</button>
+            <button
+              className="icon-button"
+              onClick={() => void load()}
+              aria-label="Reload study data"
+              title="Reload study data"
+            >
+              ↻
+            </button>
           </div>
         </header>
 
-        {error && <div className="notice error-notice" role="alert">{error}</div>}
+        {error && (
+          <div className="notice error-notice" role="alert">
+            {error}
+          </div>
+        )}
         <div className="status-line" role="status" aria-live="polite">
           <span className={saving ? "connection-indicator saving" : "connection-indicator"} />
           {saving ? "Saving your changes…" : message || "Progress is stored in your account."}
@@ -536,44 +569,75 @@ function DashboardApp() {
         <section id="dashboard" className="dashboard-section hero-section">
           <div className="hero-copy">
             <p className="eyebrow">MASTER DASHBOARD</p>
-            <h2>Your semester,<br /><span>in focus.</span></h2>
+            <h2>
+              Your semester,
+              <br />
+              <span>in focus.</span>
+            </h2>
             <p>See what is complete, what needs attention, and where to make your next move.</p>
             <a className="text-link" href="#matrix" onClick={() => setActiveSection("matrix")}>
               Continue studying <span aria-hidden="true">→</span>
             </a>
           </div>
           <div className="hero-progress" aria-label={`${chapterCompletion}% of chapters complete`}>
-            <div className="progress-ring" style={{ "--progress": `${chapterCompletion}%` } as CSSProperties}>
-              <div><strong>{chapterCompletion}%</strong><span>chapters done</span></div>
+            <div
+              className="progress-ring"
+              style={{ "--progress": `${chapterCompletion}%` } as CSSProperties}
+            >
+              <div>
+                <strong>{chapterCompletion}%</strong>
+                <span>chapters done</span>
+              </div>
             </div>
-            <p>{analytics.completedChapters} of {analytics.totalChapters} chapters complete</p>
+            <p>
+              {analytics.completedChapters} of {analytics.totalChapters} chapters complete
+            </p>
           </div>
-          <div className="hero-decoration" aria-hidden="true">✳</div>
+          <div className="hero-decoration" aria-hidden="true">
+            ✳
+          </div>
         </section>
 
         <section className="metric-grid" aria-label="Academic overview">
           <article className="metric-card">
-            <span className="metric-icon violet" aria-hidden="true">◫</span>
+            <span className="metric-icon violet" aria-hidden="true">
+              ◫
+            </span>
             <span className="metric-label">SUBJECTS</span>
             <strong>{analytics.subjects.length}</strong>
             <small>In your saved plan</small>
           </article>
           <article className="metric-card">
-            <span className="metric-icon mint" aria-hidden="true">✓</span>
+            <span className="metric-icon mint" aria-hidden="true">
+              ✓
+            </span>
             <span className="metric-label">COMPLETED CHAPTERS</span>
-            <strong>{analytics.completedChapters}<small> / {analytics.totalChapters}</small></strong>
+            <strong>
+              {analytics.completedChapters}
+              <small> / {analytics.totalChapters}</small>
+            </strong>
             <small>{analytics.inProgressChapters} currently in progress</small>
           </article>
           <article className="metric-card">
-            <span className="metric-icon amber" aria-hidden="true">◇</span>
+            <span className="metric-icon amber" aria-hidden="true">
+              ◇
+            </span>
             <span className="metric-label">QUESTION PRACTICE</span>
-            <strong>{analytics.questionsCompleted}<small> / {analytics.questionsTotal}</small></strong>
+            <strong>
+              {analytics.questionsCompleted}
+              <small> / {analytics.questionsTotal}</small>
+            </strong>
             <small>{questionCompletion}% of saved question tasks</small>
           </article>
           <article className="metric-card">
-            <span className="metric-icon blue" aria-hidden="true">↗</span>
+            <span className="metric-icon blue" aria-hidden="true">
+              ↗
+            </span>
             <span className="metric-label">STUDY TASKS</span>
-            <strong>{analytics.completedTasks}<small> / {analytics.totalTasks}</small></strong>
+            <strong>
+              {analytics.completedTasks}
+              <small> / {analytics.totalTasks}</small>
+            </strong>
             <small>{analytics.taskCompletion}% complete across the plan</small>
           </article>
         </section>
@@ -581,13 +645,23 @@ function DashboardApp() {
         <section className="dashboard-grid">
           <article id="chapters" className="panel chapter-overview">
             <div className="panel-heading">
-              <div><p className="eyebrow">CHAPTER BREAKDOWN</p><h2>Progress at a glance</h2></div>
-              <a href="#matrix" onClick={() => setActiveSection("matrix")}>View matrix <span aria-hidden="true">→</span></a>
+              <div>
+                <p className="eyebrow">CHAPTER BREAKDOWN</p>
+                <h2>Progress at a glance</h2>
+              </div>
+              <a href="#matrix" onClick={() => setActiveSection("matrix")}>
+                View matrix <span aria-hidden="true">→</span>
+              </a>
             </div>
             <div className="status-total">
-              <strong>{analytics.totalChapters}</strong><span>chapters in your plan</span>
+              <strong>{analytics.totalChapters}</strong>
+              <span>chapters in your plan</span>
             </div>
-            <div className="stacked-bar" role="img" aria-label={`${analytics.completedChapters} complete, ${analytics.inProgressChapters} in progress, ${analytics.pendingChapters} pending`}>
+            <div
+              className="stacked-bar"
+              role="img"
+              aria-label={`${analytics.completedChapters} complete, ${analytics.inProgressChapters} in progress, ${analytics.pendingChapters} pending`}
+            >
               {chapterStatuses.map((status) => (
                 <span
                   className={`stack-segment ${status.className}`}
@@ -600,68 +674,135 @@ function DashboardApp() {
               {chapterStatuses.map((status) => (
                 <div className="legend-item" key={status.label}>
                   <span className={`legend-dot ${status.className}`} />
-                  <span>{status.label}</span><strong>{status.count}</strong>
+                  <span>{status.label}</span>
+                  <strong>{status.count}</strong>
                 </div>
               ))}
             </div>
             <div className="plan-sync">
-              <span className="sync-icon" aria-hidden="true">↻</span>
-              <div><strong>Saved progress</strong><small>Last recorded update: {formatTimestamp(stateUpdatedAt)}</small></div>
+              <span className="sync-icon" aria-hidden="true">
+                ↻
+              </span>
+              <div>
+                <strong>Saved progress</strong>
+                <small>Last recorded update: {formatTimestamp(stateUpdatedAt)}</small>
+              </div>
             </div>
           </article>
 
           <article id="questions" className="panel question-overview">
             <div className="panel-heading">
-              <div><p className="eyebrow">PRACTICE</p><h2>Question preparation</h2></div>
+              <div>
+                <p className="eyebrow">PRACTICE</p>
+                <h2>Question preparation</h2>
+              </div>
               <span className="panel-badge">{questionCompletion}%</span>
             </div>
             {analytics.questionCategories.length ? (
               <div className="category-list">
                 {analytics.questionCategories.map((category) => (
                   <div className="category-row" key={category.id}>
-                    <div className="category-copy"><strong>{category.label}</strong><span>{category.completed} of {category.total} saved tasks</span></div>
-                    <div className="category-progress" role="progressbar" aria-label={category.label} aria-valuemin={0} aria-valuemax={category.total} aria-valuenow={category.completed}>
+                    <div className="category-copy">
+                      <strong>{category.label}</strong>
+                      <span>
+                        {category.completed} of {category.total} saved tasks
+                      </span>
+                    </div>
+                    <div
+                      className="category-progress"
+                      role="progressbar"
+                      aria-label={category.label}
+                      aria-valuemin={0}
+                      aria-valuemax={category.total}
+                      aria-valuenow={category.completed}
+                    >
                       <span style={{ width: `${percent(category.completed, category.total)}%` }} />
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="compact-empty"><span aria-hidden="true">◇</span><p>Question tasks are not configured in this study plan yet.</p></div>
+              <div className="compact-empty">
+                <span aria-hidden="true">◇</span>
+                <p>Question tasks are not configured in this study plan yet.</p>
+              </div>
             )}
-            <p className="data-note">Counts reflect the question tasks and completion marks saved in your Study Matrix.</p>
+            <p className="data-note">
+              Counts reflect the question tasks and completion marks saved in your Study Matrix.
+            </p>
           </article>
         </section>
 
         <section id="subjects" className="panel subjects-panel dashboard-section">
           <div className="panel-heading">
-            <div><p className="eyebrow">SUBJECT PERFORMANCE</p><h2>Your subjects</h2><p className="panel-description">Chapter completion is calculated from saved task marks, not estimates.</p></div>
+            <div>
+              <p className="eyebrow">SUBJECT PERFORMANCE</p>
+              <h2>Your subjects</h2>
+              <p className="panel-description">
+                Chapter completion is calculated from saved task marks, not estimates.
+              </p>
+            </div>
             <span className="subject-count">{analytics.subjects.length} subjects</span>
           </div>
           {analytics.subjects.length === 0 ? (
-            <div className="compact-empty"><span aria-hidden="true">◫</span><p>No subjects are included in the saved study plan.</p></div>
+            <div className="compact-empty">
+              <span aria-hidden="true">◫</span>
+              <p>No subjects are included in the saved study plan.</p>
+            </div>
           ) : (
             <div className="subject-grid">
               {analytics.subjects.map((subject) => (
                 <article className="subject-tile" key={subject.id}>
                   <div className="subject-tile-heading">
-                    <span className="subject-monogram">{String(subject.subjectIndex + 1).padStart(2, "0")}</span>
-                    <div><h3>{subject.name}</h3><small>{subject.code || `Subject ${String(subject.subjectIndex + 1).padStart(2, "0")}`}</small></div>
+                    <span className="subject-monogram">
+                      {String(subject.subjectIndex + 1).padStart(2, "0")}
+                    </span>
+                    <div>
+                      <h3>{subject.name}</h3>
+                      <small>
+                        {subject.code ||
+                          `Subject ${String(subject.subjectIndex + 1).padStart(2, "0")}`}
+                      </small>
+                    </div>
                     <strong className="subject-percent">{subject.completion}%</strong>
                   </div>
-                  <div className="progress-track" role="progressbar" aria-label={`${subject.name} chapter completion`} aria-valuemin={0} aria-valuemax={subject.totalChapters} aria-valuenow={subject.completedChapters}>
+                  <div
+                    className="progress-track"
+                    role="progressbar"
+                    aria-label={`${subject.name} chapter completion`}
+                    aria-valuemin={0}
+                    aria-valuemax={subject.totalChapters}
+                    aria-valuenow={subject.completedChapters}
+                  >
                     <span style={{ width: `${subject.completion}%` }} />
                   </div>
                   <div className="subject-breakdown">
-                    <span><i className="legend-dot complete" />{subject.completedChapters} done</span>
-                    <span><i className="legend-dot in-progress" />{subject.inProgressChapters} active</span>
-                    <span><i className="legend-dot pending" />{subject.pendingChapters} pending</span>
+                    <span>
+                      <i className="legend-dot complete" />
+                      {subject.completedChapters} done
+                    </span>
+                    <span>
+                      <i className="legend-dot in-progress" />
+                      {subject.inProgressChapters} active
+                    </span>
+                    <span>
+                      <i className="legend-dot pending" />
+                      {subject.pendingChapters} pending
+                    </span>
                   </div>
                   <div className="subject-meta">
                     <span>{subject.totalChapters} chapters</span>
-                    {subject.questionsTotal > 0 && <span>{subject.questionsCompleted}/{subject.questionsTotal} questions</span>}
+                    {subject.questionsTotal > 0 && (
+                      <span>
+                        {subject.questionsCompleted}/{subject.questionsTotal} questions
+                      </span>
+                    )}
                   </div>
-                  {subject.nextAction && <p className="next-action"><span aria-hidden="true">↳</span> Next: {subject.nextAction}</p>}
+                  {subject.nextAction && (
+                    <p className="next-action">
+                      <span aria-hidden="true">↳</span> Next: {subject.nextAction}
+                    </p>
+                  )}
                   <button className="subject-action" onClick={() => openSubject(subject.id)}>
                     Open subject in matrix <span aria-hidden="true">→</span>
                   </button>
@@ -673,7 +814,15 @@ function DashboardApp() {
 
         <section className="dashboard-grid tracking-grid">
           <article id="revision" className="panel tracking-panel dashboard-section">
-            <div className="panel-heading"><div><p className="eyebrow">RECALL & RETENTION</p><h2>Revision planner</h2></div><span className="metric-icon violet" aria-hidden="true">↻</span></div>
+            <div className="panel-heading">
+              <div>
+                <p className="eyebrow">RECALL & RETENTION</p>
+                <h2>Revision planner</h2>
+              </div>
+              <span className="metric-icon violet" aria-hidden="true">
+                ↻
+              </span>
+            </div>
             {revisionProgress.total > 0 ? (
               <TrackingSummary label="Revision tasks" progress={revisionProgress} />
             ) : (
@@ -681,7 +830,15 @@ function DashboardApp() {
             )}
           </article>
           <article id="exams" className="panel tracking-panel dashboard-section">
-            <div className="panel-heading"><div><p className="eyebrow">ASSESSMENT</p><h2>Exam preparation</h2></div><span className="metric-icon amber" aria-hidden="true">⌑</span></div>
+            <div className="panel-heading">
+              <div>
+                <p className="eyebrow">ASSESSMENT</p>
+                <h2>Exam preparation</h2>
+              </div>
+              <span className="metric-icon amber" aria-hidden="true">
+                ⌑
+              </span>
+            </div>
             {examProgress.total > 0 ? (
               <TrackingSummary label="Exam preparation tasks" progress={examProgress} />
             ) : (
@@ -689,25 +846,63 @@ function DashboardApp() {
             )}
           </article>
           <article id="assignments" className="panel tracking-panel dashboard-section">
-            <div className="panel-heading"><div><p className="eyebrow">COURSEWORK</p><h2>Assignments & practicals</h2></div><span className="metric-icon mint" aria-hidden="true">✓</span></div>
+            <div className="panel-heading">
+              <div>
+                <p className="eyebrow">COURSEWORK</p>
+                <h2>Assignments & practicals</h2>
+              </div>
+              <span className="metric-icon mint" aria-hidden="true">
+                ✓
+              </span>
+            </div>
             {assignmentProgress.total > 0 ? (
-              <TrackingSummary label="Assignment and practical tasks" progress={assignmentProgress} />
+              <TrackingSummary
+                label="Assignment and practical tasks"
+                progress={assignmentProgress}
+              />
             ) : (
               <UnavailableState text="Assignment and practical completion is not configured in the saved matrix tasks." />
             )}
           </article>
           <article id="goals" className="panel tracking-panel dashboard-section">
-            <div className="panel-heading"><div><p className="eyebrow">MILESTONES</p><h2>Goals & achievements</h2></div><span className="metric-icon blue" aria-hidden="true">✧</span></div>
+            <div className="panel-heading">
+              <div>
+                <p className="eyebrow">MILESTONES</p>
+                <h2>Goals & achievements</h2>
+              </div>
+              <span className="metric-icon blue" aria-hidden="true">
+                ✧
+              </span>
+            </div>
             <UnavailableState text="The current project does not persist goal targets or achievement history, so none are inferred here." />
           </article>
         </section>
 
         <section id="activity" className="panel activity-panel dashboard-section">
-          <div className="panel-heading"><div><p className="eyebrow">CONSISTENCY</p><h2>Study activity</h2></div><span className="metric-icon blue" aria-hidden="true">⌁</span></div>
+          <div className="panel-heading">
+            <div>
+              <p className="eyebrow">CONSISTENCY</p>
+              <h2>Study activity</h2>
+            </div>
+            <span className="metric-icon blue" aria-hidden="true">
+              ⌁
+            </span>
+          </div>
           <div className="activity-empty">
-            <span className="activity-mark" aria-hidden="true">⌁</span>
-            <div><strong>Activity history is not available yet.</strong><p>The app stores the latest study-state update, but not dated task events. Streaks and daily/weekly charts would otherwise be guesses.</p></div>
-            <div className="last-saved"><small>LAST SAVED</small><strong>{formatTimestamp(stateUpdatedAt)}</strong></div>
+            <span className="activity-mark" aria-hidden="true">
+              ⌁
+            </span>
+            <div>
+              <strong>Activity history is not available yet.</strong>
+              <p>
+                The app stores the latest study-state update, but not dated task events. Streaks and
+                daily/weekly charts would otherwise be guesses.
+              </p>
+            </div>
+            <div className="last-saved">
+              <small>LAST SAVED</small>
+              <strong>{formatTimestamp(stateUpdatedAt)}</strong>
+            </div>
           </div>
         </section>
 
@@ -720,7 +915,13 @@ function DashboardApp() {
 
         <section id="matrix" className="panel matrix-panel dashboard-section">
           <div className="panel-heading matrix-heading">
-            <div><p className="eyebrow">YOUR SOURCE OF TRUTH</p><h2>Study Matrix</h2><p className="panel-description">Mark a task complete to update the dashboard after the save succeeds.</p></div>
+            <div>
+              <p className="eyebrow">YOUR SOURCE OF TRUTH</p>
+              <h2>Study Matrix</h2>
+              <p className="panel-description">
+                Mark a task complete to update the dashboard after the save succeeds.
+              </p>
+            </div>
             <span className="matrix-save-state">{saving ? "Saving…" : "Synced to account"}</span>
           </div>
           <div className="matrix-controls">
@@ -742,7 +943,9 @@ function DashboardApp() {
             >
               <option value="">All subjects</option>
               {studyData.subjects.map((subject) => (
-                <option key={subject.id} value={subject.id}>{subject.name}</option>
+                <option key={subject.id} value={subject.id}>
+                  {subject.name}
+                </option>
               ))}
             </select>
           </div>
@@ -766,8 +969,13 @@ function DashboardApp() {
               {filteredSubjects.map((subject) => (
                 <article className="matrix-subject" key={subject.id}>
                   <div className="subject-heading">
-                    <span className="subject-number">{String(subject.subjectIndex + 1).padStart(2, "0")}</span>
-                    <div><h3>{subject.name}</h3><p>{subject.chapters.length} chapters shown</p></div>
+                    <span className="subject-number">
+                      {String(subject.subjectIndex + 1).padStart(2, "0")}
+                    </span>
+                    <div>
+                      <h3>{subject.name}</h3>
+                      <p>{subject.chapters.length} chapters shown</p>
+                    </div>
                   </div>
                   <div className="chapter-list">
                     {subject.chapters.map(({ chapter, chapterIndex }) => (
@@ -790,13 +998,28 @@ function DashboardApp() {
         </section>
 
         <section id="settings" className="panel settings-panel dashboard-section">
-          <div className="panel-heading"><div><p className="eyebrow">PREFERENCES</p><h2>Workspace settings</h2></div></div>
-          <p>Authentication and session settings are managed by the server. Academic preferences will appear here when they are persisted by the application.</p>
-          <div className="settings-actions">
-            <button className="secondary-button" onClick={downloadBackup}>Download study backup</button>
-            <a className="text-link" href="/legacy">Open the classic Study Matrix for focus timer, admin, achievements, and print/export tools</a>
+          <div className="panel-heading">
+            <div>
+              <p className="eyebrow">PREFERENCES</p>
+              <h2>Workspace settings</h2>
+            </div>
           </div>
-          <button className="secondary-button" onClick={() => void logout()}>Log out of this workspace</button>
+          <p>
+            Authentication and session settings are managed by the server. Academic preferences will
+            appear here when they are persisted by the application.
+          </p>
+          <div className="settings-actions">
+            <button className="secondary-button" onClick={downloadBackup}>
+              Download study backup
+            </button>
+            <a className="text-link" href="/legacy">
+              Open the classic Study Matrix for focus timer, admin, achievements, and print/export
+              tools
+            </a>
+          </div>
+          <button className="secondary-button" onClick={() => void logout()}>
+            Log out of this workspace
+          </button>
         </section>
 
         <footer className="footer">
@@ -817,9 +1040,14 @@ function TrackingSummary({
 }) {
   return (
     <div className="tracking-summary">
-      <strong>{progress.completed}<small> / {progress.total}</small></strong>
+      <strong>
+        {progress.completed}
+        <small> / {progress.total}</small>
+      </strong>
       <span>{label} completed</span>
-      <div className="progress-track"><span style={{ width: `${percent(progress.completed, progress.total)}%` }} /></div>
+      <div className="progress-track">
+        <span style={{ width: `${percent(progress.completed, progress.total)}%` }} />
+      </div>
       <small>{percent(progress.completed, progress.total)}% of matching Study Matrix tasks</small>
     </div>
   );
@@ -854,11 +1082,7 @@ function ChapterRow({
   const completed = tasks.filter(
     (task) => progress[chapterTaskKey(subjectIndex, chapterIndex, task.id)],
   ).length;
-  const state = completed === tasks.length
-    ? "Complete"
-    : completed > 0
-      ? "In progress"
-      : "Pending";
+  const state = completed === tasks.length ? "Complete" : completed > 0 ? "In progress" : "Pending";
 
   return (
     <div className="chapter-row">
@@ -891,7 +1115,5 @@ function ChapterRow({
 }
 
 export default function App() {
-  return window.location.pathname === "/login"
-    ? <LoginPage />
-    : <DashboardApp />;
+  return window.location.pathname === "/login" ? <LoginPage /> : <DashboardApp />;
 }

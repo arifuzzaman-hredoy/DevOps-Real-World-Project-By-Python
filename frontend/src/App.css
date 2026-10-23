@@ -18,9 +18,7 @@
   display: grid;
   grid-template-columns: 254px minmax(0, 1fr);
   color: var(--text);
-  background:
-    radial-gradient(ellipse at 78% -12%, #293a5d55, transparent 40%),
-    #0b1220;
+  background: radial-gradient(ellipse at 78% -12%, #293a5d55, transparent 40%), #0b1220;
 }
 
 .sidebar {
@@ -71,7 +69,7 @@
 .brand strong {
   color: #f8f9ff;
   font-size: 15px;
-  letter-spacing: -.3px;
+  letter-spacing: -0.3px;
 }
 
 .brand small,
@@ -115,7 +113,10 @@
   color: #9eacc1;
   font-size: 11px;
   text-decoration: none;
-  transition: color .18s ease, background .18s ease, border-color .18s ease;
+  transition:
+    color 0.18s ease,
+    background 0.18s ease,
+    border-color 0.18s ease;
 }
 
 .nav-link:hover,
@@ -216,7 +217,7 @@ h3 {
   color: #f4f6fc;
   font-size: clamp(22px, 2.4vw, 29px);
   font-weight: 750;
-  letter-spacing: -.9px;
+  letter-spacing: -0.9px;
 }
 
 .subtitle {
@@ -361,7 +362,7 @@ h3 {
 
 .text-link span {
   font-size: 15px;
-  transition: transform .18s ease;
+  transition: transform 0.18s ease;
 }
 
 .text-link:hover span {
@@ -386,7 +387,7 @@ h3 {
   border-radius: 50%;
   background: conic-gradient(#a99cff var(--progress), #ffffff20 0);
   box-shadow: 0 0 30px #a99cff21;
-  animation: ring-appear .7s ease both;
+  animation: ring-appear 0.7s ease both;
 }
 
 .progress-ring > div {
@@ -410,7 +411,7 @@ h3 {
   margin-top: 2px;
   color: #a3aec5;
   font-size: 8px;
-  letter-spacing: .5px;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
 }
 
@@ -447,7 +448,9 @@ h3 {
   border: 1px solid #ffffff12;
   border-radius: 13px;
   background: linear-gradient(145deg, #151f31, #111a2a);
-  transition: transform .18s ease, border-color .18s ease;
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease;
 }
 
 .metric-card:hover,
@@ -499,7 +502,7 @@ h3 {
   color: #f4f6ff;
   font-size: 23px;
   font-weight: 750;
-  letter-spacing: -.6px;
+  letter-spacing: -0.6px;
   font-variant-numeric: tabular-nums;
 }
 
@@ -517,7 +520,7 @@ h3 {
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(300px, .85fr);
+  grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
   gap: 13px;
   margin-top: 13px;
 }
@@ -543,7 +546,7 @@ h3 {
   color: #eff3fa;
   font-size: 15px;
   font-weight: 700;
-  letter-spacing: -.35px;
+  letter-spacing: -0.35px;
 }
 
 .panel-heading > a {
@@ -575,7 +578,7 @@ h3 {
 .status-total strong {
   color: #f2f4fc;
   font-size: 25px;
-  letter-spacing: -.8px;
+  letter-spacing: -0.8px;
 }
 
 .status-total span {
@@ -596,7 +599,7 @@ h3 {
 .stack-segment {
   min-width: 0;
   border-radius: 99px;
-  transition: width .45s ease;
+  transition: width 0.45s ease;
 }
 
 .stack-segment.complete,
@@ -728,7 +731,7 @@ h3 {
   height: 100%;
   border-radius: inherit;
   background: linear-gradient(90deg, #8979ed, #74a6f5);
-  transition: width .35s ease;
+  transition: width 0.35s ease;
 }
 
 .data-note {
@@ -776,7 +779,9 @@ h3 {
   border: 1px solid #ffffff12;
   border-radius: 11px;
   background: #0e1726;
-  transition: transform .18s ease, border-color .18s ease;
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease;
 }
 
 .subject-tile-heading {
@@ -900,7 +905,7 @@ h3 {
 .tracking-summary > strong {
   color: #f3f5fc;
   font-size: 24px;
-  letter-spacing: -.7px;
+  letter-spacing: -0.7px;
 }
 
 .tracking-summary > span {
@@ -996,7 +1001,7 @@ h3 {
   color: #7c8ca4;
   font-size: 7px;
   font-weight: 800;
-  letter-spacing: .8px;
+  letter-spacing: 0.8px;
 }
 
 .last-saved strong {
@@ -1115,7 +1120,7 @@ h3 {
 
 .chapter-row {
   display: grid;
-  grid-template-columns: minmax(135px, .8fr) minmax(180px, 1.6fr) 75px;
+  grid-template-columns: minmax(135px, 0.8fr) minmax(180px, 1.6fr) 75px;
   align-items: center;
   gap: 12px;
   padding: 11px 14px;
@@ -1145,7 +1150,7 @@ h3 {
   border-radius: 4px;
   font-size: 7px;
   font-weight: 800;
-  letter-spacing: .35px;
+  letter-spacing: 0.35px;
 }
 
 .mid-tag {
@@ -1280,9 +1285,7 @@ h3 {
   place-items: center;
   padding: 24px;
   color: #eef2fb;
-  background:
-    radial-gradient(ellipse at 60% 10%, #342c6340, transparent 44%),
-    #0b1220;
+  background: radial-gradient(ellipse at 60% 10%, #342c6340, transparent 44%), #0b1220;
 }
 
 .empty-state {
@@ -1309,7 +1312,7 @@ h3 {
 .empty-state h1 {
   margin: 8px 0;
   font-size: 22px;
-  letter-spacing: -.6px;
+  letter-spacing: -0.6px;
 }
 
 .empty-state > p:not(.eyebrow) {
@@ -1341,7 +1344,7 @@ h3 {
 }
 
 .primary-button:disabled {
-  opacity: .55;
+  opacity: 0.55;
   cursor: wait;
 }
 
@@ -1397,7 +1400,7 @@ h3 {
   border: 3px solid #2b3750;
   border-top-color: #a99cff;
   border-radius: 50%;
-  animation: spin .8s linear infinite;
+  animation: spin 0.8s linear infinite;
 }
 
 .loading-screen p {
@@ -1412,8 +1415,7 @@ h3 {
   color: #eff2fa;
   background:
     radial-gradient(ellipse at 22% 13%, #6860c330, transparent 36%),
-    radial-gradient(ellipse at 88% 88%, #3c7b8c26, transparent 35%),
-    #0b1220;
+    radial-gradient(ellipse at 88% 88%, #3c7b8c26, transparent 35%), #0b1220;
 }
 
 .login-card {
@@ -1502,12 +1504,20 @@ h3 {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes ring-appear {
-  from { opacity: .2; transform: scale(.94); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0.2;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 @media (max-width: 1160px) {
@@ -1589,7 +1599,7 @@ h3 {
   }
 
   .chapter-row {
-    grid-template-columns: minmax(120px, .8fr) minmax(160px, 1.5fr) 70px;
+    grid-template-columns: minmax(120px, 0.8fr) minmax(160px, 1.5fr) 70px;
     gap: 8px;
   }
 }
@@ -1739,8 +1749,8 @@ h3 {
   *::before,
   *::after {
     scroll-behavior: auto !important;
-    animation-duration: .01ms !important;
+    animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: .01ms !important;
+    transition-duration: 0.01ms !important;
   }
 }

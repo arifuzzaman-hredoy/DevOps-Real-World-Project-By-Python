@@ -103,10 +103,10 @@ This local preparation does not modify the server.
   rollback and preserve the database volume. If data integrity is in question,
   follow the recovery decision process in the backup runbook; do not perform an
   in-place restore as an application rollback.
-=======
-The application has a Next.js frontend and a separate Node.js API service,
-backed by PostgreSQL. Nginx routes UI traffic to frontend port 3000 and API
-traffic to backend port 3001. Prometheus scrapes `/api/metrics` privately.
+  =======
+  The application has a Next.js frontend and a separate Node.js API service,
+  backed by PostgreSQL. Nginx routes UI traffic to frontend port 3000 and API
+  traffic to backend port 3001. Prometheus scrapes `/api/metrics` privately.
 
 ## Required configuration
 
@@ -161,4 +161,4 @@ off-host backup and a tested restore before production changes.
   study-state access, and the Prometheus target.
 - If health checks fail, use the approved previous-image rollback procedure;
   application rollback does not undo database changes or writes.
->>>>>>> integration/nextjs-main
+  > > > > > > > integration/nextjs-main
