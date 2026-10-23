@@ -1,0 +1,99 @@
+name: Deploy TaskFlow to EC2
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "GHCR image tag, e.g. latest or sha-<commit-sha>"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: taskflow-production-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to production
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Validate image tag
+        env:
+          IMAGE_TAG: ${{ inputs.image_tag }}
+        run: |
+          if [[ ! "$IMAGE_TAG" =~ ^[a-zA-Z0-9_][a-zA-Z0-9_.-]{0,127}$ ]]; then
+            echo "Invalid image tag"
+            exit 1
+          fi
+
+      - name: Prepare SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.EC2_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/taskflow_deploy
+          chmod 600 ~/.ssh/taskflow_deploy
+
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+          test -s ~/.ssh/taskflow_deploy
+          test -s ~/.ssh/known_hosts
+
+      - name: Deploy selected image
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          IMAGE_TAG: ${{ inputs.image_tag }}
+        run: |
+          set -euo pipefail
+
+          test -n "$EC2_HOST"
+
+          ssh \
+            -i ~/.ssh/taskflow_deploy \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
+            -o BatchMode=yes \
+            "ubuntu@$EC2_HOST" \
+            "sudo /usr/local/bin/taskflow-deploy '$IMAGE_TAG'"
+
+      - name: Verify public HTTPS health
+        env:
+          IMAGE_TAG: ${{ inputs.image_tag }}
+        run: |
+          set -euo pipefail
+
+          for attempt in $(seq 1 12); do
+            if curl \
+              --connect-timeout 5 \
+              --max-time 10 \
+              --fail \
+              --silent \
+              --show-error \
+              https://taskflow.oxytumzone.com/api/ready \
+              -o /tmp/taskflow-health.json; then
+
+              cat /tmp/taskflow-health.json
+
+              if grep -q '"status":"ready"' /tmp/taskflow-health.json &&
+                 grep -q '"database":"ok"' /tmp/taskflow-health.json; then
+                echo "Deployment health check passed for tag: $IMAGE_TAG"
+                exit 0
+              fi
+            fi
+
+            sleep 5
+          done
+
+          echo "Deployment health check failed"
+          exit 1

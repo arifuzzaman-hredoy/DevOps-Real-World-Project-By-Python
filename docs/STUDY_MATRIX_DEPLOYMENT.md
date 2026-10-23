@@ -1,8 +1,8 @@
 # CST Study Matrix deployment checklist
 
-The production application is a single Next.js/Node.js service backed by
-PostgreSQL. Nginx proxies HTTP traffic to the Next.js server on port 3000.
-Prometheus scrapes `/api/metrics` from the private Compose network.
+The application has a Next.js frontend and a separate Node.js API service,
+backed by PostgreSQL. Nginx routes UI traffic to frontend port 3000 and API
+traffic to backend port 3001. Prometheus scrapes `/api/metrics` privately.
 
 ## Required configuration
 
@@ -20,24 +20,24 @@ secret values into logs, Git, or chat.
 
 ## Local release checks
 
-1. Run `npm ci --prefix frontend`, `npm --prefix frontend run typecheck`, and
-   `npm --prefix frontend run build`.
-2. Run `docker compose config --quiet`.
+1. Install, typecheck, and build both apps:
+   `npm ci --prefix frontend`, `npm ci --prefix backend`,
+   `npm --prefix frontend run typecheck`,
+   `npm --prefix backend run typecheck`,
+   `npm --prefix frontend run build`, and `npm --prefix backend run build`.
+2. Run `docker compose -f devops/compose.yaml config --quiet`.
 3. Start a local stack and run
-   `bash scripts/api-smoke-test.sh http://127.0.0.1:8080`.
-4. Run `bash scripts/pre-ec2-full-stack-check.sh` to verify the app, database,
+   `docker compose -f devops/compose.yaml up --build -d`, then
+   `bash devops/scripts/api-smoke-test.sh http://127.0.0.1:8080`.
+4. Run `bash devops/scripts/pre-ec2-full-stack-check.sh` to verify the app, database,
    reverse proxy, Prometheus, and Grafana together.
-5. Verify login, dashboard-to-matrix/admin navigation, matrix interactions,
-   data export/import, and reload behavior.
+5. Verify login, the default matrix, matrix interactions, data export/import,
+   and reload behavior.
 
-The complete study matrix, including its built-in subjects, chapters, and
-design, remains available at `/legacy-matrix.html`. The built-in syllabus is
-seeded into PostgreSQL when the matrix is first opened; progress, matrix
+The converted study matrix opens after login. Its built-in subjects and
+chapters are seeded into PostgreSQL when first opened; progress, matrix
 customizations, study settings, and study-tool data are saved there afterward.
-Data from older browser local storage is intentionally not imported. If that
-old data is needed, export it from the old version and restore it manually
-after signing in. The dashboard reads the same saved syllabus, completion,
-focus-session, and activity data.
+Data from older browser local storage is intentionally not imported.
 
 ## Database compatibility
 

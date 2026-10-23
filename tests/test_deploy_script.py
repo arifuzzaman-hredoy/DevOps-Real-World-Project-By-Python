@@ -13,6 +13,7 @@ NEW_IMAGE_ID = "sha256:" + "b" * 64
 OLD_IMAGE_DIGEST = REPOSITORY + "@sha256:" + "c" * 64
 SCRIPT = (
     Path(__file__).parents[1]
+    / "devops"
     / "deploy"
     / "production"
     / "taskflow"

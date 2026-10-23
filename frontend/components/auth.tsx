@@ -23,7 +23,9 @@ export function LogoutButton() {
     <button
       className="textButton"
       onClick={async () => {
-        const csrf = await fetch("/api/csrf", { credentials: "include" }).then((r) => r.json());
+        const csrf = await fetch("/api/auth/csrf", { credentials: "include" }).then((r) =>
+          r.json(),
+        );
         await fetch("/api/auth/logout", {
           method: "POST",
           headers: { "X-CSRF-Token": csrf.csrf_token },

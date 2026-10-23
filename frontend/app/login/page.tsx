@@ -8,9 +8,7 @@ export default function Login() {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   useEffect(() => {
-    fetch("/api/auth/me", { credentials: "include" }).then(
-      (r) => r.ok && router.replace("/dashboard"),
-    );
+    fetch("/api/auth/me", { credentials: "include" }).then((r) => r.ok && router.replace("/"));
   }, [router]);
   async function submit(e: FormEvent) {
     e.preventDefault();
@@ -24,7 +22,7 @@ export default function Login() {
       body: JSON.stringify({ password }),
     });
     setBusy(false);
-    if (r.ok) router.replace("/dashboard");
+    if (r.ok) router.replace("/");
     else setError("Incorrect password. Please try again.");
   }
   return (
@@ -33,7 +31,7 @@ export default function Login() {
         <div className="logo">⬡</div>
         <p className="eyebrow">Secure learning operations</p>
         <h1>CST Study Matrix</h1>
-        <p>Sign in to open your personal progress command centre.</p>
+        <p>Sign in to open your personal study matrix.</p>
         <form onSubmit={submit}>
           <label>
             Study password
@@ -47,7 +45,7 @@ export default function Login() {
           </label>
           {error && <p className="error">{error}</p>}
           <button className="primary" disabled={busy}>
-            {busy ? "Signing in…" : "Open dashboard →"}
+            {busy ? "Signing in…" : "Open study matrix →"}
           </button>
         </form>
       </section>

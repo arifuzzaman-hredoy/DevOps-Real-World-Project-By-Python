@@ -46,3 +46,16 @@ crash.*.log
 
 # Keep the provider dependency lock file tracked
 !terraform/.terraform.lock.hcl
+
+# Node.js dependencies
+node_modules/
+**/node_modules/
+
+# Terraform local configuration and state under devops
+devops/terraform/terraform.tfvars
+devops/terraform/terraform.tfstate
+devops/terraform/terraform.tfstate.*
+devops/terraform/.terraform/
+
+# Keep the devops Terraform provider lock file tracked
+!devops/terraform/.terraform.lock.hcl

@@ -1,0 +1,207 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "TaskFlow initial git and backup audit",
+      "type": "shell",
+      "command": "wsl.exe",
+      "args": [
+        "-d",
+        "Ubuntu",
+        "--cd",
+        "/mnt/g/My Skill Learn Plan/Technology/Cloud & DevOps/DevSecOps/DevOps/Portfolio Project/devops-real-world-project",
+        "--",
+        "bash",
+        "-lc",
+        "git status --short --untracked-files=all; echo BRANCH; git branch --show-current; echo HEAD; git rev-parse HEAD; echo CACHED; git diff --cached --stat; echo TRACKED_BACKUPS; git ls-files '*backup*' '.env' 'terraform/*.tfstate' 'terraform/*.tfplan'; echo ALL_BACKUP_NAMES; find . -maxdepth 4 -type f \\( -iname '*backup*' -o -iname '*.bak' -o -iname '*.old' \\) -print"
+      ],
+      "isBackground": false,
+      "problemMatcher": []
+    },
+    {
+      "label": "TaskFlow normalize audit scripts",
+      "type": "shell",
+      "command": "wsl.exe",
+      "args": [
+        "-d",
+        "Ubuntu",
+        "--cd",
+        "/mnt/g/My Skill Learn Plan/Technology/Cloud & DevOps/DevSecOps/DevOps/Portfolio Project/devops-real-world-project",
+        "--",
+        "python3",
+        ".vscode/normalize-audit-scripts.py"
+      ],
+      "isBackground": false,
+      "problemMatcher": []
+    },
+    {
+      "label": "TaskFlow backend and Ruff",
+      "type": "shell",
+      "command": "wsl.exe",
+      "args": [
+        "-d",
+        "Ubuntu",
+        "--cd",
+        "/mnt/g/My Skill Learn Plan/Technology/Cloud & DevOps/DevSecOps/DevOps/Portfolio Project/devops-real-world-project",
+        "--",
+        "bash",
+        "scripts/test.sh"
+      ],
+      "isBackground": false,
+      "problemMatcher": []
+    },
+    {
+      "label": "TaskFlow frontend checks",
+      "type": "shell",
+      "command": "wsl.exe",
+      "args": [
+        "-d",
+        "Ubuntu",
+        "--cd",
+        "/mnt/g/My Skill Learn Plan/Technology/Cloud & DevOps/DevSecOps/DevOps/Portfolio Project/devops-real-world-project/frontend",
+        "--",
+        "bash",
+        "-lc",
+        "npx tsc -b --pretty false && npm run lint && npm test"
+      ],
+      "isBackground": false,
+      "problemMatcher": []
+    },
+    {
+      "label": "TaskFlow Docker image build",
+      "type": "shell",
+      "command": "wsl.exe",
+      "args": [
+        "-d",
+        "Ubuntu",
+        "--cd",
+        "/mnt/g/My Skill Learn Plan/Technology/Cloud & DevOps/DevSecOps/DevOps/Portfolio Project/devops-real-world-project",
+        "--",
+        "docker",
+        "build",
+        "--tag",
+        "taskflow:release-verification",
+        "."
+      ],
+      "isBackground": false,
+      "problemMatcher": []
+    },
+    {
+      "label": "TaskFlow inspect local Docker resources",
+      "type": "shell",
+      "command": "wsl.exe",
+      "args": [
+        "-d",
+        "Ubuntu",
+        "--cd",
+        "/mnt/g/My Skill Learn Plan/Technology/Cloud & DevOps/DevSecOps/DevOps/Portfolio Project/devops-real-world-project",
+        "--",
+        "bash",
+        "-lc",
+        "docker compose ps -a; echo 'Existing TaskFlow audit resources:'; docker ps -a --filter name=taskflow-release-smoke --format '{{.ID}} {{.Names}} {{.Status}}'; docker network ls --filter name=taskflow-release-smoke --format '{{.ID}} {{.Name}}'; echo 'Prometheus image:'; docker image inspect prom/prometheus:v3.7.3 --format '{{.Id}}'"
+      ],
+      "isBackground": false,
+      "problemMatcher": []
+    },
+    {
+      "label": "TaskFlow isolated image smoke",
+      "type": "shell",
+      "command": "wsl.exe",
+      "args": [
+        "-d",
+        "Ubuntu",
+        "--cd",
+        "/mnt/g/My Skill Learn Plan/Technology/Cloud & DevOps/DevSecOps/DevOps/Portfolio Project/devops-real-world-project",
+        "--",
+        "bash",
+        ".vscode/smoke-release-image.sh"
+      ],
+      "isBackground": false,
+      "problemMatcher": []
+    },
+    {
+      "label": "TaskFlow local metrics behavioral test",
+      "type": "shell",
+      "command": "wsl.exe",
+      "args": [
+        "-d",
+        "Ubuntu",
+        "--cd",
+        "/mnt/g/My Skill Learn Plan/Technology/Cloud & DevOps/DevSecOps/DevOps/Portfolio Project/devops-real-world-project",
+        "--",
+        "bash",
+        ".vscode/verify-local-metrics.sh"
+      ],
+      "isBackground": false,
+      "problemMatcher": []
+    },
+    {
+      "label": "TaskFlow backend regression after race fix",
+      "type": "shell",
+      "command": "wsl.exe",
+      "args": [
+        "-d",
+        "Ubuntu",
+        "--cd",
+        "/mnt/g/My Skill Learn Plan/Technology/Cloud & DevOps/DevSecOps/DevOps/Portfolio Project/devops-real-world-project",
+        "--",
+        "bash",
+        "scripts/test.sh"
+      ],
+      "isBackground": false,
+      "problemMatcher": []
+    },
+    {
+      "label": "TaskFlow rebuild race fixed image",
+      "type": "shell",
+      "command": "wsl.exe",
+      "args": [
+        "-d",
+        "Ubuntu",
+        "--cd",
+        "/mnt/g/My Skill Learn Plan/Technology/Cloud & DevOps/DevSecOps/DevOps/Portfolio Project/devops-real-world-project",
+        "--",
+        "docker",
+        "build",
+        "--tag",
+        "taskflow:release-verification",
+        "."
+      ],
+      "isBackground": false,
+      "problemMatcher": []
+    },
+    {
+      "label": "TaskFlow production read-only config inspection",
+      "type": "shell",
+      "command": "wsl.exe",
+      "args": [
+        "-d",
+        "Ubuntu",
+        "--cd",
+        "/mnt/g/My Skill Learn Plan/Technology/Cloud & DevOps/DevSecOps/DevOps/Portfolio Project/devops-real-world-project",
+        "--",
+        "bash",
+        ".vscode/inspect-production-config.sh"
+      ],
+      "isBackground": false,
+      "problemMatcher": []
+    },
+    {
+      "label": "TaskFlow deployment helper checks",
+      "type": "shell",
+      "command": "wsl.exe",
+      "args": [
+        "-d",
+        "Ubuntu",
+        "--cd",
+        "/mnt/g/My Skill Learn Plan/Technology/Cloud & DevOps/DevSecOps/DevOps/Portfolio Project/devops-real-world-project",
+        "--",
+        "bash",
+        "-lc",
+        "bash -n deploy/production/taskflow/taskflow-deploy && .venv/bin/python -m pytest -v tests/test_deploy_script.py && .venv/bin/python -m ruff check tests/test_deploy_script.py"
+      ],
+      "isBackground": false,
+      "problemMatcher": []
+    }
+  ]
+}

@@ -10,14 +10,14 @@ GitHub Actions ---- tests, lint, Docker build ----> GHCR (release tags)
    v
 AWS EC2 Ubuntu host
    |
-   +--> Nginx :80 --> Next.js/Node.js :3000 --> PostgreSQL (private Compose network)
+   +--> Nginx :80 --> Next.js frontend :3000 --> Node.js API :3001 --> PostgreSQL
    |
-   +--> Prometheus scrapes /api/metrics --> Grafana dashboards
+   +--> Prometheus scrapes backend /api/metrics --> Grafana dashboards
 ```
 
 The local Compose stack mirrors the host stack. Nginx exposes the application on
-port 8080 locally; PostgreSQL is not exposed on a host port. Next.js serves the
-React pages and Node.js route handlers in the same service. The initial AWS
-configuration is for learning only; use HTTPS, restricted admin access,
-managed secrets, backups, and a stronger production architecture before
+port 8080 locally; PostgreSQL and the API service are not exposed on host ports.
+The frontend and backend are independently built Next.js/Node.js services. The
+initial AWS configuration is for learning only; use HTTPS, restricted admin
+access, managed secrets, backups, and a stronger production architecture before
 handling real user data.

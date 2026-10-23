@@ -1,378 +1,16 @@
-@import url("https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap");
-:root {
-  --bg: #060913;
-  --panel: rgba(12, 18, 36, 0.84);
-  --line: rgba(140, 170, 255, 0.18);
-  --cyan: #22e4ff;
-  --violet: #8b5cf6;
-  --pink: #ff3d9a;
-  --ink: #e8eefc;
-  --muted: #8d9bc0;
-}
 * {
   box-sizing: border-box;
 }
-body {
-  margin: 0;
-  color: var(--ink);
-  background: radial-gradient(900px 600px at 68% -10%, #17276880, transparent 64%), var(--bg);
-  font:
-    15px/1.55 Manrope,
-    system-ui,
-    sans-serif;
-}
-a {
-  text-decoration: none;
-  color: inherit;
-}
-.sidebar {
-  position: fixed;
-  inset: 14px auto 14px 14px;
-  width: 258px;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  gap: 22px;
-  padding: 20px 14px;
-  border: 1px solid var(--line);
-  border-radius: 24px;
-  background: linear-gradient(180deg, #11215188, transparent 40%), #080d1ce8;
-  backdrop-filter: blur(16px);
-}
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-}
-.brand > i,
-.logo {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, var(--cyan), var(--pink));
-  color: #07111d;
-  font-style: normal;
-  font-size: 22px;
-}
-.brand b {
-  display: block;
-  font: 700 18px Chakra Petch;
-}
-.brand small {
-  color: var(--muted);
-  font-size: 11px;
-}
-.brand small span,
-.signal span {
-  display: inline-block;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #3dffb0;
-  box-shadow: 0 0 9px #3dffb0;
-  margin-right: 5px;
-}
-.level {
-  display: grid;
-  gap: 6px;
-  padding: 13px;
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  background: #ffffff08;
-}
-.level b {
-  color: var(--cyan);
-  font-family: Chakra Petch;
-}
-.level span,
-.sideBottom small {
-  font-size: 11px;
-  color: var(--muted);
-}
-.level div,
-.progress {
-  height: 7px;
-  overflow: hidden;
-  border-radius: 10px;
-  background: #ffffff12;
-}
-.level i,
-.progress i {
-  display: block;
-  width: 0;
-  height: 100%;
-  background: linear-gradient(90deg, var(--violet), var(--cyan));
-}
-.sidebar nav {
-  display: grid;
-  gap: 5px;
-}
-.sidebar nav a {
-  display: flex;
-  gap: 11px;
-  align-items: center;
-  padding: 10px;
-  border-radius: 13px;
-  color: #b9c5e6;
-  font-weight: 700;
-}
-.sidebar nav a:hover,
-.sidebar nav a.active {
-  background: #22e4ff1c;
-  color: white;
-  box-shadow: inset 0 0 0 1px #22e4ff55;
-}
-.sidebar nav i {
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  border: 1px solid #22e4ff44;
-  border-radius: 9px;
-  color: var(--cyan);
-  font-style: normal;
-}
-.sideBottom {
-  margin-top: auto;
-  display: grid;
-  gap: 8px;
-  padding: 12px 4px;
-  border-top: 1px solid var(--line);
-}
-.textButton {
-  border: 0;
-  background: none;
-  padding: 0;
-  color: #ff9dbd;
-  text-align: left;
-  font: 700 13px Manrope;
-  cursor: pointer;
-}
-.content {
-  max-width: 1500px;
-  margin-left: 286px;
-  padding: 28px 34px 64px;
-}
-.heroDash {
-  position: relative;
-  display: grid;
-  grid-template-columns: 1fr 290px;
-  align-items: center;
-  min-height: 330px;
-  overflow: hidden;
-  padding: 44px;
-  border: 1px solid #22e4ff42;
-  border-radius: 28px;
-  background: linear-gradient(128deg, #0c193bce, #111329ce 56%, #3d1662aa);
-  box-shadow: 0 18px 55px #0008;
-}
-.heroDash:after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent, #22e4ff13, transparent);
-  transform: translateX(-70%);
-  animation: scan 4s infinite;
-}
-.eyebrow {
-  margin: 0;
-  color: var(--cyan);
-  font: 600 13px Chakra Petch;
-  letter-spacing: 0.06em;
-}
-.heroDash h1,
-h1,
-h2 {
-  font-family: Chakra Petch;
-  margin: 5px 0;
-}
-.heroDash h1 {
-  font-size: clamp(38px, 5vw, 64px);
-  line-height: 0.95;
-}
-.heroDash h1 em {
-  font-style: normal;
-  color: var(--cyan);
-}
-.intro {
-  max-width: 610px;
-  color: #b9c5e6;
-}
-.heroActions {
-  display: flex;
-  gap: 10px;
-  margin-top: 24px;
-}
-.primary,
-.secondary {
-  display: inline-block;
-  border: 1px solid var(--cyan);
-  border-radius: 11px;
-  padding: 10px 15px;
-  font-weight: 800;
-  cursor: pointer;
-}
-.primary {
-  background: var(--cyan);
-  color: #03121a;
-  box-shadow: 0 0 20px #22e4ff55;
-}
-.secondary {
-  color: var(--ink);
-  background: #ffffff0a;
-}
-.compact {
-  margin-top: 11px;
-}
-.orb {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  place-content: center;
-  width: 230px;
-  height: 230px;
-  margin: auto;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle, #22e4ff24 12%, transparent 45%),
-    conic-gradient(var(--cyan) 0deg, #8b5cf655 0deg 288deg, #fff1 0);
-  box-shadow: 0 0 35px #22e4ff33;
-}
-.orb:before {
-  content: "";
-  position: absolute;
-  inset: 13px;
-  border-radius: 50%;
-  background: #0a1124;
-}
-.orb b,
-.orb span {
-  position: relative;
-  text-align: center;
-}
-.orb b {
-  font: 700 48px Chakra Petch;
-}
-.orb span {
-  color: var(--muted);
-}
-.metricGrid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
-  margin: 18px 0;
-}
-.metricGrid article,
-.monitor,
-.adminCards article {
-  padding: 19px;
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  background: var(--panel);
-  box-shadow: 0 14px 42px #0006;
-}
-.metricGrid small {
-  color: var(--muted);
-  font: 700 11px Chakra Petch;
-  letter-spacing: 0.08em;
-}
-.metricGrid b {
-  display: block;
-  font: 700 37px Chakra Petch;
-}
-.metricGrid span {
-  color: var(--muted);
-  font-size: 12px;
-}
-.metricGrid .progress {
-  display: block;
-  margin-top: 12px;
-}
-.dashGrid {
-  display: grid;
-  grid-template-columns: 1.45fr 1fr;
-  gap: 14px;
-}
-.monitor {
-  min-height: 190px;
-}
-.monitor h2 {
-  font-size: 22px;
-}
-.monitor p {
-  color: var(--muted);
-}
-.monitor.large {
-  grid-row: span 2;
-}
-.chart {
-  display: flex;
-  align-items: end;
-  gap: 7px;
-  height: 135px;
-  margin: 14px 0;
-  border-bottom: 1px solid var(--line);
-  background: repeating-linear-gradient(to top, transparent 0 33px, #ffffff0b 34px);
-}
-.chart i {
-  flex: 1;
-  min-width: 3px;
-  border-radius: 4px 4px 0 0;
-  background: linear-gradient(var(--cyan), var(--violet));
-  opacity: 0.75;
-}
-.signal {
-  display: flex;
-  gap: 7px;
-  align-items: center;
-  padding: 9px 0;
-  border-bottom: 1px solid var(--line);
-  font-size: 13px;
-}
-.signal b {
-  margin-left: auto;
-  color: #3dffb0;
-  font: 600 11px Chakra Petch;
-}
-.pageHead {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-  margin: 10px 0 20px;
-}
-.pageHead h1 {
-  font-size: 38px;
-}
-.pageHead p {
-  color: var(--muted);
-  max-width: 680px;
-}
-.matrixFrame {
-  width: 100%;
-  height: calc(100vh - 160px);
-  min-height: 760px;
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  background: var(--bg);
-}
-.adminCards {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-}
-.adminCards p {
-  color: var(--muted);
-}
+
 .login {
   display: grid;
   min-height: 100vh;
   place-items: center;
   padding: 20px;
-  background: radial-gradient(700px 600px at 50% 20%, #273988aa, transparent 66%), var(--bg);
+  background:
+    radial-gradient(700px 600px at 50% 20%, #273988aa, transparent 66%), var(--bg, #060913);
 }
+
 .loginCard {
   width: min(100%, 440px);
   padding: 36px;
@@ -381,121 +19,94 @@ h2 {
   background: #0b1226e6;
   box-shadow: 0 30px 90px #0009;
 }
+
 .loginCard .logo {
-  margin-bottom: 22px;
+  display: grid;
   width: 48px;
   height: 48px;
+  margin-bottom: 22px;
+  place-items: center;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #22e4ff, #ff3d9a);
+  color: #07111d;
   font-size: 28px;
 }
+
 .loginCard h1 {
-  font-size: 36px;
+  margin: 5px 0;
+  font:
+    700 36px Chakra Petch,
+    sans-serif;
 }
+
 .loginCard > p:not(.eyebrow) {
-  color: var(--muted);
+  color: var(--muted, #8d9bc0);
 }
-form {
+
+.loginCard form {
   display: grid;
   gap: 15px;
   margin-top: 25px;
 }
-label {
+
+.loginCard label {
   display: grid;
   gap: 7px;
   color: #c8d4f2;
-  font-weight: 700;
   font-size: 13px;
+  font-weight: 700;
 }
-input {
+
+.loginCard input {
   width: 100%;
   padding: 12px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--line, rgba(140, 170, 255, 0.18));
   border-radius: 11px;
   background: #ffffff0a;
-  color: var(--ink);
-  font: 16px Manrope;
+  color: var(--ink, #e8eefc);
+  font:
+    16px Manrope,
+    sans-serif;
 }
-.loginCard button {
+
+.loginCard button.primary {
   border: 0;
-  font: 800 15px Manrope;
+  border-radius: 11px;
+  padding: 12px 15px;
+  background: #22e4ff;
+  color: #03121a;
+  font:
+    800 15px Manrope,
+    sans-serif;
+  cursor: pointer;
 }
+
+.loginCard button.primary:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
 .error {
   margin: 0;
   color: #ff9dbd;
   font-size: 13px;
 }
+
 .loading {
-  min-height: 100vh;
   display: grid;
+  min-height: 100vh;
   place-items: center;
-  color: var(--muted);
+  color: var(--muted, #8d9bc0);
 }
-@keyframes scan {
-  to {
-    transform: translateX(100%);
-  }
-}
-@media (max-width: 900px) {
-  .sidebar {
-    position: static;
-    width: auto;
-    margin: 12px;
-    flex-direction: row;
-    align-items: center;
-  }
-  .sidebar .level,
-  .sideBottom {
-    display: none;
-  }
-  .sidebar nav {
-    display: flex;
-  }
-  .sidebar nav a {
-    font-size: 0;
-  }
-  .sidebar nav i {
-    font-size: 15px;
-  }
-  .content {
-    margin: 0;
-    padding: 12px 16px 40px;
-  }
-  .heroDash {
-    grid-template-columns: 1fr;
-    padding: 28px;
-  }
-  .orb {
-    display: none;
-  }
-  .metricGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .dashGrid {
-    grid-template-columns: 1fr;
-  }
-  .monitor.large {
-    grid-row: auto;
-  }
-}
-@media (max-width: 550px) {
-  .sidebar {
-    padding: 11px;
-  }
-  .brand b {
-    font-size: 15px;
-  }
-  .sidebar nav a {
-    padding: 5px;
-  }
-  .metricGrid,
-  .adminCards {
-    grid-template-columns: 1fr;
-  }
-  .heroActions,
-  .pageHead {
-    align-items: stretch;
-    flex-direction: column;
-  }
-  .matrixFrame {
-    height: 800px;
-  }
+
+.sb .textButton {
+  border: 0;
+  padding: 8px 0 0;
+  background: transparent;
+  color: #ff9dbd;
+  text-align: left;
+  font:
+    700 13px Manrope,
+    sans-serif;
+  cursor: pointer;
 }

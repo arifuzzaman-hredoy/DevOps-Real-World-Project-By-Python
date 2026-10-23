@@ -22,7 +22,7 @@ Create a repository, push this project, use feature branches and pull requests, 
 
 ## Stage 3 — Node.js/API basics
 
-Read the Next.js route handlers in `frontend/app/api/`. Run typechecking and the API smoke test. Add pagination, filtering by status, and stronger validation.
+Read the Node.js route handler in `backend/app/api/[...path]/route.ts` and the frontend API rewrite in `frontend/next.config.ts`. Run typechecking and the API smoke test. Add pagination, filtering by status, and stronger validation.
 
 **Checkpoint:** Explain an HTTP request from Nginx to Next.js/Node.js to PostgreSQL.
 
@@ -36,7 +36,7 @@ Commands: `docker build`, `docker image ls`, `docker run`, `docker ps -a`, `dock
 
 ## Stage 5 — Compose and networking
 
-Run the full stack. Stop only the API and observe recovery. Break the DB password deliberately, diagnose logs, then restore it. Confirm the DB is not published on a host port.
+Run the full stack. Stop only the backend and observe recovery. Break the DB password deliberately, diagnose logs, then restore it. Confirm the DB and backend are not published on host ports.
 
 **Checkpoint:** Explain service DNS names, startup dependencies, health checks, networks, and persistent volumes.
 
@@ -54,8 +54,8 @@ Configure GHCR package visibility and publish a version tag such as `v0.1.0`. Pi
 
 ## Stage 8 — AWS and Terraform
 
-Read all Terraform files. Configure the AWS CLI locally, choose a region, identify a valid Ubuntu AMI and existing key pair, then run:
-`terraform init`, `terraform fmt -check`, `terraform validate`, `terraform plan`.
+Read all Terraform files under `devops/terraform/`. Configure the AWS CLI locally, choose a region, identify a valid Ubuntu AMI and existing key pair, then run:
+`terraform -chdir=devops/terraform init`, `terraform -chdir=devops/terraform fmt -check`, `terraform -chdir=devops/terraform validate`, `terraform -chdir=devops/terraform plan`.
 Only apply after reviewing the plan. Do not commit state files.
 
 **Checkpoint:** Explain security groups, CIDR restrictions, AMIs, instance types, state, providers, resources, and outputs.
