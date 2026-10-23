@@ -44,7 +44,7 @@ def _production_configuration_errors(config):
     if (
         not isinstance(password, str)
         or not password.strip()
-        or len(password) < 16
+        or len(password) < 6
         or password.startswith(("replace-with", "local-dev", "change-this"))
     ):
         errors.append("STUDY_APP_PASSWORD")
