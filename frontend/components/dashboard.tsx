@@ -100,8 +100,7 @@ function calculateOverview(states: Record<string, unknown>): Overview {
   const focusState = states["cst-fx-v1"];
   const focusSessions =
     isRecord(focusState) && typeof focusState.focusDone === "number" ? focusState.focusDone : 0;
-  const days =
-    isRecord(focusState) && isRecord(focusState.days) ? focusState.days : {};
+  const days = isRecord(focusState) && isRecord(focusState.days) ? focusState.days : {};
   const dailyActivity = Array.from({ length: 24 }, (_, index) => {
     const date = new Date();
     date.setDate(date.getDate() - (23 - index));
@@ -118,8 +117,12 @@ function calculateOverview(states: Record<string, unknown>): Overview {
     focusSessions,
     goal,
     completion,
-    nextSubject: next?.subject ?? (completedChapters === chapterCount ? "All subjects complete" : "Social Science"),
-    nextChapter: next?.title ?? (completedChapters === chapterCount ? "Your syllabus is complete" : FIRST_CHAPTER),
+    nextSubject:
+      next?.subject ??
+      (completedChapters === chapterCount ? "All subjects complete" : "Social Science"),
+    nextChapter:
+      next?.title ??
+      (completedChapters === chapterCount ? "Your syllabus is complete" : FIRST_CHAPTER),
     dailyActivity,
   };
 }
@@ -132,9 +135,11 @@ export function DashboardOverview() {
     const controller = new AbortController();
     fetch("/api/study/state", { credentials: "same-origin", signal: controller.signal })
       .then(async (response) => {
-        if (!response.ok) throw new Error(`Could not load study progress (HTTP ${response.status}).`);
+        if (!response.ok)
+          throw new Error(`Could not load study progress (HTTP ${response.status}).`);
         const body: unknown = await response.json();
-        if (!isRecord(body) || !isRecord(body.states)) throw new Error("Study progress response is invalid.");
+        if (!isRecord(body) || !isRecord(body.states))
+          throw new Error("Study progress response is invalid.");
         setOverview(calculateOverview(body.states));
       })
       .catch((reason: unknown) => {
@@ -153,50 +158,112 @@ export function DashboardOverview() {
       <header className="heroDash">
         <div>
           <p className="eyebrow">Personal learning dashboard · 2026</p>
-          <h1>Your study<br /><em>command centre.</em></h1>
-          <p className="intro">A Grafana-inspired overview of syllabus coverage, study activity and your next best task.</p>
+          <h1>
+            Your study
+            <br />
+            <em>command centre.</em>
+          </h1>
+          <p className="intro">
+            A Grafana-inspired overview of syllabus coverage, study activity and your next best
+            task.
+          </p>
           <div className="heroActions">
-            <Link className="primary" href="/matrix">Open study matrix →</Link>
-            <Link className="secondary" href="/admin">Manage syllabus</Link>
+            <Link className="primary" href="/matrix">
+              Open study matrix →
+            </Link>
+            <Link className="secondary" href="/admin">
+              Manage syllabus
+            </Link>
           </div>
         </div>
         <div
           className="orb"
           role="img"
           aria-label={`${progress}% syllabus coverage`}
-          style={{ background: `conic-gradient(var(--cyan) ${progress * 3.6}deg, #ffffff11 ${progress * 3.6}deg 360deg)` }}
+          style={{
+            background: `conic-gradient(var(--cyan) ${progress * 3.6}deg, #ffffff11 ${progress * 3.6}deg 360deg)`,
+          }}
         >
-          <b>{overview ? `${progress}%` : "…"}</b><span>coverage</span>
+          <b>{overview ? `${progress}%` : "…"}</b>
+          <span>coverage</span>
         </div>
       </header>
-      {error && <p className="error" role="alert">{error}</p>}
+      {error && (
+        <p className="error" role="alert">
+          {error}
+        </p>
+      )}
       <section className="metricGrid">
-        <article><small>CHAPTERS / UNITS</small><b>{overview?.chapters ?? "…"}</b><span>{overview?.subjects ?? "…"} subjects · {overview?.completedChapters ?? 0} complete</span></article>
-        <article><small>TASKS COMPLETED</small><b>{overview ? `${overview.completion}%` : "…"}</b><span>{overview?.completedTasks ?? 0} of {overview?.totalTasks ?? "…"} tasks</span></article>
-        <article><small>TARGET COVERAGE</small><b>{overview ? `${overview.goal}%` : "…"}</b><span className="progress"><i style={{ width: `${overview?.goal ?? 0}%` }} /></span></article>
-        <article><small>FOCUS SESSIONS</small><b>{overview?.focusSessions ?? "…"}</b><span>Completed focus blocks</span></article>
+        <article>
+          <small>CHAPTERS / UNITS</small>
+          <b>{overview?.chapters ?? "…"}</b>
+          <span>
+            {overview?.subjects ?? "…"} subjects · {overview?.completedChapters ?? 0} complete
+          </span>
+        </article>
+        <article>
+          <small>TASKS COMPLETED</small>
+          <b>{overview ? `${overview.completion}%` : "…"}</b>
+          <span>
+            {overview?.completedTasks ?? 0} of {overview?.totalTasks ?? "…"} tasks
+          </span>
+        </article>
+        <article>
+          <small>TARGET COVERAGE</small>
+          <b>{overview ? `${overview.goal}%` : "…"}</b>
+          <span className="progress">
+            <i style={{ width: `${overview?.goal ?? 0}%` }} />
+          </span>
+        </article>
+        <article>
+          <small>FOCUS SESSIONS</small>
+          <b>{overview?.focusSessions ?? "…"}</b>
+          <span>Completed focus blocks</span>
+        </article>
       </section>
       <section className="dashGrid">
         <article className="monitor large">
-          <div><p className="eyebrow">Coverage telemetry</p><h2>Study activity</h2></div>
+          <div>
+            <p className="eyebrow">Coverage telemetry</p>
+            <h2>Study activity</h2>
+          </div>
           <div className="chart" role="img" aria-label="Daily study activity over the last 24 days">
             {(overview?.dailyActivity ?? Array(24).fill(0)).map((count, index) => (
-              <i key={index} title={`${count} tasks completed`} style={{ height: `${Math.max(4, (count / chartMaximum) * 100)}%` }} />
+              <i
+                key={index}
+                title={`${count} tasks completed`}
+                style={{ height: `${Math.max(4, (count / chartMaximum) * 100)}%` }}
+              />
             ))}
           </div>
-          <small>{overview ? "Daily completed tasks from your saved study progress." : "Loading study activity…"}</small>
+          <small>
+            {overview
+              ? "Daily completed tasks from your saved study progress."
+              : "Loading study activity…"}
+          </small>
         </article>
         <article className="monitor">
           <p className="eyebrow">Next up</p>
           <h2>{overview?.nextChapter ?? "Loading your next chapter…"}</h2>
-          <p>{overview?.nextSubject ?? "Reading saved syllabus"} · Continue with the first unfinished chapter.</p>
-          <Link className="primary compact" href="/matrix">Go to Matrix</Link>
+          <p>
+            {overview?.nextSubject ?? "Reading saved syllabus"} · Continue with the first unfinished
+            chapter.
+          </p>
+          <Link className="primary compact" href="/matrix">
+            Go to Matrix
+          </Link>
         </article>
         <article className="monitor">
           <p className="eyebrow">System status</p>
-          {["Daily completion", "Study velocity", "Focus load", "Target confidence"].map((signal) => (
-            <div className="signal" key={signal}><span />{signal}<b>{overview ? "Live" : "Loading"}</b></div>
-          ))}
+          {["Daily completion", "Study velocity", "Focus load", "Target confidence"].map(
+            (signal) => (
+              <div className="signal" key={signal}>
+                <span />
+                {signal}
+                <b>{overview ? "Live" : "Loading"}</b>
+              </div>
+            ),
+          )}
         </article>
       </section>
     </AppShell>

@@ -1,3 +1,37 @@
 import Link from "next/link";
 import { AppShell } from "../../components/app-shell";
-export default function Admin() { return <AppShell><div className="pageHead"><div><p className="eyebrow">Configuration</p><h1>Admin panel</h1><p>Open the full matrix administration workspace to edit subjects, chapters, tasks, content, backup and restore data.</p></div></div><section className="adminCards"><article><h2>Syllabus and chapters</h2><p>Manage each subject, Mid-Term scope and chapter order.</p><a className="primary" href="/legacy-matrix.html">Open admin workspace ↗</a></article><article><h2>Progress data</h2><p>Your existing local checklist and flashcard backup system is safely retained from the original template.</p><Link className="secondary" href="/matrix">Open matrix</Link></article></section></AppShell>; }
+export default function Admin() {
+  return (
+    <AppShell>
+      <div className="pageHead">
+        <div>
+          <p className="eyebrow">Configuration</p>
+          <h1>Admin panel</h1>
+          <p>
+            Open the full matrix administration workspace to edit subjects, chapters, tasks,
+            content, backup and restore data.
+          </p>
+        </div>
+      </div>
+      <section className="adminCards">
+        <article>
+          <h2>Syllabus and chapters</h2>
+          <p>Manage each subject, Mid-Term scope and chapter order.</p>
+          <a className="primary" href="/legacy-matrix.html">
+            Open admin workspace ↗
+          </a>
+        </article>
+        <article>
+          <h2>Progress data</h2>
+          <p>
+            Your existing local checklist and flashcard backup system is safely retained from the
+            original template.
+          </p>
+          <Link className="secondary" href="/matrix">
+            Open matrix
+          </Link>
+        </article>
+      </section>
+    </AppShell>
+  );
+}

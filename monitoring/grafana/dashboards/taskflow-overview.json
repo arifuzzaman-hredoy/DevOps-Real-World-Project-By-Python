@@ -2,13 +2,7 @@
   "id": null,
   "uid": "taskflow-overview",
   "title": "TASKFLOW // SYSTEM MONITOR",
-  "tags": [
-    "taskflow",
-    "devops",
-    "cyberpunk",
-    "monitoring",
-    "prometheus"
-  ],
+  "tags": ["taskflow", "devops", "cyberpunk", "monitoring", "prometheus"],
   "timezone": "browser",
   "schemaVersion": 39,
   "version": 1,
@@ -79,9 +73,7 @@
       },
       "options": {
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -311,9 +303,7 @@
       },
       "options": {
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },

@@ -25,7 +25,11 @@ async function request(path, { method = "GET", payload, csrf, cookie = sessionCo
 
 async function expectStatus(label, path, expected, options) {
   const result = await request(path, options);
-  assert.equal(result.status, expected, `${label}: unexpected HTTP status; response=${JSON.stringify(result.body)}`);
+  assert.equal(
+    result.status,
+    expected,
+    `${label}: unexpected HTTP status; response=${JSON.stringify(result.body)}`,
+  );
   console.log(`PASS: ${label} (HTTP ${expected})`);
   return result.body;
 }
@@ -38,10 +42,14 @@ const anonymous = await expectStatus(
 );
 assert.equal(anonymous.error, "authentication required");
 
-const legacyTasks = await expectStatus("legacy task API data remains readable", "/api/tasks", 200, { cookie: "" });
+const legacyTasks = await expectStatus("legacy task API data remains readable", "/api/tasks", 200, {
+  cookie: "",
+});
 assert.ok(legacyTasks.some((task) => task.title === "legacy Flask task" && task.status === "done"));
 
-const loginCsrf = await expectStatus("login CSRF token retrieval", "/api/auth/csrf", 200, { cookie: "" });
+const loginCsrf = await expectStatus("login CSRF token retrieval", "/api/auth/csrf", 200, {
+  cookie: "",
+});
 assert.equal(typeof loginCsrf.csrf_token, "string");
 await expectStatus("invalid password rejected", "/api/auth/login", 401, {
   method: "POST",
@@ -61,15 +69,25 @@ assert.equal(typeof initialState.states, "object");
 const writeCsrf = await expectStatus("authenticated CSRF token retrieval", "/api/csrf", 200);
 assert.equal(typeof writeCsrf.csrf_token, "string");
 const stateValue = { release_smoke_test: "disposable-database-only" };
-await expectStatus("study-state write rejects missing CSRF", "/api/study/state/cst-study-matrix-v1", 403, {
-  method: "PUT",
-  payload: { value: stateValue },
-});
-const saved = await expectStatus("CSRF-protected study-state write", "/api/study/state/cst-study-matrix-v1", 200, {
-  method: "PUT",
-  payload: { value: stateValue },
-  csrf: writeCsrf.csrf_token,
-});
+await expectStatus(
+  "study-state write rejects missing CSRF",
+  "/api/study/state/cst-study-matrix-v1",
+  403,
+  {
+    method: "PUT",
+    payload: { value: stateValue },
+  },
+);
+const saved = await expectStatus(
+  "CSRF-protected study-state write",
+  "/api/study/state/cst-study-matrix-v1",
+  200,
+  {
+    method: "PUT",
+    payload: { value: stateValue },
+    csrf: writeCsrf.csrf_token,
+  },
+);
 assert.equal(saved.status, "saved");
 const persisted = await expectStatus("study-state persists in PostgreSQL", "/api/study/state", 200);
 assert.deepEqual(persisted.states["cst-study-matrix-v1"], stateValue);

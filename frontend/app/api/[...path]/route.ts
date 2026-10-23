@@ -55,7 +55,9 @@ function metricsText() {
     "# TYPE taskflow_http_request_duration_seconds histogram",
   );
   latencyBoundaries.forEach((boundary, index) => {
-    lines.push(`taskflow_http_request_duration_seconds_bucket{le="${boundary}"} ${latencyCounts[index]}`);
+    lines.push(
+      `taskflow_http_request_duration_seconds_bucket{le="${boundary}"} ${latencyCounts[index]}`,
+    );
   });
   lines.push(
     `taskflow_http_request_duration_seconds_bucket{le="+Inf"} ${latencyCount}`,
@@ -68,7 +70,12 @@ function metricsText() {
 function sessionSecret() {
   const secret = process.env.SESSION_SECRET || process.env.SECRET_KEY;
   if (process.env.NODE_ENV === "production") {
-    if (!secret || Buffer.byteLength(secret) < 32 || secret === "dev-only-change-me" || secret.startsWith("replace-with")) {
+    if (
+      !secret ||
+      Buffer.byteLength(secret) < 32 ||
+      secret === "dev-only-change-me" ||
+      secret.startsWith("replace-with")
+    ) {
       throw new Error("A private signing secret of at least 32 bytes must be configured");
     }
   }
@@ -77,7 +84,13 @@ function sessionSecret() {
 
 function studyPassword() {
   const password = process.env.STUDY_APP_PASSWORD;
-  if (process.env.NODE_ENV === "production" && (!password || Buffer.byteLength(password) < 16 || password === "study-matrix-local" || password.startsWith("replace-with"))) {
+  if (
+    process.env.NODE_ENV === "production" &&
+    (!password ||
+      Buffer.byteLength(password) < 16 ||
+      password === "study-matrix-local" ||
+      password.startsWith("replace-with"))
+  ) {
     throw new Error("A private study password of at least 16 bytes must be configured");
   }
   return password || "study-matrix-local";
@@ -88,7 +101,10 @@ function validateProductionConfig() {
   sessionSecret();
   studyPassword();
   const databaseUrl = process.env.DATABASE_URL || "";
-  if (!databaseUrl.startsWith("postgresql://") || databaseUrl.includes("change-this-local-password")) {
+  if (
+    !databaseUrl.startsWith("postgresql://") ||
+    databaseUrl.includes("change-this-local-password")
+  ) {
     throw new Error("A production PostgreSQL DATABASE_URL must be configured");
   }
 }
@@ -107,7 +123,11 @@ function decode(value?: string): Session {
   const providedBytes = Buffer.from(signature);
   const expectedBytes = Buffer.from(expected);
   try {
-    if (providedBytes.length !== expectedBytes.length || !timingSafeEqual(providedBytes, expectedBytes)) return {};
+    if (
+      providedBytes.length !== expectedBytes.length ||
+      !timingSafeEqual(providedBytes, expectedBytes)
+    )
+      return {};
     return JSON.parse(Buffer.from(body, "base64url").toString()) as Session;
   } catch {
     return {};
@@ -140,7 +160,9 @@ function csrfIsValid(request: NextRequest, session: Session) {
 async function parseJson(request: NextRequest): Promise<JsonObject | null> {
   try {
     const body: unknown = await request.json();
-    return body !== null && typeof body === "object" && !Array.isArray(body) ? body as JsonObject : null;
+    return body !== null && typeof body === "object" && !Array.isArray(body)
+      ? (body as JsonObject)
+      : null;
   } catch {
     return null;
   }
@@ -164,7 +186,14 @@ async function ensureSchema() {
   `);
 }
 
-function taskToJson(task: { id: number; title: string; description: string; status: string; created_at: Date; updated_at: Date }) {
+function taskToJson(task: {
+  id: number;
+  title: string;
+  description: string;
+  status: string;
+  created_at: Date;
+  updated_at: Date;
+}) {
   return {
     id: task.id,
     title: task.title,
@@ -211,7 +240,8 @@ async function getRoute(request: NextRequest, context: RouteContext) {
       headers: { "content-type": "text/plain; version=0.0.4" },
     });
   }
-  if (joinedPath === "auth/me") return session.auth ? json({ authenticated: true }) : json({ authenticated: false }, 401);
+  if (joinedPath === "auth/me")
+    return session.auth ? json({ authenticated: true }) : json({ authenticated: false }, 401);
   if (joinedPath === "auth/csrf" || joinedPath === "csrf") {
     const next = { ...session, csrf: randomBytes(32).toString("base64url") };
     return setSession(json({ csrf_token: next.csrf }), next);
@@ -224,7 +254,9 @@ async function getRoute(request: NextRequest, context: RouteContext) {
       const result = await pool.query("SELECT key, payload, updated_at FROM study_states");
       return json({
         states: Object.fromEntries(result.rows.map((row) => [row.key, row.payload])),
-        updated_at: Object.fromEntries(result.rows.map((row) => [row.key, row.updated_at?.toISOString() ?? null])),
+        updated_at: Object.fromEntries(
+          result.rows.map((row) => [row.key, row.updated_at?.toISOString() ?? null]),
+        ),
       });
     } catch (error) {
       return databaseError(error, "read study state");
@@ -234,7 +266,9 @@ async function getRoute(request: NextRequest, context: RouteContext) {
   if (joinedPath === "tasks") {
     try {
       await ensureSchema();
-      const result = await pool.query("SELECT id, title, description, status, created_at, updated_at FROM task ORDER BY id ASC");
+      const result = await pool.query(
+        "SELECT id, title, description, status, created_at, updated_at FROM task ORDER BY id ASC",
+      );
       return json(result.rows.map(taskToJson));
     } catch (error) {
       return databaseError(error, "list tasks");
@@ -246,8 +280,13 @@ async function getRoute(request: NextRequest, context: RouteContext) {
     if (id === null) return json({ error: "route not found" }, 404);
     try {
       await ensureSchema();
-      const result = await pool.query("SELECT id, title, description, status, created_at, updated_at FROM task WHERE id = $1", [id]);
-      return result.rowCount ? json(taskToJson(result.rows[0])) : json({ error: "task not found" }, 404);
+      const result = await pool.query(
+        "SELECT id, title, description, status, created_at, updated_at FROM task WHERE id = $1",
+        [id],
+      );
+      return result.rowCount
+        ? json(taskToJson(result.rows[0]))
+        : json({ error: "task not found" }, 404);
     } catch (error) {
       return databaseError(error, "get task");
     }
@@ -263,10 +302,15 @@ async function postRoute(request: NextRequest, context: RouteContext) {
   if (path === "auth/login") {
     if (!csrfIsValid(request, session)) return json({ error: "CSRF validation failed" }, 403);
     const body = await parseJson(request);
-    const provided = typeof body?.password === "string" ? Buffer.from(body.password) : Buffer.alloc(0);
+    const provided =
+      typeof body?.password === "string" ? Buffer.from(body.password) : Buffer.alloc(0);
     const expected = Buffer.from(studyPassword());
-    if (provided.length !== expected.length || !timingSafeEqual(provided, expected)) return json({ error: "invalid credentials" }, 401);
-    return setSession(json({ authenticated: true }), { auth: true, csrf: randomBytes(32).toString("base64url") });
+    if (provided.length !== expected.length || !timingSafeEqual(provided, expected))
+      return json({ error: "invalid credentials" }, 401);
+    return setSession(json({ authenticated: true }), {
+      auth: true,
+      csrf: randomBytes(32).toString("base64url"),
+    });
   }
 
   if (path === "auth/logout") {
@@ -282,10 +326,13 @@ async function postRoute(request: NextRequest, context: RouteContext) {
     if (!body || typeof body.title !== "string" || !body.title.trim()) {
       return json({ error: "title is required and must be a non-empty string" }, 400);
     }
-    if (body.title.trim().length > 160) return json({ error: "title must be 160 characters or fewer" }, 400);
+    if (body.title.trim().length > 160)
+      return json({ error: "title must be 160 characters or fewer" }, 400);
     const description = body.description ?? "";
-    if (typeof description !== "string") return json({ error: "description must be a string" }, 400);
-    if (description.length > 2000) return json({ error: "description must be 2000 characters or fewer" }, 400);
+    if (typeof description !== "string")
+      return json({ error: "description must be a string" }, 400);
+    if (description.length > 2000)
+      return json({ error: "description must be 2000 characters or fewer" }, 400);
 
     try {
       await ensureSchema();
@@ -310,10 +357,16 @@ async function patchRoute(request: NextRequest, context: RouteContext) {
   const body = await parseJson(request);
   if (!body) return json({ error: "a JSON object is required" }, 400);
 
-  if ("title" in body && (typeof body.title !== "string" || !body.title.trim() || body.title.trim().length > 160)) {
+  if (
+    "title" in body &&
+    (typeof body.title !== "string" || !body.title.trim() || body.title.trim().length > 160)
+  ) {
     return json({ error: "title must be a non-empty string of at most 160 characters" }, 400);
   }
-  if ("description" in body && (typeof body.description !== "string" || body.description.length > 2000)) {
+  if (
+    "description" in body &&
+    (typeof body.description !== "string" || body.description.length > 2000)
+  ) {
     return json({ error: "description must be a string of at most 2000 characters" }, 400);
   }
   if ("status" in body && (typeof body.status !== "string" || !taskStatuses.has(body.status))) {
@@ -337,7 +390,9 @@ async function patchRoute(request: NextRequest, context: RouteContext) {
         "status" in body ? body.status : null,
       ],
     );
-    return result.rowCount ? json(taskToJson(result.rows[0])) : json({ error: "task not found" }, 404);
+    return result.rowCount
+      ? json(taskToJson(result.rows[0]))
+      : json({ error: "task not found" }, 404);
   } catch (error) {
     return databaseError(error, "update task");
   }
@@ -375,7 +430,9 @@ async function deleteRoute(request: NextRequest, context: RouteContext) {
   try {
     await ensureSchema();
     const result = await pool.query("DELETE FROM task WHERE id = $1", [id]);
-    return result.rowCount ? new NextResponse(null, { status: 204 }) : json({ error: "task not found" }, 404);
+    return result.rowCount
+      ? new NextResponse(null, { status: 204 })
+      : json({ error: "task not found" }, 404);
   } catch (error) {
     return databaseError(error, "delete task");
   }
@@ -388,10 +445,13 @@ async function putRoute(request: NextRequest, context: RouteContext) {
 
   if (!session.auth) return unauthorized();
   if (!csrfIsValid(request, session)) return json({ error: "CSRF validation failed" }, 403);
-  if (!key || path.length !== 3 || !stateKeys.has(key)) return json({ error: "unknown study state key" }, 404);
+  if (!key || path.length !== 3 || !stateKeys.has(key))
+    return json({ error: "unknown study state key" }, 404);
   const body = await parseJson(request);
-  if (!body || !("value" in body)) return json({ error: "JSON object with a value field is required" }, 400);
-  if (Buffer.byteLength(JSON.stringify(body.value)) > 4 * 1024 * 1024) return json({ error: "study state is too large" }, 413);
+  if (!body || !("value" in body))
+    return json({ error: "JSON object with a value field is required" }, 400);
+  if (Buffer.byteLength(JSON.stringify(body.value)) > 4 * 1024 * 1024)
+    return json({ error: "study state is too large" }, 413);
 
   try {
     await ensureSchema();

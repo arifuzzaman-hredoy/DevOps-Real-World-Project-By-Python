@@ -43,9 +43,15 @@ Requirements: Node.js 22 and npm.
 ```bash
 cd frontend
 npm ci
+npm run format:check
 npm run typecheck
 npm run build
+cd ..
 ```
+
+From the repository root, use `npm --prefix frontend run format` to format the
+project source, documentation, and configuration files. `make format` also
+formats Terraform files.
 
 The end-to-end API smoke test runs against a started Compose stack:
 
@@ -56,19 +62,19 @@ bash scripts/api-smoke-test.sh http://127.0.0.1:8080
 
 ## API
 
-| Method | Path | Purpose |
-|---|---|---|
-| GET | `/api/health` | Next.js service liveness |
-| GET | `/api/ready` | Readiness including PostgreSQL connectivity |
-| GET | `/api/metrics` | Private Prometheus metrics endpoint (not exposed through Nginx) |
-| GET, POST | `/api/tasks` | List or create tasks |
-| GET, PATCH, DELETE | `/api/tasks/:id` | Read, update, or delete a task |
-| GET | `/api/auth/csrf` | Issue a CSRF token |
-| POST | `/api/auth/login` | Sign in using `STUDY_APP_PASSWORD` |
-| GET | `/api/auth/me` | Check the signed-in session |
-| POST | `/api/auth/logout` | Sign out |
-| GET | `/api/study/state` | Read authenticated study data |
-| PUT, DELETE | `/api/study/state/:key` | Save or delete authenticated study data |
+| Method             | Path                    | Purpose                                                         |
+| ------------------ | ----------------------- | --------------------------------------------------------------- |
+| GET                | `/api/health`           | Next.js service liveness                                        |
+| GET                | `/api/ready`            | Readiness including PostgreSQL connectivity                     |
+| GET                | `/api/metrics`          | Private Prometheus metrics endpoint (not exposed through Nginx) |
+| GET, POST          | `/api/tasks`            | List or create tasks                                            |
+| GET, PATCH, DELETE | `/api/tasks/:id`        | Read, update, or delete a task                                  |
+| GET                | `/api/auth/csrf`        | Issue a CSRF token                                              |
+| POST               | `/api/auth/login`       | Sign in using `STUDY_APP_PASSWORD`                              |
+| GET                | `/api/auth/me`          | Check the signed-in session                                     |
+| POST               | `/api/auth/logout`      | Sign out                                                        |
+| GET                | `/api/study/state`      | Read authenticated study data                                   |
+| PUT, DELETE        | `/api/study/state/:key` | Save or delete authenticated study data                         |
 
 Task routes retain the original JSON API behavior. Study-state routes require
 an authenticated session and CSRF protection for writes. Production must set a
