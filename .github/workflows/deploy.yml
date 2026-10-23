@@ -63,14 +63,14 @@ jobs:
           set -euo pipefail
           test -n "$EC2_HOST"
 
-          # এখানে ওল্ড ভাঙা স্ক্রিপ্ট বাইপাস করে সরাসরি ডকার কম্পোজ রান করা হচ্ছে
+          # এখানে সঠিক পাথ /home/ubuntu/taskflow-source ব্যবহার করা হয়েছে
           ssh \
             -i ~/.ssh/taskflow_deploy \
             -o IdentitiesOnly=yes \
             -o StrictHostKeyChecking=yes \
             -o BatchMode=yes \
             "ubuntu@$EC2_HOST" \
-            "cd ~/taskflow-consolidation && sudo docker compose pull && sudo docker compose up -d"
+            "cd /home/ubuntu/taskflow-source && sudo docker compose pull && sudo docker compose up -d"
 
       - name: Verify Live Container Status
         env:
@@ -83,4 +83,4 @@ jobs:
             -o IdentitiesOnly=yes \
             -o StrictHostKeyChecking=yes \
             "ubuntu@$EC2_HOST" \
-            "sudo docker compose ps"
+            "cd /home/ubuntu/taskflow-source && sudo docker compose ps"
