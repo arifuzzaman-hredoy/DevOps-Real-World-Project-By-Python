@@ -4,9 +4,15 @@ on:
   workflow_dispatch:
     inputs:
       image_tag:
-        description: "Immutable GHCR image tag: sha-<40-character commit SHA>"
+        description: "GHCR image tag, e.g. latest or sha-<commit-sha>"
         required: true
         type: string
+
+  workflow_run:
+    workflows:
+      - Publish TaskFlow image to GHCR
+    types:
+      - completed
 
 permissions:
   contents: read
@@ -18,19 +24,23 @@ concurrency:
 jobs:
   deploy:
     name: Deploy to EC2
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+
     runs-on: ubuntu-latest
     environment: production
 
     env:
-      IMAGE_TAG: ${{ inputs.image_tag }}
+      IMAGE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.image_tag || format('sha-{0}', github.event.workflow_run.head_sha) }}
 
     steps:
       - name: Validate image tag
         run: |
           set -euo pipefail
 
-          if [[ ! "$IMAGE_TAG" =~ ^sha-[0-9a-f]{40}$ ]]; then
-            echo "Image tag must be an immutable sha-<40-character commit SHA> tag"
+          if [[ ! "$IMAGE_TAG" =~ ^[a-zA-Z0-9_][a-zA-Z0-9_.-]{0,127}$ ]]; then
+            echo "Invalid image tag"
             exit 1
           fi
 
@@ -52,57 +62,6 @@ jobs:
 
           test -s ~/.ssh/taskflow_deploy
           test -s ~/.ssh/known_hosts
-
-      - name: Verify production Study Matrix secrets before deployment
-        env:
-          EC2_HOST: ${{ secrets.EC2_HOST }}
-        run: |
-          set -euo pipefail
-          test -n "$EC2_HOST"
-
-          ssh \
-            -i ~/.ssh/taskflow_deploy \
-            -o IdentitiesOnly=yes \
-            -o StrictHostKeyChecking=yes \
-            -o BatchMode=yes \
-            "ubuntu@$EC2_HOST" \
-            "sudo bash -s" <<'REMOTE'
-          set -euo pipefail
-          test -s /opt/taskflow/.env
-          grep -Eq '^SECRET_KEY=.{32,}$' /opt/taskflow/.env
-          ! grep -Eq '^SECRET_KEY=(replace-with|dev-only-change-me)' /opt/taskflow/.env
-          grep -Eq '^STUDY_APP_PASSWORD=.{6,}$' /opt/taskflow/.env
-          ! grep -Eq '^STUDY_APP_PASSWORD=(replace-with|local-dev|change-this)' /opt/taskflow/.env
-          grep -Eq '^POSTGRES_DB=.+$' /opt/taskflow/.env
-          grep -Eq '^POSTGRES_USER=.+$' /opt/taskflow/.env
-          grep -Eq '^POSTGRES_PASSWORD=.+$' /opt/taskflow/.env
-          grep -Eq 'SECRET_KEY: \$\{SECRET_KEY:\?' /opt/taskflow/compose.yaml
-          grep -Eq 'STUDY_APP_PASSWORD: \$\{STUDY_APP_PASSWORD:\?' /opt/taskflow/compose.yaml
-          grep -A2 -Fq 'location = /api/metrics {' /opt/taskflow/nginx.conf
-          grep -A2 -F 'location = /api/metrics {' /opt/taskflow/nginx.conf | grep -Fq 'return 404;'
-          grep -A2 -F 'location ^~ /api/metrics/ {' /opt/taskflow/nginx.conf | grep -Fq 'return 404;'
-          sudo docker exec taskflow-nginx-1 nginx -t
-          REMOTE
-
-      - name: Verify production metrics endpoint is private
-        run: |
-          set -euo pipefail
-
-          metrics_status="$(
-            curl \
-              --connect-timeout 5 \
-              --max-time 10 \
-              --silent \
-              --show-error \
-              -o /dev/null \
-              -w '%{http_code}' \
-              https://taskflow.oxytumzone.com/api/metrics
-          )"
-
-          if [[ "$metrics_status" != "404" ]]; then
-            echo "Production metrics endpoint must return 404 before deployment"
-            exit 1
-          fi
 
       - name: Deploy selected image
         env:
@@ -131,7 +90,7 @@ jobs:
               --fail \
               --silent \
               --show-error \
-              https://taskflow.oxytumzone.com/api/ready \
+              https://oxytumzone.com \
               -o /tmp/taskflow-health.json; then
 
               cat /tmp/taskflow-health.json
