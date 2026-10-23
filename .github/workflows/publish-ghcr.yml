@@ -45,7 +45,7 @@ jobs:
         env:
           APP_ENV: development
           STUDY_APP_PASSWORD: ci-study-password
-          SECRET_KEY: ci-test-signing-secret
+          SECRET_KEY: ci-test-signing-secret-for-release-smoke-tests
           POSTGRES_PASSWORD: ci-postgres-password
         run: |
           docker compose up --build -d api db nginx
