@@ -85,10 +85,16 @@ public_readiness() {
     [[ "$http_status" == "200" ]] && health_json_is_ready "$PUBLIC_RESPONSE"
 }
 
+reload_nginx() {
+    sudo docker exec taskflow-nginx-1 nginx -t >/dev/null 2>&1 &&
+        sudo docker exec taskflow-nginx-1 nginx -s reload >/dev/null 2>&1
+}
+
 compose_api_with_image() {
     local image="$1"
     TASKFLOW_API_IMAGE="$image" sudo --preserve-env=TASKFLOW_API_IMAGE \
-        docker compose -f "$COMPOSE_FILE" up -d --no-deps "$SERVICE" >/dev/null 2>&1
+        docker compose -f "$COMPOSE_FILE" up -d --no-deps "$SERVICE" >/dev/null 2>&1 &&
+        reload_nginx
 }
 
 verify_deployed_image() {
@@ -110,8 +116,24 @@ verify_deployed_image() {
 rollback() {
     local rollback_command_succeeded=1
     local rollback_verified=0
+    local rollback_config_dir="${TASKFLOW_ROLLBACK_CONFIG_DIR:-}"
 
     echo "Deployment failed; attempting rollback to the captured previous image."
+    if [[ -n "$rollback_config_dir" ]]; then
+        if [[ ! -s "$rollback_config_dir/compose.yaml" ||
+            ! -s "$rollback_config_dir/nginx.conf" ]]; then
+            echo "CRITICAL: Rollback configuration backup is incomplete."
+            return 1
+        fi
+        cp -- "$rollback_config_dir/compose.yaml" "$COMPOSE_FILE"
+        cp -- "$rollback_config_dir/nginx.conf" "$APP_DIR/nginx.conf"
+        if ! sudo docker compose -f "$COMPOSE_FILE" config --quiet ||
+            ! sudo docker exec taskflow-nginx-1 nginx -t >/dev/null 2>&1; then
+            echo "CRITICAL: Previous production configuration could not be restored."
+            return 1
+        fi
+    fi
+
     if ! compose_api_with_image "$OLD_IMAGE_REF"; then
         rollback_command_succeeded=0
     fi
@@ -152,6 +174,13 @@ fail_and_rollback() {
 
 if ! container_running; then
     echo "ERROR: Current API container is not running; refusing deployment." >&2
+    exit 1
+fi
+
+if [[ -n "${TASKFLOW_ROLLBACK_CONFIG_DIR:-}" ]] &&
+    [[ ! -s "$TASKFLOW_ROLLBACK_CONFIG_DIR/compose.yaml" ||
+        ! -s "$TASKFLOW_ROLLBACK_CONFIG_DIR/nginx.conf" ]]; then
+    echo "ERROR: Rollback configuration backup is incomplete; refusing deployment." >&2
     exit 1
 fi
 
