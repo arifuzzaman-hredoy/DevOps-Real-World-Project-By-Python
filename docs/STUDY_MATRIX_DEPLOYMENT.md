@@ -35,7 +35,8 @@ seeded into PostgreSQL when the matrix is first opened; progress, matrix
 customizations, study settings, and study-tool data are saved there afterward.
 Data from older browser local storage is intentionally not imported. If that
 old data is needed, export it from the old version and restore it manually
-after signing in.
+after signing in. The dashboard reads the same saved syllabus, completion,
+focus-session, and activity data.
 
 ## Database compatibility
 
