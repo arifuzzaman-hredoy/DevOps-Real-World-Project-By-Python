@@ -2,11 +2,7 @@
   "compilerOptions": {
     "target": "es2022",
     "useDefineForClassFields": true,
-    "lib": [
-      "DOM",
-      "DOM.Iterable",
-      "es2022"
-    ],
+    "lib": ["DOM", "DOM.Iterable", "es2022"],
     "module": "ESNext",
     "skipLibCheck": true,
     /* Bundler mode */
@@ -30,12 +26,6 @@
       }
     ]
   },
-  "include": [
-    "app",
-    "src",
-    ".next/types/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["app", "src", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
 }
