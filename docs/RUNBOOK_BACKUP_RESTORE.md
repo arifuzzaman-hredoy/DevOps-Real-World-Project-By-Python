@@ -1,15 +1,34 @@
 # PostgreSQL backup and recovery procedure
 
+<<<<<<< HEAD
 This procedure is for the TaskFlow PostgreSQL database. Backups contain private
 study data and must be treated as sensitive data. Never store them in the Git
 working tree, print their contents, or attach them to an issue or chat.
+=======
+## Backup
+
+```bash
+mkdir -p backups
+docker compose -f devops/compose.yaml exec -T db pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB" > "backups/taskflow-$(date +%F-%H%M).sql"
+```
+>>>>>>> integration/nextjs-main
 
 ## Create and verify a production backup
 
+<<<<<<< HEAD
 1. Confirm the production database and available disk space. Schedule the backup
    during a low-write period. Record the time and the selected recovery point.
 2. Store the archive outside `/opt/taskflow`, in a directory restricted to the
    deployment operator:
+=======
+## Restore to a fresh database
+
+1. Stop writes / put the app into maintenance mode.
+2. Create a separate test database or a fresh disposable environment.
+3. Restore with `psql -v ON_ERROR_STOP=1 -U USER -d DATABASE < backup.sql`.
+4. Verify task counts and sample records.
+5. Only then plan a production restore.
+>>>>>>> integration/nextjs-main
 
    ```bash
    set -Eeuo pipefail

@@ -1,0 +1,112 @@
+* {
+  box-sizing: border-box;
+}
+
+.login {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 20px;
+  background:
+    radial-gradient(700px 600px at 50% 20%, #273988aa, transparent 66%), var(--bg, #060913);
+}
+
+.loginCard {
+  width: min(100%, 440px);
+  padding: 36px;
+  border: 1px solid #22e4ff45;
+  border-radius: 25px;
+  background: #0b1226e6;
+  box-shadow: 0 30px 90px #0009;
+}
+
+.loginCard .logo {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 22px;
+  place-items: center;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #22e4ff, #ff3d9a);
+  color: #07111d;
+  font-size: 28px;
+}
+
+.loginCard h1 {
+  margin: 5px 0;
+  font:
+    700 36px Chakra Petch,
+    sans-serif;
+}
+
+.loginCard > p:not(.eyebrow) {
+  color: var(--muted, #8d9bc0);
+}
+
+.loginCard form {
+  display: grid;
+  gap: 15px;
+  margin-top: 25px;
+}
+
+.loginCard label {
+  display: grid;
+  gap: 7px;
+  color: #c8d4f2;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.loginCard input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--line, rgba(140, 170, 255, 0.18));
+  border-radius: 11px;
+  background: #ffffff0a;
+  color: var(--ink, #e8eefc);
+  font:
+    16px Manrope,
+    sans-serif;
+}
+
+.loginCard button.primary {
+  border: 0;
+  border-radius: 11px;
+  padding: 12px 15px;
+  background: #22e4ff;
+  color: #03121a;
+  font:
+    800 15px Manrope,
+    sans-serif;
+  cursor: pointer;
+}
+
+.loginCard button.primary:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.error {
+  margin: 0;
+  color: #ff9dbd;
+  font-size: 13px;
+}
+
+.loading {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  color: var(--muted, #8d9bc0);
+}
+
+.sb .textButton {
+  border: 0;
+  padding: 8px 0 0;
+  background: transparent;
+  color: #ff9dbd;
+  text-align: left;
+  font:
+    700 13px Manrope,
+    sans-serif;
+  cursor: pointer;
+}

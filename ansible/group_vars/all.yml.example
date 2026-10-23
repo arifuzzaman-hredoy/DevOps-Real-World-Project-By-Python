@@ -1,3 +1,0 @@
-# Encrypt this file with: ansible-vault encrypt ansible/group_vars/all.yml
-vault_postgres_password: "REPLACE_WITH_LONG_RANDOM_PASSWORD"
-vault_grafana_password: "REPLACE_WITH_ANOTHER_LONG_RANDOM_PASSWORD"

@@ -1,10 +1,15 @@
-.PHONY: test lint run down logs
+.PHONY: test format format-check run down logs
 
 test:
-	pytest -q
+	npm --prefix frontend run typecheck
 
-lint:
-	ruff check app tests
+format:
+	npm --prefix frontend run format
+	terraform fmt -recursive terraform
+
+format-check:
+	npm --prefix frontend run format:check
+	terraform fmt -check -recursive terraform
 
 run:
 	docker compose up --build -d

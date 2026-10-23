@@ -1,11 +1,23 @@
 .git
 .github
+.next
+**/.next
+**/node_modules
 .venv
+<<<<<<< HEAD
 **/__pycache__
 **/.pytest_cache
 **/.ruff_cache
 **/node_modules
 **/dist
+=======
+__pycache__
+.pytest_cache
+.ruff_cache
+instance
+.vscode
+*.pyc
+>>>>>>> integration/nextjs-main
 .env
 .env.*
 !.env.example
@@ -13,8 +25,17 @@ terraform
 ansible
 docs
 tests
+<<<<<<< HEAD
 instance
 .migration-backup
+=======
+dist
+build
+coverage
+*.tfstate
+*.tfstate.*
+*.tfplan
+>>>>>>> integration/nextjs-main
 *.pyc
 *.tfstate
 *.tfstate.*
