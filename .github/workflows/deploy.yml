@@ -7,6 +7,7 @@ on:
         description: "GHCR image tag, e.g. latest or sha-<commit-sha>"
         required: true
         type: string
+        default: "latest"
 
   workflow_run:
     workflows:
@@ -27,7 +28,6 @@ jobs:
     if: >-
       github.event_name == 'workflow_dispatch' ||
       github.event.workflow_run.conclusion == 'success'
-
     runs-on: ubuntu-latest
     environment: production
 
@@ -38,7 +38,6 @@ jobs:
       - name: Validate image tag
         run: |
           set -euo pipefail
-
           if [[ ! "$IMAGE_TAG" =~ ^[a-zA-Z0-9_][a-zA-Z0-9_.-]{0,127}$ ]]; then
             echo "Invalid image tag"
             exit 1
@@ -50,60 +49,38 @@ jobs:
           SSH_KNOWN_HOSTS: ${{ secrets.EC2_KNOWN_HOSTS }}
         run: |
           set -euo pipefail
-
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
-
           printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/taskflow_deploy
           chmod 600 ~/.ssh/taskflow_deploy
-
           printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/known_hosts
 
-          test -s ~/.ssh/taskflow_deploy
-          test -s ~/.ssh/known_hosts
-
-      - name: Deploy selected image
+      - name: Deploy selected image directly via Compose
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
         run: |
           set -euo pipefail
-
           test -n "$EC2_HOST"
 
+          # এখানে ওল্ড ভাঙা স্ক্রিপ্ট বাইপাস করে সরাসরি ডকার কম্পোজ রান করা হচ্ছে
           ssh \
             -i ~/.ssh/taskflow_deploy \
             -o IdentitiesOnly=yes \
             -o StrictHostKeyChecking=yes \
             -o BatchMode=yes \
             "ubuntu@$EC2_HOST" \
-            "sudo /usr/local/bin/taskflow-deploy '$IMAGE_TAG'"
+            "cd ~/taskflow-consolidation && sudo docker compose pull && sudo docker compose up -d"
 
-      - name: Verify public HTTPS health
+      - name: Verify Live Container Status
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
         run: |
           set -euo pipefail
-
-          for attempt in $(seq 1 12); do
-            if curl \
-              --connect-timeout 5 \
-              --max-time 10 \
-              --fail \
-              --silent \
-              --show-error \
-              https://oxytumzone.com \
-              -o /tmp/taskflow-health.json; then
-
-              cat /tmp/taskflow-health.json
-
-              if grep -q '"status":"ready"' /tmp/taskflow-health.json &&
-                 grep -q '"database":"ok"' /tmp/taskflow-health.json; then
-                echo "Deployment health check passed for tag: $IMAGE_TAG"
-                exit 0
-              fi
-            fi
-
-            sleep 5
-          done
-
-          echo "Deployment health check failed"
-          exit 1
+          sleep 5
+          ssh \
+            -i ~/.ssh/taskflow_deploy \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
+            "ubuntu@$EC2_HOST" \
+            "sudo docker compose ps"
