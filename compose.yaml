@@ -24,7 +24,8 @@ services:
         ]
       interval: 20s
       timeout: 4s
-      retries: 5
+      start_period: 30s
+      retries: 10
 
   db:
     image: postgres:16-alpine
