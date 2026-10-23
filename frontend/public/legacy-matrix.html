@@ -3065,6 +3065,14 @@
     </style>
   </head>
   <body>
+    <div
+      id="databaseGate"
+      role="status"
+      aria-live="polite"
+      style="position:fixed;inset:0;z-index:99999;display:grid;place-items:center;padding:24px;background:#060913;color:#fff;text-align:center;font:600 16px/1.5 system-ui"
+    >
+      Loading your study matrix from the database…
+    </div>
     <div class="fx-bg" aria-hidden="true">
       <div class="fx-aurora a1"></div>
       <div class="fx-aurora a2"></div>
@@ -3371,10 +3379,7 @@
         </div>
         <main id="matrix"></main>
         <div class="footer">
-          <span id="ftxt"
-            >Progress is saved automatically in this browser on this
-            device.</span
-          >
+          <span id="ftxt">Your syllabus and progress are saved to your study database.</span>
           <button class="btn ghost" id="resetBtn">Reset all progress</button>
         </div>
       </div>
@@ -3629,6 +3634,60 @@
         { id: "selfTest", label: "Self-exam" },
       ];
       const DATA_KEY = "cst-study-data-v2";
+      const STORAGE_KEY = "cst-study-matrix-v1";
+      const studyPersistence = (() => {
+        let loading;
+        let csrfToken;
+        let writeQueue = Promise.resolve();
+        const load = () => {
+          if (!loading) {
+            loading = fetch("/api/study/state", { credentials: "same-origin" })
+              .then(async (response) => {
+                if (!response.ok) throw new Error("Could not load saved study data.");
+                const body = await response.json();
+                if (!body.states || typeof body.states !== "object" || Array.isArray(body.states))
+                  throw new Error("The saved study data response is invalid.");
+                return body.states;
+              });
+          }
+          return loading;
+        };
+        const get = async (key) => (await load())[key];
+        const save = (key, value) => {
+          const snapshot = JSON.parse(JSON.stringify(value));
+          const operation = writeQueue.catch(() => {}).then(async () => {
+            if (!csrfToken) {
+              const response = await fetch("/api/csrf", { credentials: "same-origin" });
+              if (!response.ok) throw new Error("Could not prepare a secure database save.");
+              const body = await response.json();
+              if (typeof body.csrf_token !== "string") throw new Error("The security token response is invalid.");
+              csrfToken = body.csrf_token;
+            }
+            const response = await fetch(`/api/study/state/${encodeURIComponent(key)}`, {
+              method: "PUT",
+              credentials: "same-origin",
+              headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken },
+              body: JSON.stringify({ value: snapshot }),
+            });
+            if (!response.ok) throw new Error(`Database save failed (HTTP ${response.status}).`);
+            const states = await load();
+            states[key] = snapshot;
+          });
+          writeQueue = operation;
+          return operation;
+        };
+        return { get, save };
+      })();
+      window.cstStudyPersistence = studyPersistence;
+      const readyParts = new Set();
+      window.cstStudyPartReady = (part) => {
+        readyParts.add(part);
+        if (readyParts.size === 3) $("databaseGate")?.remove();
+      };
+      window.cstStudyPartFailed = (error) => {
+        const gate = $("databaseGate");
+        if (gate) gate.textContent = `Study data could not be loaded or saved. Please refresh and try again. ${error?.message || ""}`;
+      };
       const uid = () =>
         "x" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
       function defaults() {
@@ -3643,8 +3702,7 @@
             noticeHead: "How completion works:",
             notice:
               "Every chapter has 4 question-preparation tasks and 4 study-workflow tasks. A chapter counts as complete only when all 8 are checked. The Mid-Term ranges for subjects other than Mathematics-III are estimates—confirm them against your college syllabus.",
-            footer:
-              "Progress is saved automatically in this browser on this device.",
+            footer: "Your syllabus and progress are saved to your study database.",
           },
           subjects: RAW.map((s, si) => ({
             id: "s" + si,
@@ -3659,19 +3717,7 @@
           s: DS.map((x) => ({ ...x })),
         };
       }
-      let D;
-      try {
-        D = JSON.parse(localStorage.getItem(DATA_KEY));
-        if (
-          !D ||
-          !Array.isArray(D.subjects) ||
-          !Array.isArray(D.q) ||
-          !Array.isArray(D.s)
-        )
-          D = defaults();
-      } catch (e) {
-        D = defaults();
-      }
+      let D = defaults();
       D.cfg = { ...defaults().cfg, ...D.cfg };
       let subjects, questionTasks, studyTasks, allChapters;
       function sync() {
@@ -3692,22 +3738,15 @@
         );
       }
       function saveD() {
-        try {
-          localStorage.setItem(DATA_KEY, JSON.stringify(D));
-        } catch (e) {
-          showToast("Browser storage unavailable. Take a backup.");
-        }
+        studyPersistence.save(DATA_KEY, D).catch((error) => {
+          window.cstStudyPartFailed(error);
+          showToast("Could not save syllabus changes to the database.");
+        });
       }
       const T = () => questionTasks.length + studyTasks.length;
       sync();
-      const STORAGE_KEY = "cst-study-matrix-v1";
       let state = {};
       let scope = "all";
-      try {
-        state = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}") || {};
-      } catch (e) {
-        state = {};
-      }
       const $ = (id) => document.getElementById(id);
       function taskKey(chapterId, taskId) {
         return chapterId + "::" + taskId;
@@ -3724,11 +3763,10 @@
         return T() > 0 && chapterTaskCount(c) === T();
       }
       function save() {
-        try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-        } catch (e) {
-          showToast("Browser storage unavailable. Export a backup.");
-        }
+        studyPersistence.save(STORAGE_KEY, state).catch((error) => {
+          window.cstStudyPartFailed(error);
+          showToast("Could not save study progress to the database.");
+        });
       }
       function renderStats() {
         const done = allChapters.reduce((n, c) => n + chapterTaskCount(c), 0);
@@ -4199,30 +4237,44 @@
       }
       $("adminBtn").addEventListener("click", () => showView(true));
       $("backBtn").addEventListener("click", () => showView(false));
-      applyCfg();
-      render();
+      window.cstStudyReady = (async () => {
+        try {
+          const savedData = await studyPersistence.get(DATA_KEY);
+          if (
+            savedData &&
+            Array.isArray(savedData.subjects) &&
+            Array.isArray(savedData.q) &&
+            Array.isArray(savedData.s)
+          ) {
+            D = savedData;
+          } else {
+            D = defaults();
+            await studyPersistence.save(DATA_KEY, D);
+          }
+          D.cfg = { ...defaults().cfg, ...D.cfg };
+          const savedProgress = await studyPersistence.get(STORAGE_KEY);
+          state =
+            savedProgress && typeof savedProgress === "object" && !Array.isArray(savedProgress)
+              ? savedProgress
+              : {};
+          if (savedProgress === undefined) await studyPersistence.save(STORAGE_KEY, state);
+          sync();
+          applyCfg();
+          render();
+          window.cstStudyPartReady("core");
+        } catch (error) {
+          window.cstStudyPartFailed(error);
+          throw error;
+        }
+      })();
     </script>
     <script id="fxjs">
-      (() => {
+      (async () => {
         "use strict";
         const $$ = (s, r = document) => [...r.querySelectorAll(s)];
         const RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
-        const store = {
-          get(k, d) {
-            try {
-              const v = JSON.parse(localStorage.getItem(k));
-              return v == null ? d : v;
-            } catch (e) {
-              return d;
-            }
-          },
-          set(k, v) {
-            try {
-              localStorage.setItem(k, JSON.stringify(v));
-            } catch (e) {}
-          },
-        };
         const SK = "cst-fx-v1";
+        await window.cstStudyReady;
         const S = Object.assign(
           {
             accent: "cyan",
@@ -4233,10 +4285,14 @@
             focusDone: 0,
             lite: null,
           },
-          store.get(SK, {}),
+          (await window.cstStudyPersistence.get(SK)) || {},
         );
         if (S.lite === null) S.lite = (navigator.hardwareConcurrency || 8) <= 2;
-        const saveS = () => store.set(SK, S);
+        const saveS = () =>
+          window.cstStudyPersistence.save(SK, S).catch((error) => {
+            window.cstStudyPartFailed(error);
+            showToast("Could not save study settings to the database.");
+          });
         const root = document.documentElement;
         const LITE = () => !!S.lite || RM;
         const pad = (n) => String(n).padStart(2, "0");
@@ -5253,7 +5309,8 @@
           childList: true,
         });
         requestAnimationFrame(() => requestAnimationFrame(refresh));
-      })();
+        window.cstStudyPartReady("fx");
+      })().catch((error) => window.cstStudyPartFailed(error));
     </script>
     <style>
       @media print {
@@ -5373,32 +5430,32 @@
       }
     </style>
     <script id="hubjs">
-      (() => {
+      (async () => {
         "use strict";
-        /* ===== DataStore (schema v1, separate key; existing progress/backups untouched) ===== */
+        /* ===== DataStore (schema v1) ===== */
         const KEY = "cst-hub-v1",
           DAY = 864e5,
           blank = () => ({ schema: 1, exams: [], cards: [], reviews: [] });
-        let H = blank();
-        try {
-          const r = JSON.parse(localStorage.getItem(KEY));
-          if (
-            r &&
-            r.schema === 1 &&
-            Array.isArray(r.cards) &&
-            Array.isArray(r.exams) &&
-            Array.isArray(r.reviews)
-          )
-            H = r;
-        } catch (e) {}
+        await window.cstStudyReady;
+        let H = (await window.cstStudyPersistence.get(KEY)) || blank();
+        if (
+          H.schema !== 1 ||
+          !Array.isArray(H.cards) ||
+          !Array.isArray(H.exams) ||
+          !Array.isArray(H.reviews)
+        )
+          H = blank();
+        if ((await window.cstStudyPersistence.get(KEY)) === undefined)
+          await window.cstStudyPersistence.save(KEY, H);
         const save = () => {
-          try {
-            localStorage.setItem(KEY, JSON.stringify(H));
-            return true;
-          } catch (e) {
-            showToast("Storage is full. Export a backup first.");
-            return false;
-          }
+          return window.cstStudyPersistence.save(KEY, H).then(
+            () => true,
+            (error) => {
+              window.cstStudyPartFailed(error);
+              showToast("Could not save study tools to the database.");
+              return false;
+            },
+          );
         };
         const uid = () =>
           "h" +
@@ -6257,7 +6314,8 @@
         }
         badge();
         window.StudyHub = { show };
-      })();
+        window.cstStudyPartReady("hub");
+      })().catch((error) => window.cstStudyPartFailed(error));
     </script>
   </body>
 </html>

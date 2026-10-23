@@ -2,8 +2,11 @@
 
 A full-stack study-progress application built with Next.js, React, TypeScript,
 Node.js route handlers, and PostgreSQL. The original interactive study matrix
-is preserved at `/legacy-matrix.html`; the Next.js dashboard, login, matrix
-workspace, and admin panel are the primary entry points.
+and its built-in subjects and chapters are preserved at `/legacy-matrix.html`.
+The syllabus is seeded into PostgreSQL, and new progress and study-tool data
+are stored there; progress from the old browser-local version is not imported.
+The Next.js dashboard, login, matrix workspace, and admin panel are the primary
+entry points.
 
 ## Local run
 

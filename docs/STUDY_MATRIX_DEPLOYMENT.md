@@ -29,11 +29,13 @@ secret values into logs, Git, or chat.
 5. Verify login, dashboard-to-matrix/admin navigation, matrix interactions,
    data export/import, and reload behavior.
 
-The original study template remains available at `/legacy-matrix.html`. Its
-existing browser data is stored in that browser's local storage; export a
-backup before clearing browser data or changing domains. The authenticated
-server-side study-state API is available, but browser data is not automatically
-uploaded by simply opening the legacy template.
+The complete study matrix, including its built-in subjects, chapters, and
+design, remains available at `/legacy-matrix.html`. The built-in syllabus is
+seeded into PostgreSQL when the matrix is first opened; progress, matrix
+customizations, study settings, and study-tool data are saved there afterward.
+Data from older browser local storage is intentionally not imported. If that
+old data is needed, export it from the old version and restore it manually
+after signing in.
 
 ## Database compatibility
 
