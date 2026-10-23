@@ -7,6 +7,7 @@ def app():
     app = create_app({
         "TESTING": True,
         "SQLALCHEMY_DATABASE_URI": "sqlite://",
+        "STUDY_APP_PASSWORD": "test-study-password",
     })
     with app.app_context():
         db.drop_all()

@@ -1,10 +1,37 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, current_app, jsonify, request, session
+from hmac import compare_digest
 from sqlalchemy import text
 from .extensions import db
 from .models import Task
 
 api = Blueprint("api", __name__)
 VALID_STATUSES = {"todo", "in_progress", "done"}
+
+
+@api.get("/api/auth/me")
+def auth_me():
+    if session.get("study_authenticated") is True:
+        return jsonify({"authenticated": True}), 200
+    return jsonify({"authenticated": False}), 401
+
+
+@api.post("/api/auth/login")
+def auth_login():
+    payload = request.get_json(silent=True) or {}
+    password = payload.get("password", "")
+    if not isinstance(password, str):
+        return jsonify({"error": "invalid credentials"}), 401
+    if not compare_digest(password, current_app.config["STUDY_APP_PASSWORD"]):
+        return jsonify({"error": "invalid credentials"}), 401
+    session.clear()
+    session["study_authenticated"] = True
+    return jsonify({"authenticated": True}), 200
+
+
+@api.post("/api/auth/logout")
+def auth_logout():
+    session.clear()
+    return "", 204
 
 @api.get("/api/health")
 def health():

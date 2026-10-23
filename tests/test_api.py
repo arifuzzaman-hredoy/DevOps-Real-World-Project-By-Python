@@ -51,3 +51,13 @@ def test_homepage_serves_study_matrix(client):
     assert response.status_code == 200
     assert response.mimetype == "text/html"
     assert b"CST Semester Study Matrix" in response.data
+
+
+def test_study_login_and_logout(client):
+    assert client.get("/api/auth/me").status_code == 401
+    assert client.post("/api/auth/login", json={"password": "wrong"}).status_code == 401
+    response = client.post("/api/auth/login", json={"password": "test-study-password"})
+    assert response.status_code == 200
+    assert client.get("/api/auth/me").json["authenticated"] is True
+    assert client.post("/api/auth/logout").status_code == 204
+    assert client.get("/api/auth/me").status_code == 401
