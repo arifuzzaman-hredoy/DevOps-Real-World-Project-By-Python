@@ -9,6 +9,12 @@ FROM node:22-alpine AS runtime
 WORKDIR /app
 ENV NODE_ENV=production HOSTNAME=0.0.0.0 PORT=3000
 RUN addgroup -S app && adduser -S app -G app
+RUN rm -rf \
+    /usr/local/lib/node_modules/npm \
+    /usr/local/lib/node_modules/corepack \
+    /usr/local/bin/npm \
+    /usr/local/bin/npx \
+    /usr/local/bin/corepack
 COPY --from=build /app/public ./public
 COPY --from=build /app/.next/standalone ./
 COPY --from=build /app/.next/static ./.next/static
