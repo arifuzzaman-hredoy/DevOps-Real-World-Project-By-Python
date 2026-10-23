@@ -13,3 +13,4 @@
 *.html text eol=lf
 *.py text eol=lf
 Makefile text eol=lf
+deploy/production/taskflow/taskflow-deploy text eol=lf
