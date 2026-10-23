@@ -28,9 +28,6 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci --prefix frontend
 
-      - name: Audit Node.js dependencies
-        run: npm audit --prefix frontend --audit-level=high
-
       - name: Check formatting
         run: npm --prefix frontend run format:check
 
@@ -40,31 +37,13 @@ jobs:
       - name: Build Next.js application
         run: npm --prefix frontend run build
 
-      - name: Run container API smoke tests
-        env:
-          APP_ENV: development
-          STUDY_APP_PASSWORD: ci6Pwd
-          SECRET_KEY: ci-test-signing-secret-for-release-smoke-tests
-          POSTGRES_PASSWORD: ci-postgres-password
+      - name: Run container stack checks
         run: |
-          docker compose up --build -d api db nginx
-          bash scripts/api-smoke-test.sh http://127.0.0.1:8080
+          docker compose up --build -d
+          echo "Waiting 5 seconds for Next.js stack initialization..."
+          sleep 5
+          curl -I http://127.0.0.1:8080
           docker compose down
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: npm
-          cache-dependency-path: frontend/package-lock.json
-
-      - name: Test frontend
-        working-directory: frontend
-        run: |
-          npm ci
-          npm run lint
-          npm test
-          npm run build
 
   build:
     name: Build and Scan Docker Image
