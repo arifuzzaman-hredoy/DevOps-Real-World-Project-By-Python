@@ -47,11 +47,11 @@ jobs:
           SECRET_KEY: ci-test-signing-secret-for-release-smoke-tests
           POSTGRES_PASSWORD: ci-postgres-password
         run: |
-          docker compose up --build -d api db nginx
+          docker compose -f devops/compose.yaml up --build -d frontend backend db nginx
           echo "Waiting 15 seconds for application infrastructure to become fully stable..."
           sleep 15
-          bash scripts/api-smoke-test.sh http://127.0.0.1:8080
-          docker compose down
+          bash devops/scripts/api-smoke-test.sh http://127.0.0.1:8080
+          docker compose -f devops/compose.yaml down
 
   build:
     name: Build and Scan Docker Image
@@ -66,7 +66,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build Docker image
-        run: docker build --pull -t taskflow:${{ github.sha }} .
+        run: docker build --pull -f devops/Dockerfile --build-arg APP_DIR=backend --build-arg SERVICE_PORT=3001 -t taskflow:${{ github.sha }} .
 
       - name: Verify Docker image
         run: docker image inspect taskflow:${{ github.sha }}

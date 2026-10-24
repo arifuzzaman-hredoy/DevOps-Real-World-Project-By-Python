@@ -1,0 +1,131 @@
+# EC2 production stack (/opt/taskflow/compose.yaml)
+# frontend + backend + db + nginx(HTTPS) + prometheus + grafana
+# Build hobe na server e, image GHCR theke pull hobe.
+name: taskflow
+
+x-logging: &logging
+  logging:
+    driver: json-file
+    options:
+      max-size: "10m"
+      max-file: "3"
+
+services:
+  frontend:
+    <<: *logging
+    image: ${TASKFLOW_FRONTEND_IMAGE:-ghcr.io/arifuzzaman-hredoy/taskflow-frontend:latest}
+    environment:
+      NODE_ENV: production
+      BACKEND_URL: http://backend:3001
+    restart: unless-stopped
+    networks: [app-net]
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/login').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))",
+        ]
+      interval: 20s
+      timeout: 4s
+      start_period: 30s
+      retries: 10
+
+  backend:
+    <<: *logging
+    image: ${TASKFLOW_BACKEND_IMAGE:-ghcr.io/arifuzzaman-hredoy/taskflow-backend:latest}
+    environment:
+      NODE_ENV: production
+      APP_ENV: production
+      SECRET_KEY: ${SECRET_KEY:?SECRET_KEY missing in .env}
+      STUDY_APP_PASSWORD: ${STUDY_APP_PASSWORD:?STUDY_APP_PASSWORD missing in .env}
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD_URLENCODED:?POSTGRES_PASSWORD_URLENCODED missing in .env}@db:5432/${POSTGRES_DB}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks: [app-net]
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3001/api/ready').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))",
+        ]
+      interval: 20s
+      timeout: 4s
+      start_period: 30s
+      retries: 10
+
+  db:
+    <<: *logging
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - taskflow-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+    networks: [app-net]
+
+  nginx:
+    <<: *logging
+    image: nginx:1.28-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /opt/taskflow/certbot-webroot:/var/www/certbot:ro
+    depends_on:
+      frontend:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+      grafana:
+        condition: service_started
+    restart: unless-stopped
+    networks: [app-net]
+
+  prometheus:
+    <<: *logging
+    image: prom/prometheus:v3.7.3
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on: [backend]
+    restart: unless-stopped
+    networks: [app-net]
+
+  grafana:
+    <<: *logging
+    image: grafana/grafana:12.2.1
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?GRAFANA_ADMIN_PASSWORD missing in .env}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_SERVER_ROOT_URL: https://grafana.oxytumzone.com
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on: [prometheus]
+    restart: unless-stopped
+    networks: [app-net]
+
+volumes:
+  taskflow-db-data:
+  grafana-data:
+
+networks:
+  app-net:

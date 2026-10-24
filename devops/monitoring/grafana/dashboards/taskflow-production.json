@@ -199,11 +199,7 @@
           "showLegend": true,
           "displayMode": "list",
           "placement": "bottom",
-          "calcs": [
-            "lastNotNull",
-            "mean",
-            "max"
-          ]
+          "calcs": ["lastNotNull", "mean", "max"]
         },
         "tooltip": {
           "mode": "multi",
@@ -629,11 +625,7 @@
           "showLegend": true,
           "displayMode": "list",
           "placement": "bottom",
-          "calcs": [
-            "lastNotNull",
-            "mean",
-            "max"
-          ]
+          "calcs": ["lastNotNull", "mean", "max"]
         },
         "tooltip": {
           "mode": "multi",
@@ -644,12 +636,7 @@
   ],
   "refresh": "15s",
   "schemaVersion": 39,
-  "tags": [
-    "taskflow",
-    "production",
-    "devops",
-    "nexus"
-  ],
+  "tags": ["taskflow", "production", "devops", "nexus"],
   "templating": {
     "list": []
   },
