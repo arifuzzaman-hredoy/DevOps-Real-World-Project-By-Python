@@ -26,14 +26,14 @@
       "type": "text",
       "title": "How to read this page",
       "gridPos": {
-        "h": 4,
+        "h": 5,
         "w": 24,
         "x": 0,
         "y": 0
       },
       "options": {
         "mode": "markdown",
-        "content": "**Green** = healthy. **Yellow** = keep an eye on it. **Red** = needs action now.\n\nNumbers update automatically every 10 seconds and graphs cover the last hour. Hover over the **i** icon at the top-left of any panel to see what it shows and when to worry.\n\nThe page reads top to bottom: 1) is the website working, 2) is the server healthy, 3) how traffic and speed look over time, 4) how the server resources look over time, 5) any alerts."
+        "content": "**Green** = healthy. **Yellow** = keep an eye on it. **Red** = needs action now.\n\nNumbers refresh automatically and graphs cover the last hour. Hover over the **i** icon at the top-left of any panel to see what it shows and when to worry. Read the page top to bottom: website, server, traffic and speed, server resources, alerts."
       }
     },
     {
@@ -45,7 +45,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 4
+        "y": 5
       },
       "panels": []
     },
@@ -62,7 +62,7 @@
         "h": 5,
         "w": 4,
         "x": 0,
-        "y": 5
+        "y": 6
       },
       "fieldConfig": {
         "defaults": {
@@ -143,7 +143,7 @@
         "h": 5,
         "w": 4,
         "x": 4,
-        "y": 5
+        "y": 6
       },
       "fieldConfig": {
         "defaults": {
@@ -197,7 +197,7 @@
         "h": 5,
         "w": 4,
         "x": 8,
-        "y": 5
+        "y": 6
       },
       "fieldConfig": {
         "defaults": {
@@ -257,7 +257,7 @@
     {
       "id": 6,
       "type": "stat",
-      "title": "Page Response Time",
+      "title": "Response Time",
       "description": "How long the server takes to answer a request. This is the 95th percentile: 95 out of 100 requests were answered faster than this number. Under 200 ms feels instant. Over 1 second feels slow.",
       "datasource": {
         "type": "prometheus",
@@ -267,7 +267,7 @@
         "h": 5,
         "w": 4,
         "x": 12,
-        "y": 5
+        "y": 6
       },
       "fieldConfig": {
         "defaults": {
@@ -337,7 +337,7 @@
         "h": 5,
         "w": 4,
         "x": 16,
-        "y": 5
+        "y": 6
       },
       "fieldConfig": {
         "defaults": {
@@ -403,7 +403,7 @@
     {
       "id": 8,
       "type": "stat",
-      "title": "Monitoring Coverage",
+      "title": "Monitoring Health",
       "description": "Monitoring collects numbers from several places (the TaskFlow app and the server itself). 100% means every place is reporting. Less than 100% means some graphs on this page may be empty.",
       "datasource": {
         "type": "prometheus",
@@ -413,7 +413,7 @@
         "h": 5,
         "w": 4,
         "x": 20,
-        "y": 5
+        "y": 6
       },
       "fieldConfig": {
         "defaults": {
@@ -479,7 +479,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 10
+        "y": 11
       },
       "panels": []
     },
@@ -496,7 +496,7 @@
         "h": 6,
         "w": 4,
         "x": 0,
-        "y": 11
+        "y": 12
       },
       "fieldConfig": {
         "defaults": {
@@ -556,7 +556,7 @@
     {
       "id": 11,
       "type": "gauge",
-      "title": "Memory Usage (RAM)",
+      "title": "Memory (RAM)",
       "description": "How much of the server’s memory (RAM) is in use. RAM is the fast working space programs need while they run. Under 75% is healthy. Above 90% the server may become slow or stop programs to free space.",
       "datasource": {
         "type": "prometheus",
@@ -566,7 +566,7 @@
         "h": 6,
         "w": 4,
         "x": 4,
-        "y": 11
+        "y": 12
       },
       "fieldConfig": {
         "defaults": {
@@ -636,7 +636,7 @@
         "h": 6,
         "w": 4,
         "x": 8,
-        "y": 11
+        "y": 12
       },
       "fieldConfig": {
         "defaults": {
@@ -706,7 +706,7 @@
         "h": 6,
         "w": 4,
         "x": 12,
-        "y": 11
+        "y": 12
       },
       "fieldConfig": {
         "defaults": {
@@ -776,7 +776,7 @@
         "h": 6,
         "w": 4,
         "x": 16,
-        "y": 11
+        "y": 12
       },
       "fieldConfig": {
         "defaults": {
@@ -846,7 +846,7 @@
         "h": 6,
         "w": 4,
         "x": 20,
-        "y": 11
+        "y": 12
       },
       "fieldConfig": {
         "defaults": {
@@ -896,7 +896,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 17
+        "y": 18
       },
       "panels": []
     },
@@ -913,7 +913,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 18
+        "y": 19
       },
       "fieldConfig": {
         "defaults": {
@@ -1055,7 +1055,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 18
+        "y": 19
       },
       "fieldConfig": {
         "defaults": {
@@ -1193,7 +1193,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 27
+        "y": 28
       },
       "panels": []
     },
@@ -1210,7 +1210,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 28
+        "y": 29
       },
       "fieldConfig": {
         "defaults": {
@@ -1335,7 +1335,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 28
+        "y": 29
       },
       "fieldConfig": {
         "defaults": {
@@ -1462,7 +1462,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 36
+        "y": 37
       },
       "fieldConfig": {
         "defaults": {
@@ -1578,7 +1578,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 36
+        "y": 37
       },
       "fieldConfig": {
         "defaults": {
@@ -1690,7 +1690,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 44
+        "y": 45
       },
       "panels": []
     },
@@ -1707,7 +1707,7 @@
         "h": 5,
         "w": 24,
         "x": 0,
-        "y": 45
+        "y": 46
       },
       "fieldConfig": {
         "defaults": {
