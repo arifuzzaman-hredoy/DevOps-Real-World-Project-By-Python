@@ -101,6 +101,7 @@ services:
     image: prom/prometheus:v3.7.3
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/alerts.yml:/etc/prometheus/alerts.yml:ro
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on: [backend]
@@ -122,6 +123,18 @@ services:
     depends_on: [prometheus]
     restart: unless-stopped
     networks: [app-net]
+
+  node-exporter:
+    image: prom/node-exporter:v1.9.1
+    network_mode: host
+    pid: host
+    command:
+      - --path.rootfs=/host
+      - --web.listen-address=:9101
+      - --collector.filesystem.mount-points-exclude=^/(dev|proc|sys|run|var/lib/docker/.+|var/lib/containers/.+)($|/)
+    volumes:
+      - /:/host:ro,rslave
+    restart: unless-stopped
 
 volumes:
   taskflow-db-data:
