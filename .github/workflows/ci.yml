@@ -48,6 +48,8 @@ jobs:
           POSTGRES_PASSWORD: ci-postgres-password
         run: |
           docker compose up --build -d api db nginx
+          echo "Waiting 15 seconds for application infrastructure to become fully stable..."
+          sleep 15
           bash scripts/api-smoke-test.sh http://127.0.0.1:8080
           docker compose down
 

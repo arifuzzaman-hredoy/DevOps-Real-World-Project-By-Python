@@ -1,79 +1,59 @@
-cd "/mnt/g/My Skill Learn Plan/Technology/Cloud & DevOps/DevSecOps/DevOps/Portfolio Project/devops-real-world-project"
+cd /opt/taskflow || exit 1
 
-python3 - <<'PY'
-from pathlib import Path
-import re
+echo "========== 1. CURRENT COMPOSE FILE =========="
+sudo sed -n '1,240p' /opt/taskflow/compose.yaml
 
-source = Path("backend/app/api/[...path]/route.ts")
-compose = Path("devops/compose.yaml")
+echo "========== 2. ACTIVE NGINX CONFIG =========="
+sudo grep -nE \
+  'server_name|listen 443|proxy_pass|location /|location = /api/ready|ssl_certificate|grafana' \
+  /opt/taskflow/nginx.conf
 
-source_text = source.read_text()
-compose_text = compose.read_text()
+echo "========== 3. SAVED PRE-NEXTJS CONFIG =========="
+if sudo test -f /opt/taskflow/.pre-nextjs-migration/compose.yaml; then
+  sudo grep -nE \
+    'image:|build:|healthcheck:|5000|3000|service:|api:' \
+    /opt/taskflow/.pre-nextjs-migration/compose.yaml
+else
+  echo "No saved Compose file"
+fi
 
-# Verify backend source before making changes.
-if source_text.count("process.env.NODE_ENV") != 4:
-    raise SystemExit("STOP: Expected exactly 4 NODE_ENV references.")
+if sudo test -f /opt/taskflow/.pre-nextjs-migration/nginx.conf; then
+  sudo grep -nE \
+    'server_name|listen|proxy_pass|location|5000|3000|grafana' \
+    /opt/taskflow/.pre-nextjs-migration/nginx.conf
+else
+  echo "No saved Nginx config"
+fi
 
-# Locate top-level Compose services, not nested dependency entries.
-def get_service(text, name):
-    pattern = rf"(?ms)^  {re.escape(name)}:\n(.*?)(?=^  [A-Za-z0-9_-]+:\n|\Z)"
-    matches = list(re.finditer(pattern, text))
-    if len(matches) != 1:
-        raise SystemExit(
-            f"STOP: Expected exactly one top-level {name} service; found {len(matches)}."
-        )
-    return matches[0]
+echo "========== 4. RUNNING IMAGE METADATA =========="
+sudo docker image inspect \
+  ghcr.io/arifuzzaman-hredoy/devops-real-world-project-by-python:sha-2c8844b5a822da55e15958a27290e7940d1537c9 \
+  --format 'Created={{.Created}} OS={{.Os}} Architecture={{.Architecture}} Entrypoint={{json .Config.Entrypoint}} Cmd={{json .Config.Cmd}}'
 
-backend_match = get_service(compose_text, "backend")
-grafana_match = get_service(compose_text, "grafana")
+echo "========== 5. CURRENT COMPOSE IMAGE METADATA =========="
+sudo docker image inspect \
+  ghcr.io/arifuzzaman-hredoy/devops-real-world-project-by-python:sha-1b44031ab14dc8a804d1585d32f8612606f9f4da \
+  --format 'Created={{.Created}} ID={{.Id}} Entrypoint={{json .Config.Entrypoint}} Cmd={{json .Config.Cmd}}' \
+  2>&1 || true
 
-backend_section = backend_match.group(1)
-grafana_section = grafana_match.group(1)
+echo "========== 6. DEPLOY HELPER IMAGE AND ROLLBACK LOGIC =========="
+sudo sed -n '175,275p' /usr/local/bin/taskflow-deploy
 
-old_env = "      NODE_ENV: ${APP_ENV:-development}"
-if backend_section.count(old_env) != 1:
-    raise SystemExit("STOP: Backend NODE_ENV setting did not match exactly once.")
+echo "========== 7. NGINX UPSTREAM AND READINESS =========="
+sudo docker exec taskflow-nginx-1 nginx -T 2>&1 |
+  grep -nE -A 5 -B 5 \
+  'server_name taskflow.oxytumzone.com|proxy_pass http://api:3000|proxy_pass http://api:5000|location = /api/ready'
 
-old_port = '      - "3001:3000"'
-if grafana_section.count(old_port) != 1:
-    raise SystemExit("STOP: Grafana port mapping did not match exactly once.")
+echo "========== 8. API HEALTH AND RECENT ERRORS =========="
+sudo docker inspect taskflow-api-1 \
+  --format 'Status={{.State.Status}} Health={{.State.Health.Status}} Restarts={{.RestartCount}}'
 
-# Prepare all changes in memory first.
-updated_source = source_text.replace(
-    "process.env.NODE_ENV", "process.env.APP_ENV"
-)
+sudo docker logs --since 5m taskflow-api-1 2>&1 |
+  grep -c 'failed-to-find-server-action' || true
 
-updated_backend = backend_section.replace(
-    old_env,
-    "      NODE_ENV: production\n      APP_ENV: ${APP_ENV:-development}",
-    1,
-)
-updated_grafana = grafana_section.replace(
-    old_port, '      - "3002:3000"', 1
-)
+echo "========== 9. PUBLIC READINESS =========="
+curl -sS -i --max-time 10 \
+  https://taskflow.oxytumzone.com/api/ready
 
-# Apply service-specific replacements, from later section to earlier section.
-updated_compose = compose_text
-for match, replacement in sorted(
-    [
-        (backend_match, updated_backend),
-        (grafana_match, updated_grafana),
-    ],
-    key=lambda item: item[0].start(),
-    reverse=True,
-):
-    updated_compose = (
-        updated_compose[:match.start(1)]
-        + replacement
-        + updated_compose[match.end(1):]
-    )
-
-# Write only after every validation has passed.
-source.write_text(updated_source)
-compose.write_text(updated_compose)
-
-print("SUCCESS: Backend runtime checks now use APP_ENV.")
-print("SUCCESS: Backend NODE_ENV is production.")
-print("SUCCESS: Backend APP_ENV defaults to development.")
-print("SUCCESS: Grafana host port changed to 3002.")
-PY
+echo
+echo "========== DIAGNOSTICS COMPLETE =========="
